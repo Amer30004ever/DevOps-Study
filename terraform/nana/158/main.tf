@@ -63,7 +63,7 @@ variable "environment" {
 resource "aws_vpc" "dev-vpc-3" {
   cidr_block = var.vpc_cidr_block
   tags = {
-    Name = "var.environment"
+    Name = "var.environment"  #to Replicate same infrastructure for different environments
   }
 
 }
@@ -120,7 +120,7 @@ variable "cidr_blocks_2"  {
 resource "aws_vpc" "dev-vpc-5" {
   cidr_block = var.cidr_blocks_2[0].cidr_block
   tags = {
-    Name = var.cidr_blocks_2[0].name
+    Name = var.cidr_blocks_2[0].name  #to Replicate same infrastructure for different environments
   }
 }
 
@@ -131,7 +131,7 @@ resource "aws_subnet" "dev-subnet-5" {
   cidr_block = var.cidr_blocks_2[1].cidr_block
   availability_zone = var.avail_zone
   tags = {
-    Name = var.cidr_blocks_2[1].name
+    Name = var.cidr_blocks_2[1].name  #to Replicate same infrastructure for different environments
   }
 }
 #.\terraform.exe apply -var-file terraform-dev.tfvars -var "avail_zone=eu-west-3a" -auto-approve
