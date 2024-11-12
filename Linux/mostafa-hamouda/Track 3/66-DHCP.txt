@@ -1,0 +1,91 @@
+server:
+-------
+#yum install dhcp
+#yum install vim
+
+#systemctl enable dhcpd
+#systemctl start dhcpd
+
+client:
+-------
+#yum install net-tools
+#ifconfig 
+ens33: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.248.151  netmask 255.255.255.0  broadcast 192.168.248.255
+        inet6 fe80::6487:dfde:b347:97d4  prefixlen 64  scopeid 0x20<link>
+        ether 00:0c:29:30:2c:0e 
+#route-n
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         192.168.248.2   0.0.0.0         UG    100    0        0 ens33
+#nmcli connection show ens33
+connection.autoconnect:                 yes
+#less /etc/sysconfig/network-scripts/ifcfg-ens33
+BOOTPROTO=dhcp
+
+less /var/lib/dhclient/ .lease ---> if u dont have NM
+
+"dhclient-fbe60846-3377-3253-ae6d-f5184506a302-ens33.lease" this files means that your IF is configured to obtain ip from DHCP
+#less /var/lib/NetworkManager/dhclient-fbe60846-3377-3253-ae6d-f5184506a302-ens33.lease
+lease {
+  interface "ens33";
+  fixed-address 192.168.248.151;
+  option subnet-mask 255.255.255.0;
+  option routers 192.168.248.2;
+  option dhcp-lease-time 1800;
+  option dhcp-message-type 5;
+  option domain-name-servers 192.168.248.2;
+  option dhcp-server-identifier 192.168.248.254;
+  option broadcast-address 192.168.248.255;
+  option domain-name "localdomain";
+  renew 0 2024/03/17 17:23:27;
+  rebind 0 2024/03/17 17:35:55;
+  expire 0 2024/03/17 17:39:40;
+}
+ 
+#vi /etc/dhcp/dhcpd.conf ----> empty
+
+#cat /usr/share/doc/dhcp-4.2.5/dhcpd.conf.example
+#cp /usr/share/doc/dhcp-4.2.5/dhcpd.conf.example /etc/dhcp/dhcpd.conf
+
+#vi /etc/dhcp/dhcpd.conf
+
+# dhcpd.conf
+# Sample configuration file for ISC dhcpd
+# option definitions common to all supported networks...
+option domain-name "mostafa.com";
+option domain-name-servers  208.67.222.222, 208.67.220.220;
+
+default-lease-time 7200;
+max-lease-time 10800;
+
+authoritative;
+
+log-facility local7;
+
+# A slightly different configuration for an internal subnet.
+subnet 192.168.248.0 netmask 255.255.255.0 {
+  range 192.168.248.100 192.168.248.200;
+  option routers 192.168.248.2;
+  option broadcast-address 192.168.248.255;
+  default-lease-time 600;
+  max-lease-time 7200;
+}
+
+#systemctl enable dhcpd
+#systemctl restart dhcpd
+#systemctl status dhcpd
+Active: active  enabled;
+#dhclient
+#reboot
+
+Server:
+-------
+#tailf /var/log/messages
+Mar 16 18:35:04 192 dhcpd: DHCPDISCOVER from 00:0c:29:51:04:d9 via ens33
+Mar 16 18:35:05 192 dhcpd: DHCPOFFER on 192.168.248.153 to 00:0c:29:51:04:d9 via ens33
+Mar 16 18:37:32 192 dhclient[872]: DHCPREQUEST on ens33 to 192.168.248.254 port 67 (xid=0x6de60281)
+Mar 16 18:37:32 192 dhclient[872]: DHCPACK from 192.168.248.254 (xid=0x6de60281)
+
+client:
+-------
+less /var/lib/NetworkManager/dhclient-

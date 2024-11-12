@@ -1,0 +1,39 @@
+How to disable alt + ctl + delete :
+----------------------------------
+ls -l /etc/systemd/system ---> soft links for /usr/lib/systemd/system
+
+# cd /usr/lib/systemd/system
+
+# ls -l | grep -i del
+lrwxrwxrwx. 1 root root   13 Jan 13 19:16 ctrl-alt-del.target -> reboot.target
+--> so to stop alt + ctl + delete manually ,you must edit reboot.target file
+
+Masking:
+-------
+# systemctl mask ctrl+alt+del.target
+-->masking a target created a soft link for it and made it points to /dev/null
+
+# ls -l /etc/systemd/system/ctrl-alt-del.target
+lrwxrwxrwx. 1 root root 9 Feb  4 09:41 /etc/systemd/system/ctrl-alt-del.target -> /dev/null
+
+-->as i edited a target i must reload the config files again
+# systemctl daemon-reload
+
+# ls -l /etc/systemd/system/ | grep -i del
+lrwxrwxrwx. 1 root root    9 Feb  4 09:41 ctrl-alt-del.target -> /dev/null
+
+good..after i reloaded the config files with daemon-reload it still points to -->/dev/null
+-->this because when u run any service or target or edit them ,these edits are made to the soft link in /etc/systemd/system not in original file in /user/lib/systemd/system
+
+Unmasking:
+---------
+#systemctl unmask ctrl+alt+del.target
+Removed symlink /etc/systemd/system/ctrl-alt-del.target.
+
+ls -l /etc/systemd/system/ | grep -i del
+-->soft link of ctrl+alt+del.target removed
+
+-->while systemd running it looks first in /etc/systemd/system if setting of service or target no found then it looks in /usr/li/systemd/system
+
+
+

@@ -1,0 +1,22 @@
+lsbibe | :
+-------
+| = shift + \  --> take input of a command and put it as output for another command
+
+#less /etc/passwd --> less to show page by page
+                      press q to exit
+
+#more /etx/passwd --> when i reach the pages end will exit automatic
+
+#ls -lR / > result.txt
+#less result.txt
+or
+#ls -lR / | less --> for less
+
+#ls -lR / | more --> for more
+
+tee:
+---  -->takes a copy to be shown on terminal and another cory
+        to be saved in a file
+
+#ls | tee result.txt
+#cat result.txt

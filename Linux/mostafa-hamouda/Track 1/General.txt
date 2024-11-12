@@ -1,0 +1,129 @@
+#id amer
+uid=1000(amer) gid=1000(amer) groups=1000(amer),10(wheel)
+[amer@localhost ~]# date
+Sat Sep 16 18:23:24 EDT 2023
+
+[amer@localhost ~]# su - amer
+Password: 
+Last login: Sat Sep 16 18:16:52 EDT 2023 on :0
+
+[amer@localhost Amer]# cd
+[amer@localhost ~]# pwd
+/home/amer 
+[amer@localhost ~]# cd ~
+[amer@localhost ~]# pwd
+/home/amer
+
+[amer@localhost ~]# ls
+Amer     Documents  file001  file2  Pictures  Templates
+Desktop  Downloads  file1    Music  Public    Videos
+
+amer@localhost ~]# ls -l
+total 0
+drwxrwxr-x. 7 amer amer  98 Sep 16 18:42 Amer
+drwxr-xr-x. 3 amer amer  18 Aug 27 13:29 Desktop
+
+
+[amer@localhost ~]$ ls /
+bin   dev  home  lib64  mnt  proc  run   srv  tmp  var
+boot  etc  lib   media  opt  root  sbin  sys  usr
+
+[amer@localhost ~]$ pwd
+/home/amer
+[amer@localhost ~]$ ls /home/amer/Amer
+1  2  3  4  amer  zain
+
+[amer@localhost ~]$ cd /home/amer/Amer/1
+[amer@localhost 1]$ pwd
+/home/amer/Amer/1
+
+[amer@localhost 1]$ ls /home/amer/Amer
+1  2  3  4  amer  zain
+[amer@localhost 1]$ mkdir /home/amer/Amer/saif
+[amer@localhost 1]$ ls /home/amer/Amer/
+1  2  3  4  amer  saif  zain
+
+[amer@localhost 1]$ cat /home/amer/Amer/amer
+hi
+my name is amer
+i am learning linux
+
+[amer@localhost ~]$ cd /home/amer/Amer
+[amer@localhost Amer]$ ls
+1  2  3  4  amer  saif  zain
+[amer@localhost Amer]$ touch 55 66  -------files
+[amer@localhost Amer]$ ls
+1  2  3  4  55  66  amer  saif  zain
+
+[root@localhost Amer]# mkdir 77 88  --------folders
+[root@localhost Amer]# ls
+1  2  3  4  55  66  77  88  amer  saif  zain
+
+
+[amer@localhost ~]$ su - root
+Password: 
+Last login: Sat Sep 16 14:49:57 EDT 2023 on pts/0
+[root@localhost ~]# cd ~amer
+[root@localhost amer]# pwd
+/home/amer
+[root@localhost amer]# 
+
+[root@localhost Amer]# cd .
+[root@localhost Amer]# pwd
+/home/amer/Amer
+[root@localhost Amer]# cd ..
+[root@localhost amer]# pwd
+/home/amer
+
+[root@localhost saif]# pwd
+/home/amer/Amer/saif
+[root@localhost saif]# cd ../../..
+[root@localhost home]# pwd
+/home
+
+nano /home/amer/Amer/amer
+ ctrl + o -----save
+ ctrl + w -----search
+ ctrl + k -----cut
+ ctrl + u -----paste
+ ctrl + x -----exit
+
+[root@localhost Amer]# cp amer zain
+cp: overwrite ‘zain’? y
+[root@localhost Amer]# cat zain
+hi
+my name is amer
+i am learning linux
+
+[root@localhost Amer]# cp zain /home/amer
+[root@localhost Amer]# ls /home/amer
+Amer     Documents  file001  file2  Pictures  saif       Videos
+Desktop  Downloads  file1    Music  Public    Templates  zain
+[root@localhost Amer]# cat /home/amer/zain
+hi
+my name is amer
+i am learning linux
+
+[root@localhost Amer]# cd /home/amer/Amer/saif
+[root@localhost saif]# touch Amer zain saif
+[root@localhost saif]# ls
+Amer  saif  zain
+[root@localhost saif]# cd /home
+[root@localhost home]# ls
+amer
+[root@localhost home]# mkdir zain saif
+[root@localhost home]# ls
+amer  saif  zain
+[root@localhost home]# cp -r /home/amer/Amer/saif /home/zain
+[root@localhost saif]# ls /home/zain
+saif
+
+# rm -rf ~/Downloads  -------  If we want to force delete a directory and everything in it,
+
+# rm ciao.txt  ------- if u want to delete a file
+
+# mv hello.txt bonjour.txt  -------   rename the file hello.txt to bonjour.txt.
+
+
+su -i  ------> switch to root
+sudo bash  ---> switch to root

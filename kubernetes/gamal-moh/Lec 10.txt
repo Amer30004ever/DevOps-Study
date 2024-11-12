@@ -1,0 +1,371 @@
+minikube vs kubaAdm
+
+# minikube status
+minikube
+type: Control Plane
+host: Stopped
+kubelet: Stopped
+apiserver: Stopped
+kubeconfig: Stopped
+
+on every machine restart
+# minikube start
+* minikube v1.33.1 on Ubuntu 22.04
+* Using the docker driver based on existing profile
+* Starting "minikube" primary control-plane node in "minikube" cluster
+* Pulling base image v0.0.44 ...
+
+# minikube status
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured 
+
+# minikube dashboard
+
+# kubectl get nodes
+NAME       STATUS   ROLES           AGE   VERSION
+minikube   Ready    control-plane   52d   v1.30.0
+
+# minikube addons list
+
+# minikube addons enable volumesnapshots
+* The 'volumesnapshots' addon is enabled
+
+
+kubernetes orchestrator:
+-----------------------
+high availability
+load balancing 
+scalability
+manage update without down-time
+ease of managment
+
+k8s cluster architecture:
+------------------------
+                  cluster
+control-plane                worker node
+ master node                 (min 2 nodes)
+-api server                  -kubelet
+-scheduler                   -proxy
+-kube control manager
+-etcd
+
+# kubectl create deployment lab1 --image httpd --port 80
+
+# kubectl get pods
+NAME                    READY   STATUS    RESTARTS   AGE
+lab1-69c9b6ff7-l2ddb    1/1     Running   0          12m
+
+-o wide :
+-------
+#kubectl get pods -o wide
+NAME                    READY   STATUS    RESTARTS   AGE   IP            NODE       NOMINATED NODE   READINESS GATES
+lab1-69c9b6ff7-l2ddb    1/1     Running   0          15m   10.244.0.13   minikube   <none>           <none>
+
+# kubectl get deployment lab1 -o wide
+NAME   READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES   SELECTOR
+lab1   1/1     1            1           15m   httpd        httpd    app=lab1
+
+# kubectl scale deployment lab1 --replicas 2
+deployment.apps/lab1 scaled
+
+NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+lab1   2/2     2            2           19m
+
+~$ kubectl get pods
+NAME                    READY   STATUS    RESTARTS   AGE
+lab1-69c9b6ff7-l2ddb    1/1     Running   0          19m
+lab1-69c9b6ff7-mp48q    1/1     Running   0          49s
+
+# kubectl scale deployment lab1 --replicas 4
+deployment.apps/lab1 scaled
+
+# kubectl get pods -o wide
+NAME                   READY   STATUS              RESTARTS   AGE     IP            NODE       NOMINATED NODE   READINESS GATES
+lab1-69c9b6ff7-jfpxm   0/1     ContainerCreating   0          3s      <none>        minikube   <none>           <none>
+lab1-69c9b6ff7-l2ddb   1/1     Running             0          26m     10.244.0.13   minikube   <none>           <none>
+lab1-69c9b6ff7-mp48q   1/1     Running             0          7m17s   10.244.0.17   minikube   <none>           <none>
+lab1-69c9b6ff7-pbzjm   0/1     ContainerCreating   0          3s      <none>        minikube   <none>           <none>
+
+# kubectl get pods -o wide
+NAME                   READY   STATUS    RESTARTS   AGE     IP            NODE       NOMINATED NODE   READINESS GATES
+lab1-69c9b6ff7-jfpxm   1/1     Running   0          64s     10.244.0.20   minikube   <none>           <none>
+lab1-69c9b6ff7-l2ddb   1/1     Running   0          27m     10.244.0.13   minikube   <none>           <none>
+lab1-69c9b6ff7-mp48q   1/1     Running   0          8m18s   10.244.0.17   minikube   <none>           <none>
+lab1-69c9b6ff7-pbzjm   1/1     Running   0          64s     10.244.0.21   minikube   <none>           <none>
+
+# kubectl delete pod lab1-69c9b6ff7-jfpxm
+pod "lab1-69c9b6ff7-jfpxm" deleted
+# kubectl get pods -o wide
+NAME                   READY   STATUS              RESTARTS   AGE     IP            NODE       NOMINATED NODE   READINESS GATES
+lab1-69c9b6ff7-l2ddb   1/1     Running             0          29m     10.244.0.13   minikube   <none>           <none>
+lab1-69c9b6ff7-mp48q   1/1     Running             0          11m     10.244.0.17   minikube   <none>           <none>
+lab1-69c9b6ff7-pbzjm   1/1     Running             0          3m49s   10.244.0.21   minikube   <none>           <none>
+lab1-69c9b6ff7-s4gmb   0/1     ContainerCreating   0          8s      <none>        minikube   <none>           <none>
+
+# kubectl get pods -o wide
+NAME                   READY   STATUS    RESTARTS   AGE     IP            NODE       NOMINATED NODE   READINESS GATES
+lab1-69c9b6ff7-l2ddb   1/1     Running   0          31m     10.244.0.13   minikube   <none>           <none>
+lab1-69c9b6ff7-mp48q   1/1     Running   0          12m     10.244.0.17   minikube   <none>           <none>
+lab1-69c9b6ff7-pbzjm   1/1     Running   0          5m10s   10.244.0.21   minikube   <none>           <none>
+lab1-69c9b6ff7-s4gmb   1/1     Running   0          89s     10.244.0.22   minikube   <none>           <none>
+
+
+High Availability  ---> deleted pods are re-created
+Scalability  ---> can add replicas depending on request numbers sent to pods to blanace the load on pods
+Load Balancing  ---> the replica pods added are redirected to other subnets to balance the network traffic
+Ease of Management  ---> delete, create, inspect, scale with easy commands
+Manage Updates Without Down-Time  --->
+
+# minikube dashboard &
+
+object called "Service" is one of these three services
+service types:
+-------------
+1-cluster ip : 
+	-for pods to communicate together inside cluster and 
+	-connect user to pods
+	-discover new pods and their new ips and map requests to them
+2-node port : port mapping
+3-load balancer : every pods can take specifc number of requests
+
+# kubectl get services
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   58d
+
+Namespace:
+---------
+-split k8s cluster into small clusters (isolation)
+-Duplicate resources/configuration
+-Manage HardWare Resources
+
+# kubectl create namespace dev
+namespace/dev created
+
+# kubectl create namespace test
+namespace/test created
+
+# kubectl create deployment prog --image httpd --port 80 -n dev
+deployment.apps/prog created
+
+# kubectl create deployment prog --image httpd --port 80 -n test
+deployment.apps/prog created
+
+# kubectl get namespaces
+NAME                   STATUS   AGE
+default                Active   58d
+dev                    Active   2m54s
+kube-node-lease        Active   58d
+kube-public            Active   58d
+kube-system            Active   58d
+kubernetes-dashboard   Active   127m
+test                   Active   2m50s
+
+# kubectl get pods  --->  will get pods of default namespace
+
+# kubectl get pods -n dev
+NAME                   READY   STATUS    RESTARTS   AGE
+prog-8b9c97c4c-nl9ss   1/1     Running   0          6m14s
+
+# kubectl get pods -n test
+NAME                   READY   STATUS    RESTARTS   AGE
+prog-8b9c97c4c-rxfz7   1/1     Running   0          44m
+
+# kubectl scale deployment prog -n test --replicas 5
+deployment.apps/prog scaled
+
+# kubectl get deployment prog -n test
+NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+prog   5/5     5            5           47m
+
+# kubectl get pods -n test
+NAME                   READY   STATUS    RESTARTS   AGE
+prog-8b9c97c4c-48j5d   1/1     Running   0          52s
+prog-8b9c97c4c-8fh8v   1/1     Running   0          52s
+prog-8b9c97c4c-lqggb   1/1     Running   0          52s
+prog-8b9c97c4c-qz7nh   1/1     Running   0          52s
+prog-8b9c97c4c-rxfz7   1/1     Running   0          47m
+
+# kubectl get deployment prog -n dev
+NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+prog   1/1     1            1           49m
+
+# kubectl scale deployment prog -n dev --replicas 3
+deployment.apps/prog scaled
+
+# kubectl get pods -n dev
+NAME                   READY   STATUS              RESTARTS   AGE
+prog-8b9c97c4c-m6rvw   0/1     ContainerCreating   0          9s
+prog-8b9c97c4c-nl9ss   1/1     Running             0          50m
+prog-8b9c97c4c-wsq4r   0/1     ContainerCreating   0          9s
+-----------------------------------------------------------------------
+
+Manage k8s Resources:
+--------------------
+Imperative(30-40)%    GUI    Declarative(60-70)%
+cmd
+kubectl:                     yml --> config/metadata resources
+ -create
+ -run
+ -delete
+ -get
+ -describe
+ -scale
+ -logs
+
+# kubectl api-resources
+NAME                                SHORTNAMES   APIVERSION                        NAMESPACED   KIND
+bindings                                         v1                                true         Binding
+componentstatuses                   cs           v1                                false        ComponentStatus
+configmaps                          cm           v1                                true         ConfigMap
+endpoints                           ep           v1                                true         Endpoints
+events                              ev           v1                                true         Event
+limitranges                         limits       v1                                true         LimitRange
+namespaces                          ns           v1                                false        Namespace
+nodes                               no           v1                                false        Node
+persistentvolumeclaims              pvc          v1                                true         PersistentVolumeClaim
+persistentvolumes                   pv           v1                                false        PersistentVolume
+pods                                po           v1                                true         Pod
+podtemplates                                     v1                                true         PodTemplate
+replicationcontrollers              rc           v1                                true         ReplicationController
+resourcequotas                      quota        v1                                true         ResourceQuota
+secrets                                          v1                                true         Secret
+serviceaccounts                     sa           v1                                true         ServiceAccount
+services                            svc          v1                                true         Service
+mutatingwebhookconfigurations                    admissionregistration.k8s.io/v1   false        MutatingWebhookConfiguration
+validatingadmissionpolicies                      admissionregistration.k8s.io/v1   false        ValidatingAdmissionPolicy
+validatingadmissionpolicybindings                admissionregistration.k8s.io/v1   false        ValidatingAdmissionPolicyBinding
+validatingwebhookconfigurations                  admissionregistration.k8s.io/v1   false        ValidatingWebhookConfiguration
+customresourcedefinitions           crd,crds     apiextensions.k8s.io/v1           false        CustomResourceDefinition
+apiservices                                      apiregistration.k8s.io/v1         false        APIService
+controllerrevisions                              apps/v1                           true         ControllerRevision
+daemonsets                          ds           apps/v1                           true         DaemonSet
+deployments                         deploy       apps/v1                           true         Deployment
+replicasets                         rs           apps/v1                           true         ReplicaSet
+statefulsets                        sts          apps/v1                           true         StatefulSet
+selfsubjectreviews                               authentication.k8s.io/v1          false        SelfSubjectReview
+tokenreviews                                     authentication.k8s.io/v1          false        TokenReview
+localsubjectaccessreviews                        authorization.k8s.io/v1           true         LocalSubjectAccessReview
+selfsubjectaccessreviews                         authorization.k8s.io/v1           false        SelfSubjectAccessReview
+selfsubjectrulesreviews                          authorization.k8s.io/v1           false        SelfSubjectRulesReview
+subjectaccessreviews                             authorization.k8s.io/v1           false        SubjectAccessReview
+horizontalpodautoscalers            hpa          autoscaling/v2                    true         HorizontalPodAutoscaler
+cronjobs                            cj           batch/v1                          true         CronJob
+jobs                                             batch/v1                          true         Job
+certificatesigningrequests          csr          certificates.k8s.io/v1            false        CertificateSigningRequest
+leases                                           coordination.k8s.io/v1            true         Lease
+endpointslices                                   discovery.k8s.io/v1               true         EndpointSlice
+events                              ev           events.k8s.io/v1                  true         Event
+flowschemas                                      flowcontrol.apiserver.k8s.io/v1   false        FlowSchema
+prioritylevelconfigurations                      flowcontrol.apiserver.k8s.io/v1   false        PriorityLevelConfiguration
+ingressclasses                                   networking.k8s.io/v1              false        IngressClass
+ingresses                           ing          networking.k8s.io/v1              true         Ingress
+networkpolicies                     netpol       networking.k8s.io/v1              true         NetworkPolicy
+runtimeclasses                                   node.k8s.io/v1                    false        RuntimeClass
+poddisruptionbudgets                pdb          policy/v1                         true         PodDisruptionBudget
+clusterrolebindings                              rbac.authorization.k8s.io/v1      false        ClusterRoleBinding
+clusterroles                                     rbac.authorization.k8s.io/v1      false        ClusterRole
+rolebindings                                     rbac.authorization.k8s.io/v1      true         RoleBinding
+roles                                            rbac.authorization.k8s.io/v1      true         Role
+priorityclasses                     pc           scheduling.k8s.io/v1              false        PriorityClass
+csidrivers                                       storage.k8s.io/v1                 false        CSIDriver
+csinodes                                         storage.k8s.io/v1                 false        CSINode
+csistoragecapacities                             storage.k8s.io/v1                 true         CSIStorageCapacity
+storageclasses                      sc           storage.k8s.io/v1                 false        StorageClass
+volumeattachments                                storage.k8s.io/v1                 false        VolumeAttachment
+
+
+kind: Pod, Replica, Deploy....     from--> kubectl api-resources
+apiVersion: v1, apps/v1      from--> kubectl api-resources.
+metadata:
+  name: resource-name
+  namespace: name-space
+  labels: 
+    key: value
+    app: jenkins-server
+spec:
+    meta data
+        +
+    h.w resources
+
+change from imparative to declarative
+----------------------------------
+kubectl run test --image httpd --port 80
+pod/test created
+# kubectl run test --image httpd --port 80 -o yaml --dry-run=client
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null  --->remove this line
+  labels:
+    run: test
+  name: test
+spec:
+  containers:
+  - image: httpd
+    name: test
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+# kubectl run test --image httpd --port 80 -o yaml --dry-run=client > pod-test.yml
+
+# kubectl create deployment prog --image httpd --port 80 -n dev -o yaml --dry-run=client
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null  --->remove this line
+  labels:
+    app: prog
+  name: prog
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prog
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null  --->remove this line
+      labels:
+        app: prog
+    spec:
+      containers:
+      - image: httpd
+        name: httpd
+        ports:
+        - containerPort: 80
+        resources: {}
+
+
+# kubectl create deployment prog --image httpd --port 80 -n dev -o yaml --dry-run=client > deployment-test.yml
+
+2nd-way : ready teplates
+------------------------
+search google : pod k8s yaml
+navigate : https://kubernetes.io/docs/concepts/workloads/pods/
+copy
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 80
+
+# sudo vi pod-nginx.yml
+paste
+
+3rd-way: write file from scratch:
+---------------------------------

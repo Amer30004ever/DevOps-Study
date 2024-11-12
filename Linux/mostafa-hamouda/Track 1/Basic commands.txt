@@ -1,0 +1,70 @@
+#mkdir folder1  --> create folder1
+
+#touch file1  -->  create file1
+
+#nano file1  --> edit file1
+
+#cp file1 file2 test  -->  copy file 1 , file2 and put them in folder test
+
+#cat file2 ---> both cat are the same ,with or without '<'
+#cat <file2
+
+#cp file2 music.mp3 
+#file music.mp3  --> to know the type of file
+
+#tree -h
+.
+├── [100M]  bigfile
+├── [500M]  bigfile2
+├── [  52]  error.txt
+├── [ 198]  file3.txt
+├── [   6]  new
+├── [  19]  old
+│   └── [  11]  file2 -> /root/file2
+└── [  35]  result.txt
+
+#ls-l /
+total 16
+lrwxrwxrwx.   1 root root   11 Oct 17 21:16 2 -> /root/file2
+lrwxrwxrwx.   1 root root    6 Oct 17 21:16 3 -> /file2
+lrwxrwxrwx.   1 root root    7 Sep 22 03:44 bin -> usr/bin
+dr-xr-xr-x.   5 root root 4096 Sep 22 03:50 boot
+drwxr-xr-x.  20 root root 3280 Nov 14 02:08 dev
+drwxr-xr-x.  75 root root 8192 Nov 14 19:08 etc
+drwxr-xr-x.   6 root root   56 Sep 29 19:55 home
+lrwxrwxrwx.   1 root root    7 Sep 22 03:44 lib -> usr/lib
+lrwxrwxrwx.   1 root root    9 Sep 22 03:44 lib64 -> usr/lib64
+drwxr-xr-x.   2 root root    6 Apr 11  2018 media
+drwxr-xr-x.   2 root root    6 Apr 11  2018 mnt
+lrwxrwxrwx.   1 root root   11 Oct 17 22:15 new -> /root/file2
+drwxr-xr-x.   2 root root    6 Apr 11  2018 opt
+dr-xr-xr-x. 121 root root    0 Nov 14 02:06 proc
+dr-xr-x---.   4 root root  230 Nov 14 21:03 root
+drwxr-xr-x.  24 root root  720 Nov 14 19:08 run
+lrwxrwxrwx.   1 root root    8 Sep 22 03:44 sbin -> usr/sbin
+drwxr-xr-x.   2 root root    6 Apr 11  2018 srv
+dr-xr-xr-x.  13 root root    0 Nov 14 02:07 sys
+drwxrwxrwt.  10 root root  208 Nov 14 20:49 tmp
+drwxr-xr-x.  13 root root  155 Sep 22 03:44 usr
+drwxr-xr-x.  19 root root  267 Sep 22 03:50 var
+
+#ls /usr/bin --->both the same result
+#ls /bin
+[                                   nm
+addr2line                           nmcli
+alias                               nm-online
+apropos                             nmtui
+ar                                  nmtui-connect
+arch                                nmtui-edit
+as                                  nmtui-hostname
+aserver                             nohup
+aulast                              nproc
+aulastlog                           nroff
+ausyscall                           nsenter
+auvirt                              nss-policy-check
+awk                                 numfmt
+base64                              objcopy
+basename                            objdump
+bash                                od
+
+#

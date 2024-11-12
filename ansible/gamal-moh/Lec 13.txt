@@ -1,0 +1,773 @@
+part1:
+------
+playbook-------->yaml
+-------------
+key:value
+-------------
+sections
+	key:value
+
+item
+	section
+		key:value
+--------------------
+yaml file
+---               <--start
+playbook1
+---
+playbook2
+...		  <--end
+
+amer@master:~$ ansible-doc (module_name)
+
+yaml file
+---
+- name: playbook description
+  hosts: group,host
+  tasks:
+    - name: task description 1
+      module: 
+	option1:
+	option2:
+
+    - name: task description 2
+      module: 
+	option1:
+	option2:
+
+...
+
+
+amer@master:~$ mkdir playbooks
+amer@master:~$ cd playbooks
+amer@master:~/playbooks$ vi playbook.yml
+
+---
+- name: First playbook
+  hosts: node1
+  tasks:
+    - name: create group
+      group:
+          name: devops15
+          state: present
+          gid: 1710
+
+    - name: create group
+      group:
+          name: amergroup15
+          state: present
+          gid: 1711
+
+
+    - name: create user
+      user:
+          name: james
+          shell: /bin/bash
+          groups: devops15,amergroup15
+          append: yes
+          uid: 1040
+
+    - name: install ftp
+      package:
+          name: ftp
+          state: latest
+...
+
+check code syntax , spaces:
+---------------------------
+amer@master:~/playbooks$ ansible-playbook playbook.yml --syntax-check
+playbook: playbook.yml  <-- means correct
+
+dry run:
+-------
+PLAY [First playbook] **********************************************************
+
+TASK [Gathering Facts] *********************************************************
+[WARNING]: Platform linux on host node2 is using the discovered Python
+interpreter at /usr/bin/python, but future installation of another Python
+interpreter could change the meaning of that path. See https://docs.ansible.com
+/ansible/2.10/reference_appendices/interpreter_discovery.html for more
+information.
+ok: [node2]
+
+TASK [create group] ************************************************************
+changed: [node2]
+
+TASK [create group] ************************************************************
+changed: [node2]
+
+TASK [create user] *************************************************************
+changed: [node2]
+
+TASK [install ftp] *************************************************************
+fatal: [node2]: FAILED! => {"changed": false, "failures": ["No package ftpd available."], "msg": "Failed to install some of the specified packages", "rc": 1, "results": []}
+
+PLAY RECAP *********************************************************************
+node2                      : ok=4    changed=3    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0  
+
+[amer@node2 ~]$ grep devops15 /etc/group
+devops15:x:1710:james
+[amer@node2 ~]$ grep amergroup /etc/group
+amergroup15:x:1711:james
+[amer@node2 ~]$ id james
+uid=1040(james) gid=1040(james) groups=1040(james),1710(devops15),1711(amergroup15)
+
+[amer@node2 ~]$ top
+
+[amer@node2 ~]$ rpm -q ftp  <-- make query on package to check package availability
+ftp-0.17-89.el9.x86_64   <-- exist
+
+-----------------------------------------------------------------
+amer@master:~/playbooks$ cp playbook.yml reverse-playbook1.yml
+amer@master:~/playbooks$ vi reverse-playbook1.yml
+
+---
+- name: First playbook
+  hosts: node2
+  tasks:
+    - name: delete group
+      group:
+          name: devops15
+          state: absent
+          gid: 1710
+
+    - name: delete group
+      group:
+          name: amergroup15
+          state: absent
+          gid: 1711
+
+
+    - name: delete user
+      user:
+          name: james
+          state: absent
+
+    - name: uninstall ftp
+      package:
+          name: ftp
+          state: absent
+...
+
+
+amer@master:~/playbooks$ ansible-playbook reverse-playbook1.yml --syntax-check
+
+playbook: reverse-playbook1.yml
+amer@master:~/playbooks$ ansible-playbook reverse-playbook1.yml --check
+
+PLAY [First playbook] **********************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [node2]
+
+[amer@node2 ~]$ grep devops15 /etc/group
+[amer@node2 ~]$ grep amergroup /etc/group
+[amer@node2 ~]$ id james
+id: ‘james’: no such user
+[amer@node2 ~]$ rpm -q ftp
+package ftp is not installed
+
+TASK [delete group] ************************************************************
+changed: [node2]
+
+TASK [delete group] ************************************************************
+changed: [node2]
+
+TASK [delete user] *************************************************************
+changed: [node2]
+
+TASK [uninstall ftp] ***********************************************************
+changed: [node2]
+
+PLAY RECAP *********************************************************************
+node2                      : ok=5    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0  
+
+--------------------------------------------------------------------------------------
+start play book from specific task:
+----------------------------------
+amer@master:~/playbooks$ ansible-playbook playbook.yml --start-at-task="install ftpd"
+
+PLAY [First playbook] **********************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [node2]
+
+TASK [install ftpd] ************************************************************
+changed: [node2]
+
+PLAY RECAP *********************************************************************
+node2                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0  
+
+-------------------------------------------------------------------------------------
+start play book from specific task and ask me:
+---------------------------------------------
+amer@master:~/playbooks$ ansible-playbook playbook.yml --start-at-task="create user" --step
+
+PLAY [First playbook] **********************************************************
+Perform task: TASK: Gathering Facts (N)o/(y)es/(c)ontinue: y
+
+Perform task: TASK: Gathering Facts (N)o/(y)es/(c)ontinue: *********************
+
+TASK [Gathering Facts] *********************************************************
+ok: [node2]
+Perform task: TASK: create user (N)o/(y)es/(c)ontinue: n
+
+Perform task: TASK: create user (N)o/(y)es/(c)ontinue: *************************
+Perform task: TASK: install ftpd (N)o/(y)es/(c)ontinue: y
+
+Perform task: TASK: install ftpd (N)o/(y)es/(c)ontinue: ************************
+
+TASK [install ftpd] ************************************************************
+ok: [node2]
+
+PLAY RECAP *********************************************************************
+node2                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0  
+
+(c)ontinue: option will continue to  the end without asking
+--------------------------------------------------------------------------------------------
+start play book from the begining and ask me:
+---------------------------------------------
+amer@master:~/playbooks$ ansible-playbook playbook.yml  --step
+
+PLAY [First playbook] **********************************************************
+Perform task: TASK: Gathering Facts (N)o/(y)es/(c)ontinue: y
+
+Perform task: TASK: Gathering Facts (N)o/(y)es/(c)ontinue: *********************
+
+TASK [Gathering Facts] *********************************************************
+ok: [node2]
+Perform task: TASK: create group (N)o/(y)es/(c)ontinue: c
+
+Perform task: TASK: create group (N)o/(y)es/(c)ontinue: ************************
+
+TASK [create group] ************************************************************
+changed: [node2]
+
+TASK [create group] ************************************************************
+changed: [node2]
+
+TASK [create user] *************************************************************
+changed: [node2]
+
+TASK [install ftpd] ************************************************************
+ok: [node2]
+
+PLAY RECAP *********************************************************************
+node2                      : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0 
+----------------------------------------------------------------------------------------------
+part2:
+------
+  <---------------------------------------variables--------------------------------->
+facts					  ---------				user var
+-----										--------
+-ansible vars						inventory	CMD	Playbook	file
+-created by Ansible					---------	---	--------	----		
+-contain real data										
+  H.W	    	S.W										
+  ---		---
+  -cpu		-os										
+  -ram		-os version									
+  -disks	-pkg mgr									
+  -swap		-python version									
+  -Nic		-kernel version									
+
+to get all machine facts:
+---------------------
+amer@master:~$ ansible node2 -m setup
+node2 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_all_ipv4_addresses": [
+            "192.168.2.102"
+        ],
+	.
+	.
+	.
+
+to get machine facts: ansible_distribution & memfree:
+----------------------------------------------------
+amer@master:~$ ansible node2 -m setup | grep -E 'ansible_distribution|memfree'
+        "ansible_distribution": "Rocky",
+        "ansible_distribution_file_parsed": true,
+        "ansible_distribution_file_path": "/etc/redhat-release",
+        "ansible_distribution_file_variety": "RedHat",
+        "ansible_distribution_major_version": "9",
+        "ansible_distribution_release": "Blue Onyx",
+        "ansible_distribution_version": "9.4",
+        "ansible_memfree_mb": 1026,
+-----------------------------------------------------------------------------------------
+amer@master:~/playbooks$ vim print_fact.yml
+---
+- name: print facrs
+  hosts: node2
+  tasks:
+          - name: print mem/os
+            debug:   <-----------like echo
+              msg: "os name: {{ansible_distribution}} , free memory: {{ansible_memfree_mb}}"
+...
+
+PLAY [print facrs] ****************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************
+ok: [node2]
+
+TASK [print mem/os] ***************************************************************************************************
+ok: [node2] => {
+    "msg": "os name: Rocky , free memory: 1026"
+}
+
+PLAY RECAP ************************************************************************************************************
+node2                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+
+  <---------------------------------------variables--------------------------------->
+facts					  ---------				user var
+-----										--------
+-ansible vars						inventory	CMD	Playbook	file
+-created by Ansible					---------	---	--------	----		
+-contain real data						var=value   | var: value		
+  H.W	    	S.W						var=value   |	var: value	
+  ---		---							      
+  -cpu		-os						notes:				
+  -ram		-os version					-dont start with (ansible_)			
+  -disks	-pkg mgr					-dont use spaces				
+  -swap		-python version					-dont use special char				
+  -Nic		-kernel version					-dont use dashes				
+								-must start with letter
+								-only use under_score
+								-dont use dots
+
+							but in normal shell script variable 
+								-can contain dash
+								-can contain dot
+								-can start with number
+
+amer@master:$ sudo vi /etc/ansible/servers.txt
+
+[production]
+node2 var1=123 var2=hello
+
+[production:vars]
+myvar1=globl
+
+amer@master:/$ sudo vi /home/amer/playbooks/print_vars.yml
+
+---
+- name: print vars
+  hosts: node2
+  tasks:
+          - name: print vars
+            debug:
+              msg: "var1 is: {{var1}} , var2: {{var2}} , global var is {{myvar1}}"
+...
+
+
+amer@master:/$ ansible-playbook /home/amer/playbooks/print_vars.yml
+
+PLAY [print vars] *****************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************
+ok: [node2]
+
+TASK [print vars] *****************************************************************************************************
+ok: [node2] => {
+    "msg": "var1 is: 123 , var2: hello , global var is globl"
+}
+
+PLAY RECAP ************************************************************************************************************
+node2                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+-----------------------------------------------------------------------------
+amer@master:~/playbooks$ vim all-vars.yml
+
+session: 13
+topic: ansible
+
+amer@master:~/playbooks$ sudo vi print_vars2.yml
+
+---
+- name: print vars
+  hosts: node2
+  vars_files:
+          - all-vars.yml
+  tasks:
+          - name: print vars
+            debug:
+              msg: "today session: {{session}}, topic is {{topic}}"
+...
+
+amer@master:~/playbooks$ ansible-playbook print_vars2.yml
+
+PLAY [print vars] *****************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************
+ok: [node2]
+
+TASK [print vars] *****************************************************************************************************
+ok: [node2] => {
+    "msg": "today session: 13, topic is ansible"
+}
+
+PLAY RECAP ************************************************************************************************************
+node2                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+--------------------------------------------------------------------------
+amer@master:~/playbooks$ sudo vi print_vars3.yml
+
+---
+- name: print vars
+  hosts: node2
+  vars:
+          session: mid-course
+          topic: devops
+  tasks:
+          - name: print vars
+            debug:
+              msg: "today session: {{session}}, topic is {{topic}}"
+
+amer@master:~/playbooks$ ansible-playbook print_vars3.yml
+
+PLAY [print vars] *****************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************
+ok: [node2]
+
+TASK [print vars] *****************************************************************************************************
+ok: [node2] => {
+    "msg": "today session: mid-course, topic is devops"
+}
+
+PLAY RECAP ************************************************************************************************************
+node2                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+--------------------------------------------------------------------------------------
+amer@master:~/playbooks$ vim all-vars.yml
+
+session: 13
+topic: ansible
+
+amer@master:~/playbooks$ sudo vi print_vars4.yml
+---
+- name: print vars
+  hosts: node2
+  vars:
+          session: mid-course
+          topic: devops
+  vars_files:
+          - all-vars.yml
+  tasks:
+          - name: print vars
+            debug:
+              msg: "today session: {{session}}, topic is {{topic}}"
+...
+
+amer@master:~/playbooks$ ansible-playbook print_vars4.yml
+
+PLAY [print vars] *****************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************
+ok: [node2]
+
+TASK [print vars] *****************************************************************************************************
+ok: [node2] => {
+    "msg": "today session: 13, topic is ansible"   <--------all-vars.yml
+}
+
+PLAY RECAP ************************************************************************************************************
+node2                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+the variables called are of file "all-vars.yml" and not that inside "print_vars4.yml" file.
+priority is always for file   <------*****important*****
+--------------------------------------------------------------------
+variable from command
+---------------------
+amer@master:~/playbooks$ ansible-playbook print_vars4.yml -e session=another
+
+PLAY [print vars] *****************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************
+[WARNING]: Platform linux on host node2 is using the discovered Python interpreter at /usr/bin/python, but future
+installation of another Python interpreter could change the meaning of that path. See
+https://docs.ansible.com/ansible/2.10/reference_appendices/interpreter_discovery.html for more information.
+ok: [node2]
+
+TASK [print vars] *****************************************************************************************************
+ok: [node2] => {
+    "msg": "today session: another, topic is ansible"
+}
+
+PLAY RECAP ************************************************************************************************************
+node2                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+-----------------------------------
+variable from command
+---------------------
+amer@master:~/playbooks$ ansible-playbook print_vars4.yml -e "session=another topic=ansible"
+
+PLAY [print vars] *****************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************
+[WARNING]: Platform linux on host node2 is using the discovered Python interpreter at /usr/bin/python, but future
+installation of another Python interpreter could change the meaning of that path. See
+https://docs.ansible.com/ansible/2.10/reference_appendices/interpreter_discovery.html for more information.
+ok: [node2]
+
+TASK [print vars] *****************************************************************************************************
+ok: [node2] => {
+    "msg": "today session: another, topic is ansible"
+}
+
+PLAY RECAP ************************************************************************************************************
+node2                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+-----------------------------------------------------------------------------
+part3:
+------
+amer@master:~/playbooks$ vim create_users.yml
+
+---
+- name: create list of users
+  hosts: production
+  tasks:
+          - name:  create users
+            user:
+                    name: "{{ item }}" # {{ item }} : is a parameter that calls the loop
+                    shell: /bin/bash
+                    groups: adm
+                    append: yes
+            loop:
+                  - user1
+                    user2
+                    user3
+                    user4
+...
+
+---------------------------------------------
+amer@master:~/playbooks$ vim create_users2.yml
+---
+- name: create list of users
+  hosts: production
+  tasks:
+          - name:  create users
+            user:
+                    name: "{{ item.name }}" # {{ item }} : is a parameter that calls the loop
+                    uid: "{{ item.uid }}"
+                    shell: /bin/bash
+                    groups: adm
+                    append: yes
+            loop:
+                    - name: user1
+                      uid: 2000
+                    - name: user2
+                      uid: 2001
+                    - name: user3
+                      uid: 2002
+                    - name: user4
+                      uid: 2003
+...
+
+PLAY [create list of users] ***************************************************************************
+
+TASK [Gathering Facts] ********************************************************************************
+ok: [node2]
+
+TASK [james] ******************************************************************************************
+changed: [node2] => (item={'name': 'user1', 'uid': 2000})
+changed: [node2] => (item={'name': 'user2', 'uid': 2001})
+changed: [node2] => (item={'name': 'user3', 'uid': 2002})
+changed: [node2] => (item={'name': 'user4', 'uid': 2003})
+
+PLAY RECAP ********************************************************************************************
+node2                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+[amer@node2 ~]$ id user1
+uid=2000(user1) gid=1501(user1) groups=1501(user1),4(adm)
+
+------------------------------------------------------------
+amer@master:~/playbooks$ vim delete_users.yml
+
+- name: delete list of users
+  hosts: production
+  tasks:
+          - name: delete users
+            user:
+                    name: "{{ item.name }}" # {{ item }} : is a parameter that calls the loop
+                    #uid: "{{ item.uid }}"
+                    #shell: /bin/bash
+                    #groups: adm
+                    #append: yes
+                    state: absent
+                    remove: yes #to delete files from /home directory also
+            loop:
+                    - name: user1
+                      uid: 2000
+                    - name: user2
+                      uid: 2001
+                    - name: user3
+                      uid: 2002
+                    - name: user4
+                      uid: 2003
+...
+
+
+amer@master:~/playbooks$ ansible-playbook delete_users.yml
+
+PLAY [delete list of users] ***************************************************************************
+
+TASK [Gathering Facts] ********************************************************************************
+ok: [node2]
+
+TASK [delete users] ***********************************************************************************
+changed: [node2] => (item={'name': 'user1', 'uid': 2000})
+changed: [node2] => (item={'name': 'user2', 'uid': 2001})
+changed: [node2] => (item={'name': 'user3', 'uid': 2002})
+changed: [node2] => (item={'name': 'user4', 'uid': 2003})
+
+PLAY RECAP ********************************************************************************************
+node2                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+[amer@node2 ~]$ id user1
+id: ‘user1’: no such user
+
+--------------------------------------------------------------------
+amer@master:~/playbooks$ vim install_ftp.yml
+
+---
+- name: install ftp package play book
+  hosts: production
+  tasks:
+          - name: install ftp
+            package:
+                      name:
+                        - ftp
+                      state: latest
+            when: ansible_memfree_mb > 1800   # when == if
+
+...
+
+amer@master:~/playbooks$ ansible-playbook print_fact.yml
+
+PLAY [print facrs] *************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [node2]
+
+TASK [print mem/os] ************************************************************
+ok: [node2] => {
+    "msg": "os name: Rocky , free memory: 1020"
+}
+
+PLAY RECAP *********************************************************************
+node2                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+amer@master:~/playbooks$ ansible-playbook install_ftp.yml
+
+PLAY [install ftp package play book] *******************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [node2]
+
+TASK [install ftp] *************************************************************
+skipping: [node2]
+
+PLAY RECAP *********************************************************************
+node2                      : ok=1    changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+-------------------------------------------------------------------------------------------
+amer@master:~/playbooks$ vim install_ftp2.yml
+
+---
+- name: install ftp package play book
+  hosts: production
+  tasks:
+          - name: install ftp
+            package:
+                      name:
+                        - ftp
+                      state: latest
+            when: ansible_memfree_mb > 1800 or ansible_distribution == "Rocky"  # or , and conditions can be used
+...
+
+amer@master:~/playbooks$ ansible-playbook install_ftp2.yml --syntax-check
+playbook: install_ftp2.yml
+
+amer@master:~/playbooks$ ansible-playbook install_ftp2.yml
+
+PLAY [install ftp package play book] *******************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [node2]
+
+TASK [install ftp] *************************************************************
+ok: [node2]
+
+PLAY RECAP *********************************************************************
+node2                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+---------------------------------------------------------------------------------
+rescure will not start:
+----------------------
+amer@master:~/playbooks$ vim rescue.yml
+---
+- name: rescue task
+  hosts: production
+  tasks:
+          - block:   # block means exec this task first
+                  - name: create user hussien
+                    user:
+                          name: hussien
+                          uid: 1010
+            rescue:   <-----------------------------rescue task will not execute because block task will successful
+                  - name: create user kamal
+                    user:
+                          name: kamal
+                          uid: 2100
+...
+
+amer@master:~/playbooks$ ansible-playbook rescue.yml
+
+PLAY [rescue task] *************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [node2]
+
+TASK [create user hussien] *****************************************************
+changed: [node2]
+
+PLAY RECAP *********************************************************************
+node2                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+----------------------------------------------------------------------------
+will rescure:
+-------------
+amer@master:~/playbooks$ vim rescue2.yml
+---
+- name: rescue task
+  hosts: production
+  tasks:
+          - block:   # block means exec this task first
+                  - name: create user emad
+                    user:
+                          name: emad
+                          uid: 1000  <---system reserved uid..so task block will fail and rescure task will execute
+            rescue:
+                  - name: create user ahmed
+                    user:
+                          name: ahmed
+                          uid: 3000
+...
+
+amer@master:~/playbooks$ ansible-playbook rescue2.yml
+
+PLAY [rescue task] *************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [node2]
+
+TASK [create user emad] ********************************************************
+fatal: [node2]: FAILED! => {"changed": false, "msg": "useradd: UID 1000 is not unique\n", "name": "emad", "rc": 4}
+
+TASK [create user ahmed] *******************************************************
+changed: [node2]
+
+PLAY RECAP *********************************************************************
+node2                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=1    ignored=0
+
+[amer@node2 home]$ id ahmed
+uid=3000(ahmed) gid=3000(ahmed) groups=3000(ahmed)

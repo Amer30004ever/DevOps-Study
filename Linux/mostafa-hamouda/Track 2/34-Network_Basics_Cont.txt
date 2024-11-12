@@ -1,0 +1,107 @@
+ip = [0-255].[0-255].[0-255].[0-255]
+        2⁸      2⁸      2⁸      2⁸
+
+Classes:
+--------              A   0 - 126
+127 - loop back       B   128 - 191
+                      C   192 - 223
+                      D   224 - 239
+                      E   240 - 254    
+
+0.0.0.0 ---> any ip
+
+255.255.255.255 --> Broad Cast --> any one sends to this 
+address will send to all hosts on network
+
+      X  .  Y  .  Y  .  Y     255.0.0.0
+    
+      2⁸       2²⁴-->hosts
+    
+    Network        Subnet --> number of devices on network
+      ID           Mask
+   (constant)-->common part that all hosts in netowrk will be in
+
+      X  .  X  .  Y  .  Y      255.255.0.0
+        Network   Subnet
+           ID      Mask
+
+      X  .  X  .  X  .  Y      255.255.255.0
+         Network       Subnet
+           ID           Mask
+           2²⁴           2⁸
+e.g:
+---
+255.255.255.0
+for this network i want 10 ips
+10 = 2^y
+8 = 2³ , 8 is fewer than 10
+16 = 2⁴ , so 16 is the most closest to 10 instead of 255 ips
+256 - 16 = 240
+SNM = 255.255.255.240
+
+e.g:
+---
+255.255.255.0
+for this network i want 24 ips
+24 = 2^y
+16 = 2⁴ , 16 is fewer than 24
+32 = 2⁵ , so 32 is the most closest to 24 instead of 255 ips
+256 - 32 = 224
+SNM = 255.255.255.224
+
+e.g:
+---
+192.168.0.21 / 255.255.255.252
+      ip         Subnet Mask
+how many ips in this subnet mask ?
+256 - 252 = 4 ips
+[0-3] [4-7] [8-11] [12-15] [16-19] [20-23]                
+                                   -------
+192.168.0.[21] is in network [20-23]
+20 --> network id
+23 --> broad cast id
+21,22 --> are the only usable ips
+so the networ id should be 192.168.0.20
+
+e.g:
+---
+10.0.0.51 / 255.255.255.240
+      ip         Subnet Mask
+how many ips in this subnet mask ?
+256 - 240 = 16 ips
+[0-15] [16-31] [32-47] [48-63]
+                        -----
+10.0.0.[51] is in the network [48-63]
+48 --> network id
+63 --> broad cast id
+so the networ id should be 10.0.0.48
+
+e.g:
+---
+10.0.1.173 / 255.255.255.224
+      ip         Subnet Mask
+how many ips in this subnet mask ?
+256 - 224 = 32 hosts or ips
+[0-31][32-63][64-95][96-127][128-159][160-191]
+                                     ---------
+10.0.1.[173] is in the network [160-191]
+160 --> network id
+191 --> broad cast id
+
+e.g:
+---
+192.168.0.12 / 255.255.255.240
+how to make short-cut for this subnet mask ?
+256 - 240 = 16 hosts
+hosts 16 = 2⁴  , 4 bits
+ipv4 is 32 bit , 32 - 4 = 28
+[short-cut] = 192.168.0.12 / 28
+
+e.g:
+---
+192.168.0.19 / 255.255.255.224
+how to make short-cut for this subnet mask ?
+256 - 224 = 32 hosts
+hosts 32 = 2⁵  , 5 bits
+ipv4 is 32 bit , 32 - 5 = 27
+[short-cut] = 192.168.0.19 / 27

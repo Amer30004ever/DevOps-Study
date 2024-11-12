@@ -1,0 +1,57 @@
+#pvs ----> volume group scan
+#pvremove /dev/sd[bce]
+
+LVM over RAID :
+--------------
+#df -h
+sdb
+sdc
+sdd
+sde
+#mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sdb /dev/sdc
+#cat /proc/mdstat
+#watch cat /proc/mdstat
+#mdadm --create /dev/md1 --level=1 --raid-devices=2 /dev/sdd /dev/sde
+#pvcreate /dev/md[01]
+#pvs
+#vgcreate data /dev/md[01]
+#vgs
+#lsv
+#lvcreate --size=30G --name oracle data ---> will take 30G from the vg data to create LV oracle
+#lvs
+#mkfs.ext4 /dev/data/oracle
+#mount /dev/data/oracle /data
+#df -h
+#cp -r /etc /data
+#cat /proc/mdstat
+
+Testing (failing 1 device in each raid md0 , md1):
+-------------------------------------------------
+#cp -r /etc /data
+#cat /proc/mdstat
+#mdadm /dev/md0 -f /dev/sdb ----> i'm telling that drive sdb in RAID Array md0 failed
+#cat /proc/mdstat
+#cp -r /usr /data 
+#ls -l /data
+#du -sh /data/usr
+203M /data/usr  ----> even after failed it wrote /usr on /data
+#mdadm /dev/md1 -f /dev/sde ----> i'm telling that drive sde in RAID Array md1 failed
+#cat /proc/mdstat
+#cp -r /var /data
+#du -sh /data/var
+185M /data/var  ----> even after failed it wrote /var on /data
+
+Extend LVM:
+----------
+#lvextend --size +5G /dev/data/oracle
+#lvs
+#df -h
+/dev/mapper/data-oracle  30G   /data --> fs dont know there is a change in inode table
+#umount /data
+#mount /dev/data/oracle /data
+#df -h
+/dev/mapper/data-oracle  30G   /data ---> still didn't know i extended size
+#resize2fs /dev/data/oracle
+#df -h
+/dev/mapper/data-oracle  35G   /data ---> extend and resize can be made while fs mounted and withount unmount
+

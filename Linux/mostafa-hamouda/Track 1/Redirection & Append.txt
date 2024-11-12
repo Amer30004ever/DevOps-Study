@@ -1,0 +1,93 @@
+Redirection: > will overwrite an old output in the file
+------------
+< input keyboard
+> output screen 
+
+1> > output ( 1> = > )
+2> error
+0< input
+
+#ls 1>result.txt --> result of the order will be put in a file and named result.txt (if it's not exist)
+#cat result.txt
+backupfile
+file11
+file2
+#rm result.txt
+
+#ls >result.txt   ( > = 1> )
+#cat result.txt
+
+#ls file22
+no such file
+#ls file22 2> error.txt  --> no output because error is saved in error.txt (no such file)
+                         --> file22 don't exist neither error.txt ,so error will be put
+                             in file error.txt that i wanted it to be created. 
+#cat error.txt
+no such file 
+
+#ls file22 >result2.txt  ---> if command have result it will be put in result2.txt that will be created if not exist
+                              if error and there is nothing to put the error in then
+                              it will be shown on screen.
+no such file
+#cat result2.txt ----> result2.txt is empty because there was no output at 
+                       previous command.
+
+#ls -l file22 file2
+no such file <--- error
+-rwxrw-r-x.........file2
+#rm -rf result2.txt result.txt error.txt
+
+#ls -l file22 file2 > result.txt 2> error.txt  --> have output
+#cat result.txt
+-rwxrw-r-x............file2
+#cat error.txt
+no such file --> file22
+
+
+
+Append: >> will not overwrite previous output ,will add to the last old output in the file
+-------
+
+<< , 1>> , 2>>
+#ls -l file22 file4 >> result.txt 2>> error.txt
+-rw-r--r--...........file4
+-rw-r--r--...........file4
+#cat error.txt
+no such file
+no such file
+
+#ls -l / /usr/tecot >> result.txt 2>> error.txt
+#cat result.txt
+#cat error.txt
+
+Input <-- change behavior of
+-----
+#cat --> shows content of file, but it can make input to file
+   <file2> --> take the input of file2 & replace old data
+ <<mostafa>> --> what will be written will be added to old data
+#cat <<mostafa>>error.txt --> when type 'mostafa' ,every thing will be saved
+>hi
+>i am learning
+>mostafa
+
+#cat <file2>error.txt
+     <file2  ---> take the input of file2
+     >error  ---> put input of file2 in error.txt
+
+#cat file2 ---> both cat are the same ,with or without '<'
+#cat <file2
+
+#cp file2 music.mp3
+#file music.mp3  -->file to know the type of file
+
+#ls file2 file22 >>result.txt
+
+#ls file2 file22 >>result.txt 2>>result.txt --> will put output and error in 
+                                                one file result.txt
+or for Redirection:
+
+#ls file2 file22 2&>myresult.txt
+
+and for Append:
+
+#ls file2 file22 2&>>myresult.txt

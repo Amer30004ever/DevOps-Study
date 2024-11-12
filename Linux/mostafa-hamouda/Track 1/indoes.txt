@@ -1,0 +1,61 @@
+#ls -li  ---> inode numbers of files
+#df  -----> disk free space
+#df -h  ----> human readable(MB,GB)
+#df -i  ----> no. of inodes used and available for this fs
+
+rm tes* file* m* -rf  ---> delete files that start with
+
+Hard link :(not used any more)
+---------
+#ls -li
+#ln file1 file2 ---> link file1(exist) with anything and call this thing file2(not created)
+#rm file1 
+#cat file2
+#ls -li
+---------------
+
+[root@server ~]# nano file2
+[root@server ~]# nano /tmp/file2
+[root@server ~]# cat /tmp/file2
+cat: /tmp/file2: No such file or directory
+[root@server ~]# rm file1 file2 -rf
+[root@server ~]# touch file1
+[root@server ~]# nano file1
+Hi i am Amer
+[root@server ~]# ln file1 file2
+[root@server ~]# cat file2
+Hi i am Amer
+[root@server ~]# nano file1
+Hi i am Amer
+i am 35 years old
+[root@server ~]# cat file2
+Hi i am Amer
+i am 35 years old
+[root@server ~]# rm file1 -rf
+[root@server ~]# cat file2
+Hi i am Amer
+i am 35 years old
+--------------------------------------------------------------------
+softlink:(most used)
+--------
+#ln -s /root/file2 /folder
+
+#touch file2
+#ls -li
+#nano file2
+hi i am Amer
+#ln -s /root/file2 /tmp/
+#cat /tmp/file2
+hi i am Amer
+#ls -l /tmp/file2
+lrwxrwxrwx. 1 root root 11 Nov 14 20:49 /tmp/file2 -> /root/file2
+#rm /root/file2 -rf
+#cat /tmp/file2
+[root@server ~]# rm /root/file2 -rf
+[root@server ~]# cat /root/file2
+cat: /root/file2: No such file or directory
+[root@server ~]# ls -li /tmp/file2
+4194377 lrwxrwxrwx. 1 root root 11 Nov 14 20:49 /tmp/file2 -> /root/file2 (in red color:means something wrong=file that point to don't exist)
+--------------------------
+#mkdir test
+#ln test/ mydir ---> hard link not allowd for directory but soft link allowed for directory

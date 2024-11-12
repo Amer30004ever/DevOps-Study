@@ -1,0 +1,65 @@
+init:
+call services in series
+less /etc/init.d/network ----> big shell script file
+to run service it calls init scripts = shell scripts
+every service has a command to run
+
+systemd
+call services in parallel
+less /etc/systemd/system/multi-user.target.wants/sshd.service
+to sun service it calls unit files
+run services with systemctl
+supports init scripts and to work in-parallel with init
+
+# yum search apache
+# yum search apache | grep -i
+# yum search httpd
+# yum install httpd
+-----------------------------------------------
+systemd:                   init:
+-------                    -----
+# systemctl status httpd ==== systemctl status crond
+
+# systemctl start httpd ==== service crond start ----> service will start but must be enabled to restart on reboot
+active
+
+# systemctl stop httpd ==== service crond stop ----> stops service for now but will work auto. on reboot
+inactive
+
+# systemctl enable httpd ==== chkconfig crond on ----> enable service and will start on reboot
+enabled - run at boot
+
+# systemctl disable httpd ==== chkconfig crond off
+disabled - wont run at boot
+
+# systemctl is-enabled crond.service ==== i am asking is this service enabled
+# systemctl is-active crond ==== i am asking is this service active
+
+Apache listen on port 80
+nginx listen on port 80
+they can be installed on same machine but not running bec. they listen on same port
+
+i will prevent crond from starting:
+---------------------------------- 
+# systemctl status crond 
+# systemctl start crond
+# systemctl mask crond
+# reboot
+
+# systemctl status crond 
+loaded : maksed
+active : inactive
+
+# systemctl start crond
+failed to start crond service : unit crond service maksed
+
+# systemctl unmask crond
+removed symlink /etc/systemd/system/crond.service
+
+# systemctl start crond
+# systemctl status crond
+loaded : enabled
+active
+
+# systemctl restart crond ----> will close the service and will disconnect any connected user and user will need to restart sessions
+# systemctl reload crond ----> will not close service and will reload the config files

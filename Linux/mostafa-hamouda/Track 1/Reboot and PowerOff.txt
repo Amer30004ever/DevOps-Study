@@ -1,0 +1,24 @@
+Reboot and Poweroff:
+--------------------
+reboot:
+------
+#reboot  ---->  restart machine
+
+#shutdown -r now  ---->  restart machine also
+
+#systemctl reboot  ---->  restart machine also
+
+#init 6  ---->  restart machine also
+
+
+shutdown:
+--------
+#shutdown -h now  ---->  shutdown machine
+
+#shutdown -h time  ---->shutdown machine
+
+#systemctl poweroff  ---->  shutdown machine
+
+#poweroff  ---->  shutdown machine
+
+#init 0  ---->  shutdown machine

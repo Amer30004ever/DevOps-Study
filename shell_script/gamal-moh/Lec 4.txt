@@ -1,0 +1,68 @@
+always change default port
+total ports available 65535
+
+ssh is an application layer in layer 7 and enabled by default
+
+pkg: openssh-server
+sevice: ssh/sshd
+port: 22
+config:: /etc/ssh/sshd_config
+
+sudo apt instal openssh-server
+systemctl status sshd
+
+generate private and public key
+ssh-keygen -t    dsa (default)
+		ecdsa
+		ecdsa-sk
+		ed25519
+		ed25519-sk
+		rsa
+
+
+shell script:
+------------
+1-createscript.sh
+2-add code 
+3-save
+4-give execute permission: sudo chmod +x (filename)
+5-run script
+	a-manual 
+		./script (current dir)
+		/full/path
+		sh (script.sh,path)    --->exec permiss not required
+		bash (script.sh,path)    --->exec permiss not required
+	b-automatic
+
+#! --> shebang label
+#!/path/to/shell
+#: is a comment
+
+to echo system shell: echo $SHELL
+			/bin/bash
+		      which bash
+			/usr/bin/bash
+ls -l /
+	bin -> usr/bin
+
+search in / for any file .sh:
+sudo find / -name *.sh
+
+no of cpu in my vm:
+grep processor /proc/cpuinfo
+
+vm running  time:
+uptime
+
+memory stats:
+free -m
+
+df -h | grep -v tmpfs ---> -v: execlude
+
+sudo tar -cvf config_backup-$(date +%f_%H.%M).tar /etc
+
+shell is interpreter(exec line by line) not compiler
+
+And --> &&
+CMD1 && CMD2 && CMD3
+or --> ||

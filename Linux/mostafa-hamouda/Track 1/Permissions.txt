@@ -1,0 +1,104 @@
+types:
+-----
+- : normal
+d : directory
+b : block device
+c : char device  (keyboard)
+L : link file (short-cut)
+
+file type   user   group    other
+             u       g        o
+     -      rwx     rwx       rwx  ---> 10 char
+
+ r read              + add permission
+ w write             - remove permission
+ x execute           = setting permission from beginig --> #chmod ug=rw,o=rx file2
+
+
+file : r=read  w=edit,delete,overwrite  x=execute,run
+----
+folder : r=ls(know files inside from outside)  w=add,delete file  
+------   x=cd,ls-l(access directory and asks for its files permissions)
+
+-rw-r--r--.1 root root 0 Aug 4 19:51 file1
+ own gp o             0 = file size    file1 = file name
+         1 = link count  
+                Aug 4 19:51 = last accesed date
+
+#chmod o+w file1
+add (write) permission to (others) for file1
+
+#chmod g-r
+remove (read) permission from (group) for file1
+
+#chmod ugo-x file0
+remove (execute) permission from user ,group & others
+
+#chmod ug+r,o-wx file0
+add (write) permiss. to group and remove (write,execute) permission for others
+#chmod -x file1
+remove (execute) permiss. for all
+
+#cp file1 file2 test
+copy file 1 , file2 and put them in folder test
+#chmod go-rwx test
+remove (read,write,execute) from (group,others)
+test is a folder
+
+#chmod -R go-rwx test
+remove permission recursevily from folder test
+-R = recursevily
+
+
+#su - amer
+#mkdir test
+#ls -l
+#chmod a-rwx test
+#ls -l
+#cd test
+#chmod w+x test
+#cd test
+#cd
+#ls -l
+d--x------
+#ls test
+#chmod u+r test
+#ls test
+but test folder is empty
+#touch test/file1
+permission denied
+#chmod u+w test
+#touch test/file1
+#ls test
+#chmod u-r /test
+#ls test
+permission denied
+#chmod u+r test
+#ls -l test
+
+           r w x
+           4 2 1
+
+-   rw-     r--     r--
+   4+2=6   4+0+0   4+0+0
+
+-   rwx     rw-     r-x
+  4+2+1=7  4+2=6   4+1=5
+
+ r--------
+#chmod 400 file2
+
+  ---------
+#chmod 000 file1
+
+#chmod 756 file2
+#ls -l file2
+-rwxr-xrw- file2
+#chmod u-x,g-x,g+w,o-W,o+x file2
+#ls -l file2
+-rw-rw-r-x file2
+#chmod 756 file2
+-rwxr-xrw- file2
+#chmod ug=rw,o=rx file2
+#chmod -R 765 test/
+for directory and files in it 

@@ -1,0 +1,198 @@
+					     software
+						req
+		 <-----------------------------infra----------------------------->
+<---------------s.w-------------->			   <-------------<------h.w-------->------------->
+os				apps			server	     <--net-->		storage		sec
+								     R	     S
+
+ids: intrusion detection system
+
+amer@master:~$ docker run -d --name prometheus -p 9090:9090 prom/prometheus
+d21b02d15c70805042dc7ad3d60aa71e8b99e28acd314e63795f197f4807b64c
+
+amer@master:~$ docker ps
+CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS          PORTS                                       NAMES
+d21b02d15c70   prom/prometheus   "/bin/prometheus --c…"   12 seconds ago   Up 10 seconds   0.0.0.0:9090->9090/tcp, :::9090->9090/tcp   prometheus
+
+from browser:
+------------
+http://192.168.2.100:9090/
+
+amer@master:~$ docker exec -it prometheus bash
+OCI runtime exec failed: exec failed: unable to start container process: exec: "shell": 
+executable file not found in $PATH: unknown
+
+amer@master:~$ docker exec -it prometheus sh
+
+/prometheus $ vi /etc/prometheus/prometheus.yml
+# my global config
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is eve
+  # scrape_timeout is set to the global default (10s).
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evalua
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped
+  - job_name: "prometheus"
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ["localhost:9090"]
+
+/prometheus $ exit
+
+amer@master:~$ docker restart prometheus
+prometheus
+
+amer@master:~$ docker rm -f prometheus
+prometheus
+
+amer@master:~$ mkdir prometheus
+amer@master:~$ cd prometheus/
+amer@master:~/prometheus$ vim prometheus.yml
+
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "prometheus"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "Server1"
+    static_configs:
+      - targets: ["192.168.2.101:9100"]
+
+  - job_name: "Server2"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["192.168.2.102:9100"]
+
+
+amer@master:~/prometheus$ vim docker-compose.yml
+
+version: '3.8'
+services:
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: always
+    volumes: # node exporter will collect data from paths in volumes
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev/host|etc)($$|/)'
+    ports:
+      - "9100:9100"
+
+amer@master:~/prometheus$ docker-compose up -d
+Creating network "prometheus_default" with the default driver
+Creating node-exporter ... done
+
+amer@master:~/prometheus$ docker run -d --name prometheus -p 9090:9090 --network prometheus_default --mount type=bind,source=$PWD/prometheus.yml,target=/etc/prometheus/prometheus.yml prom/prometheus
+7fe8c52435e606c5862826e42b12828f6319a1d11e0e249fbaaeb784b1027412
+
+--network prometheus_default --> is the default network created by node_exporter by docker-compose
+
+amer@master:~/prometheus$ docker ps
+CONTAINER ID   IMAGE                       COMMAND                  CREATED         STATUS         PORTS                                       NAMES
+7fe8c52435e6   prom/prometheus             "/bin/prometheus --c…"   5 seconds ago   Up 3 seconds   0.0.0.0:9090->9090/tcp, :::9090->9090/tcp   prometheus
+3a6159d5badb   prom/node-exporter:latest   "/bin/node_exporter …"   6 minutes ago   Up 6 minutes   0.0.0.0:9100->9100/tcp, :::9100->9100/tcp   node-exporter
+
+http://192.168.2.100:9090/targets?search=
+
+Targets
+Filter by endpoint or labels
+
+
+
+Server1 (0/1 up)
+Server2 (0/1 up)
+Endpoint	State	Labels	Last Scrape	Scrape Duration	Error
+http://192.168.2.102:9100/metrics	DOWN	
+instance="192.168.2.102:9100"job="Server2"
+1m 24s ago	
+3.280ms
+Get "http://192.168.2.102:9100/metrics": dial tcp 192.168.2.102:9100: connect: no route to host
+prometheus (1/1 up)
+Endpoint	State	Labels	Last Scrape	Scrape Duration	Error
+http://localhost:9090/metrics	UP	
+instance="localhost:9090"job="prometheus"
+1m 25s ago	
+10.529ms
+
+amer@master:~/prometheus$ docker pull jenkins/jenkins
+
+amer@master:~/prometheus$ docker run -d --name jenkins -p 8080:8080 -v jenkins_home:/var/jenkins_home jenkins/jenkins
+
+amer@master:~/prometheus$ vi prometheus.yml
+
+amer@master:~/prometheus$ docker exec -it jenkins bash
+jenkins@ce46ff94f8b1:/$ cat /var/jenkins_home/secrets/initialAdminPassword
+6bd487964bff4e35925f7171f429eee9
+
+Dashboard > Manage Jenkins > Plugins
+install
+Prometheus metrics plugin
+
+Dashboard > Manage Jenkins > System
+
+Prometheus
+
+Path
+prometheus
+
+Collecting metrics period in seconds
+15
+
+Job attribute name
+jenkins
+
+Save
+
+global:
+  scrape_interval: 15sjenkins
+
+scrape_configs:
+  - job_name: "prometheus"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "Ansible-Master"
+    static_configs:
+      - targets: ["192.168.2.100:9100"]
+
+  - job_name: "Node2"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["192.168.2.102:9100"]
+
+  - job_name: "jenkins"
+    metrics_path: /prometheus
+    static_configs:
+      - targets: ["192.168.2.100:8080"]
+    basic_auth:
+      username: 'jenkins'
+      password: '1234'

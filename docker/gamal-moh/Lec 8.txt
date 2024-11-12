@@ -1,0 +1,202 @@
+container is a virtual isolated invironment
+Nic : network interface card
+CNI : container network interface
+	bridge : virtual switch with virtual subnets with specific container and can be exposed
+	host : (1 network) 
+	null : (1 network) fully isolated - stand-alone
+
+Commands:
+  connect     Connect a container to a network
+  create      Create a network
+  disconnect  Disconnect a container from a network
+  inspect     Display detailed information on one or more networks
+  ls          List networks
+  prune       Remove all unused networks
+  rm          Remove one or more networks
+
+
+docker network create mynet1 --subnet 10.10.10.0/24 --gateway 10.10.10.1 --driver bridge
+
+docker network create mynet2 --subnet 20.20.20.0/24 --gateway 20.20.20.1 --driver bridge --internal
+
+amer@strong-man:~$ docker network ls
+NETWORK ID     NAME      DRIVER    SCOPE
+8e350b2ad126   bridge    bridge    local
+1637ac0abf34   host      host      local
+97676530e380   mynet1    bridge    local
+4a3bad4ba6df   mynet2    bridge    local
+b1477f6c9bd2   none      null      local
+
+amer@strong-man:~$ docker network create  mynet3 --driver host
+Error response from daemon: only one instance of "host" network is allowed
+
+docker network prune
+WARNING! This will remove all custom networks not used by at least one container.
+Are you sure you want to continue? [y/N] y
+Deleted Networks:
+mynet1
+mynet2
+
+docker run -d --name laba --hostname laba --restart always -p 90:80 --network mynet1 httpd
+static ip optional(--ip 10.10.10.30)
+
+
+docker run -d --name labb --hostname labb --restart always -p 91:80 --network mynet1 httpd
+
+$ docker exec -it laba bash
+root@lab1:/usr/local/apache2# apt install iputils-ping net-tools
+root@lab1:/usr/local/apache2# ping google.com
+PING google.com (142.251.37.238) 56(84) bytes of data.
+64 bytes from mrs09s16-in-f14.1e100.net (142.251.37.238): icmp_seq=1 ttl=127 time=41.1 ms
+64 bytes from mrs09s16-in-f14.1e100.net (142.251.37.238): icmp_seq=2 ttl=127 time=41.2 ms
+64 bytes from mrs09s16-in-f14.1e100.net (142.251.37.238): icmp_seq=3 ttl=127 time=40.8 ms
+
+root@lab1:/usr/local/apache2# ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.10.10.2  netmask 255.255.255.0  broadcast 10.10.10.255
+        ether 02:42:0a:0a:0a:02  txqueuelen 0  (Ethernet)
+        RX packets 1400  bytes 9692003 (9.2 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 1180  bytes 67413 (65.8 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 16  bytes 1483 (1.4 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 16  bytes 1483 (1.4 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+
+*******************************************
+**sudo apt install iputils-ping net-tools**
+*******************************************
+docker inspect laba
+
+docker inspect labb
+
+                    "Gateway": "10.10.10.1",
+                    "IPAddress": "10.10.10.3",
+                    "IPPrefixLen": 24,
+
+amer@strong-man:~$ docker exec -it laba bash
+root@lab1:/usr/local/apache2# ping 10.10.10.3
+PING 10.10.10.3 (10.10.10.3) 56(84) bytes of data.
+64 bytes from 10.10.10.3: icmp_seq=1 ttl=64 time=0.178 ms
+64 bytes from 10.10.10.3: icmp_seq=2 ttl=64 time=0.092 ms
+64 bytes from 10.10.10.3: icmp_seq=3 ttl=64 time=0.063 ms
+
+docker run -d --name labx --hostname labx --restart always -p 100:80 --network mynet2 httpd
+d415130e0c0b34ddb54617eb79041cf314a0ed6fa15d242ccd2f31bee50924bf
+
+docker run -d --name laby --hostname laby --restart always -p 101:80 --network mynet2 httpd
+02f115ad28c474ee8292268e3b998dec577c6f3200a352421f5815582d2e47f1
+
+docker inspect labx | grep -i ipaddress
+            "SecondaryIPAddresses": null,
+            "IPAddress": "",
+                    "IPAddress": "20.20.20.2",
+
+-i : case sensitive              tail -1 : last line
+docker inspect laby | grep -i ipaddress | tail -1
+                    "IPAddress": "20.20.20.3",
+
+docker network connect mynet2 laba
+
+root@lab1:/usr/local/apache2# ping 20.20.20.3
+PING 20.20.20.3 (20.20.20.3) 56(84) bytes of data.
+64 bytes from 20.20.20.3: icmp_seq=1 ttl=64 time=0.164 ms
+64 bytes from 20.20.20.3: icmp_seq=2 ttl=64 time=0.090 ms
+64 bytes from 20.20.20.3: icmp_seq=3 ttl=64 time=0.074 ms
+
+root@lab1:/usr/local/apache2# ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.10.10.2  netmask 255.255.255.0  broadcast 10.10.10.255
+        ether 02:42:0a:0a:0a:02  txqueuelen 0  (Ethernet)
+        RX packets 1425  bytes 9693501 (9.2 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 1470  bytes 94937 (92.7 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 20.20.20.4  netmask 255.255.255.0  broadcast 20.20.20.255
+        ether 02:42:14:14:14:04  txqueuelen 0  (Ethernet)
+        RX packets 19  bytes 1510 (1.4 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 7  bytes 574 (574.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+
+root@lab1:/usr/local/apache2# exit
+
+docker network disconnect mynet2 laba
+
+
+
+------------------------------------
+Dockerfile
+
+when i need img
+	if i dont have img
+	if app have container image and  need to edit
+
+FROM
+LABEL
+ENV
+EXPOSE
+COPY
+RUN
+WORKDIR
+CMD === ENTRYPOINT
+ADD
+USER
+
+
+FROM httpd:latest
+LABEL apache v2 with some customizations
+
+
+RUN apt update
+RUN apt install nano ip
+
+
+ENV
+
+
+RUN touch file1.txt
+
+
+EXPOSE 80/tcp 22/tcp
+
+
+WORKDIR /usr/local/apache2
+
+COPY index.html /usr/local/apache2/htdocs
+
+#set CMD entry point
+CMD ["httpd-foreground"]
+
+-------------------------------------------------
+docker image
+
+Usage:  docker image COMMAND
+
+Manage images
+
+Commands:
+  build       Build an image from a Dockerfile
+  history     Show the history of an image
+  import      Import the contents from a tarball to create a filesystem image
+  inspect     Display detailed information on one or more images
+  load        Load an image from a tar archive or STDIN
+  ls          List images
+  prune       Remove unused images
+  pull        Download an image from a registry
+  push        Upload an image to a registry
+  rm          Remove one or more images
+  save        Save one or more images to a tar archive (streamed to STDOUT by default)
+  tag         Create a tag TARGET_IMAGE that refers to SOURCE_IMAGE
+
+

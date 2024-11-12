@@ -1,0 +1,657 @@
+worker1@worker1-k8s:~/amer$ kubectl create ns dev
+
+worker1@worker1-k8s:~/amer$ kubectl create deployment mypod1 --image httpd --port 80 -n dev
+deployment.apps/mypod1 created
+
+worker1@worker1-k8s:~/amer$ kubectl describe ns dev
+Name:         dev
+Labels:       kubernetes.io/metadata.name=dev
+Annotations:  <none>
+Status:       Active
+
+No resource quota.
+
+No LimitRange resource.
+
+sudo vi quota-ns-dev.yml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: quota-ns-dev
+  namespace: dev
+spec:
+  hard:
+    pods: 5
+    services: 5
+    configmaps: 6
+    secrets: 5
+    count/deployments.apps: 5
+    limits.cpu: 1 المساحه القصوي
+    requests.cpu: "0.5" المساحه اللي ححجزهالك بشكل مبدئي حتي لو لم تستخدم
+    limits.memory: 500Mi
+    requests.memory: 250Mi
+
+worker1@worker1-k8s:~$ kubectl apply -f quota-ns-dev.yml
+resourcequota/quota-ns-dev created
+ 
+worker1@worker1-k8s:~$ kubectl describe ns dev
+Name:         dev
+Labels:       kubernetes.io/metadata.name=dev
+Annotations:  <none>
+Status:       Active
+
+Resource Quotas
+  Name:                   quota-ns-dev
+  Resource                Used  Hard
+  --------                ---   ---
+  configmaps              1     6
+  count/deployments.apps  1     5
+  limits.cpu              0     1
+  limits.memory           0     500Mi
+  pods                    1     5
+  requests.cpu            0     500m
+  requests.memory         0     250Mi
+  secrets                 0     5
+  services                0     5
+
+No LimitRange resource.
+
+worker1@worker1-k8s:~/amer$ kubectl run amer3 --image httpd --port 80 -n dev -o yaml --dry-run=client > amer3-pod.yml
+worker1@worker1-k8s:~/amer$ kubectl apply -f amer3-pod.yml
+Error from server (Forbidden): error when creating "amer3-pod.yml": pods "amer3" is forbidden: failed quota: quota-ns-dev: 
+must specify limits.cpu for: amer3; limits.memory for: amer3; requests.cpu for: amer3; requests.memory for: amer3
+
+after making a ResourceQuota any pod that u will create should determine its resources
+
+worker1@worker1-k8s:~/amer$ sudo vi amer3-pod.yml                                            
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: amer3
+  name: amer3
+  namespace: dev
+spec:
+  containers:
+  - image: httpd
+    name: amer3
+    ports:
+    - containerPort: 80
+    resources:
+      limits:
+        cpu: "0.1"
+        memory: 50Mi
+      requests:
+        cpu: "0.05"
+        memory: 25Mi
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+worker1@worker1-k8s:~/amer$ kubectl apply -f amer3-pod.yml
+pod/amer3 created
+
+-----------------------------------------------------------------
+worker1@worker1-k8s:~/amer$ sudo vi myapp-deployment.yml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: myapp
+  name: myapp
+  namespace: scale
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - image: httpd
+        name: httpd
+        ports:
+        - containerPort: 80
+        resources: {}
+status: {}
+
+worker1@worker1-k8s:~/amer$ kubectl get pods -n scale
+No resources found in scale namespace.
+
+worker1@worker1-k8s:~/amer$ kubectl apply -f myapp-deployment.yml
+deployment.apps/myapp created
+
+worker1@worker1-k8s:~/amer$ kubectl get pods -n scale
+NAME                     READY   STATUS    RESTARTS   AGE
+myapp-57cd64b458-7jqxv   1/1     Running   0          8m39s
+myapp-57cd64b458-t7j2b   1/1     Running   0          8m39s
+myapp-57cd64b458-w5r8p   1/1     Running   0          8m39s
+
+HPA : horizontal pod autoscaling
+
+worker1@worker1-k8s:~/amer$ kubectl autoscale deployment myapp -n scale --cpu-percent 70 --min 4 --max 25 -o yaml --dry-run=client > hpa-myapp-deployment.yml
+worker1@worker1-k8s:~/amer$ sudo vi hpa-myapp-deployment.yml
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  namespace: scale
+  name: myapp
+spec:
+  maxReplicas: 25
+  minReplicas: 4
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: myapp
+  targetCPUUtilizationPercentage: 70
+status:
+  currentReplicas: 0
+  desiredReplicas: 0
+
+worker1@worker1-k8s:~/amer$ kubectl get all -n scale
+NAME                         READY   STATUS    RESTARTS   AGE
+pod/myapp-57cd64b458-7jqxv   1/1     Running   0          22m
+pod/myapp-57cd64b458-t7j2b   1/1     Running   0          22m
+pod/myapp-57cd64b458-w5r8p   1/1     Running   0          22m
+
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/myapp   3/3     3            3           22m
+
+NAME                               DESIRED   CURRENT   READY   AGE
+replicaset.apps/myapp-57cd64b458   3         3         3       22m
+
+worker1@worker1-k8s:~/amer$ kubectl get hpa -n scale
+No resources found in scale namespace.
+
+worker1@worker1-k8s:~/amer$ kubectl apply -f hpa-myapp-deployment.yml
+horizontalpodautoscaler.autoscaling/myapp created
+
+worker1@worker1-k8s:~/amer$ kubectl get hpa -n scale
+NAME    REFERENCE          TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+myapp   Deployment/myapp   cpu: <unknown>/70%   4         25        0          14s
+worker1@worker1-k8s:~/amer$ kubectl get all -n scale
+NAME                         READY   STATUS    RESTARTS   AGE
+pod/myapp-57cd64b458-7jqxv   1/1     Running   0          28m
+pod/myapp-57cd64b458-lw2rh   1/1     Running   0          5s
+pod/myapp-57cd64b458-t7j2b   1/1     Running   0          28m
+pod/myapp-57cd64b458-w5r8p   1/1     Running   0          28m
+
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/myapp   4/4     4            4           28m
+
+NAME                               DESIRED   CURRENT   READY   AGE
+replicaset.apps/myapp-57cd64b458   4         4         4       28m
+
+NAME                                        REFERENCE          TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/myapp   Deployment/myapp   cpu: <unknown>/70%   4         25        3          20s
+
+worker1@worker1-k8s:~/amer$watch -n 1 kubectl get all -n scale
+
+hpa added another pod because in the configuration the minimum pods are 4
+
+hpa for automatic = replica for manual
+hpa can overrides replicas because it can add more pods that assigned from replicas
+-------------------------------------------------------------------------------------
+                          Deployment Update Strategy
+   Recreate(Down-time)						RollingUpdate(zero down-time)
+
+      Deployment					           Deployment
+Replica1    R2      R3					  R1		R2		R3
+pppppp	   ppppp   ppppp				pppppp		pppp		ppppp
+ Img	    Img	    Img					  img		img		img
+version      v2	     v3					   v1		v2		v3
+
+1-stop replica					1-create new replica
+2-stop/terminate old pods (down)- 		2-create/start 25% new pods 20(old)+5(new)
+   pods meta data exists			3-stop/terminate 25% old pods
+3-create new replica				4-create/start 25% new pods 20(old)+5(new)
+4-create new pods				5-etc untill all pods recreated
+
+
+worker1@worker1-k8s:~$ mkdir update
+worker1@worker1-k8s:~$ cd update/
+worker1@worker1-k8s:~/update$ kubectl create ns update
+namespace/update created
+worker1@worker1-k8s:~/update$ kubectl create deployment seniorapp --image httpd:2.4.55 --replicas 3 -n update -o yaml --dry-run=client > deployment-seniorapp-v1.yml
+worker1@worker1-k8s:~/update$ kubectl apply -f deployment-seniorapp-v1.yml                   deployment.apps/seniorapp created
+worker1@worker1-k8s:~/update$ kubectl get all -n update
+NAME                            READY   STATUS              RESTARTS   AGE
+pod/seniorapp-5b6fb976c-hcbbx   1/1     Running             0          34s
+pod/seniorapp-5b6fb976c-nccz2   0/1     ContainerCreating   0          34s
+pod/seniorapp-5b6fb976c-qgm68   1/1     Running             0          34s
+
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/seniorapp   2/3     3            2           34s
+
+NAME                                  DESIRED   CURRENT   READY   AGE
+replicaset.apps/seniorapp-5b6fb976c   3         3         2       34s
+
+worker1@worker1-k8s:~/update$ cp deployment-seniorapp-v1.yml deployment-seniorapp-v2.yml
+worker1@worker1-k8s:~/update$ sudo vi deployment-seniorapp-v2.yml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: seniorapp
+  name: seniorapp
+  namespace: update
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: seniorapp
+  strategy:
+    type: Recreate     <-------was-  strategy:{} , added type: Recreate 
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: seniorapp
+    spec:
+      containers:
+      - image: httpd:2.4.57  <------was-  image: httpd:2.4.55
+        name: httpd
+        ports:                <---------added-
+          - containerPort: 80
+        resources: {}
+status: {}
+
+worker1@worker1-k8s:~/update$ kubectl apply -f deployment-seniorapp-v2.yml
+deployment.apps/seniorapp configured
+worker1@worker1-k8s:~/update$ kubectl get all -n update
+NAME                            READY   STATUS    RESTARTS   AGE
+pod/seniorapp-688b4dcdd-lvq64   1/1     Running   0          69s
+pod/seniorapp-688b4dcdd-pj8nb   1/1     Running   0          69s
+pod/seniorapp-688b4dcdd-zrr6g   1/1     Running   0          69s
+
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/seniorapp   3/3     3            3           18m
+
+NAME                                  DESIRED   CURRENT   READY   AGE
+replicaset.apps/seniorapp-5b6fb976c   0         0         0       18m
+replicaset.apps/seniorapp-688b4dcdd   3         3         3       69s
+
+worker1@worker1-k8s:~/update$ cp deployment-seniorapp-v2.yml deployment-seniorapp-v3.yml
+worker1@worker1-k8s:~/update$ sudo vi deployment-seniorapp-v3.yml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: seniorapp
+  name: seniorapp
+  namespace: update
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: seniorapp
+  strategy:
+    type: RollingUpdate   <<-------
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: seniorapp
+    spec:
+      containers:
+      - image: httpd:2.4.59    <<-------
+        name: httpd
+        ports:
+          - containerPort: 80
+        resources: {}
+status: {}
+
+worker1@worker1-k8s:~/update$ watch kubectl get all -n update
+
+Every 2.0s: kubectl get all -n update                   worker1-k8s: Thu Oct 10 21:59:55 2024
+
+NAME                             READY   STATUS              RESTARTS   AGE
+pod/seniorapp-5948694898-d6s68   0/1     ContainerCreating   0          2s
+pod/seniorapp-5948694898-xl6tw   1/1     Running             0          31s
+pod/seniorapp-688b4dcdd-lvq64    1/1     Running             0          17m
+pod/seniorapp-688b4dcdd-pj8nb    1/1     Terminating         0          17m
+pod/seniorapp-688b4dcdd-zrr6g    1/1     Running             0          17m
+
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/seniorapp   3/3     2            3           34m
+
+NAME                                   DESIRED   CURRENT   READY   AGE
+replicaset.apps/seniorapp-5948694898   2         2         1       31s
+replicaset.apps/seniorapp-5b6fb976c    0         0         0       34m
+
+worker1@worker1-k8s:~/update$ kubectl rollout history deployment seniorapp -n update
+deployment.apps/seniorapp
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+3         <none>
+
+worker1@worker1-k8s:~/update$ kubectl rollout history deployment seniorapp -n update --revision 2
+deployment.apps/seniorapp with revision #2
+Pod Template:
+  Labels:       app=seniorapp
+        pod-template-hash=688b4dcdd
+  Containers:
+   httpd:
+    Image:      httpd:2.4.57    <<-------
+    Port:       80/TCP
+    Host Port:  0/TCP
+    Environment:        <none>
+    Mounts:     <none>
+  Volumes:      <none>
+
+worker1@worker1-k8s:~/update$ kubectl rollout history deployment seniorapp -n update --revision 1
+deployment.apps/seniorapp with revision #1
+Pod Template:
+  Labels:       app=seniorapp
+        pod-template-hash=5b6fb976c <<------- 5b6fb976c
+  Containers:
+   httpd:
+    Image:      httpd:2.4.55    <<-------
+    Port:       <none>
+    Host Port:  <none>
+    Environment:        <none>
+    Mounts:     <none>
+  Volumes:      <none>
+
+worker1@worker1-k8s:~/update$ kubectl rollout history deployment seniorapp -n update --revision 3
+deployment.apps/seniorapp with revision #3
+Pod Template:
+  Labels:       app=seniorapp
+        pod-template-hash=5948694898
+  Containers:
+   httpd:
+    Image:      httpd:2.4.59    <<-------
+    Port:       80/TCP
+    Host Port:  0/TCP
+    Environment:        <none>
+    Mounts:     <none>
+  Volumes:      <none>
+
+worker1@worker1-k8s:~/update$ kubectl rollout undo deployment seniorapp -n update --to-revision 1  <<------- roll back with command
+deployment.apps/seniorapp rolled back
+
+worker1@worker1-k8s:~/update$ kubectl get all -n update
+NAME                            READY   STATUS    RESTARTS   AGE
+pod/seniorapp-5b6fb976c-5mcpp   1/1     Running   0          29s
+pod/seniorapp-5b6fb976c-95f6h   1/1     Running   0          25s
+pod/seniorapp-5b6fb976c-cf5d5   1/1     Running   0          27s
+
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/seniorapp   3/3     3            3           46m
+
+NAME                                   DESIRED   CURRENT   READY   AGE
+replicaset.apps/seniorapp-5948694898   0         0         0       13m
+replicaset.apps/seniorapp-5b6fb976c    3         3         3       46m  <<--3-3-3--- 5b6fb976c
+replicaset.apps/seniorapp-688b4dcdd    0         0         0       29m
+
+worker1@worker1-k8s:~/update$ kubectl rollout undo deployment seniorapp -n update --to-revision 2  <<------- roll back with command
+deployment.apps/seniorapp rolled back
+worker1@worker1-k8s:~/update$ kubectl get all -n update
+NAME                            READY   STATUS              RESTARTS   AGE
+pod/seniorapp-5b6fb976c-5mcpp   1/1     Running             0          6m2s
+pod/seniorapp-5b6fb976c-95f6h   1/1     Terminating         0          5m58s
+pod/seniorapp-688b4dcdd-jjm46   1/1     Running             0          5s
+pod/seniorapp-688b4dcdd-p4flm   1/1     Running             0          3s
+pod/seniorapp-688b4dcdd-v8b88   0/1     ContainerCreating   0          1s
+
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/seniorapp   3/3     3            3           52m
+
+NAME                                   DESIRED   CURRENT   READY   AGE
+replicaset.apps/seniorapp-5948694898   0         0         0       18m
+replicaset.apps/seniorapp-5b6fb976c    1         1         1       52m <<------- from v1
+replicaset.apps/seniorapp-688b4dcdd    3         3         2       35m <<------- to v2
+
+worker1@worker1-k8s:~/update$ kubectl apply -f deployment-seniorapp-v1.yml  <<------- roll back with file
+deployment.apps/seniorapp configured
+worker1@worker1-k8s:~/update$ kubectl get all -n update
+NAME                            READY   STATUS              RESTARTS   AGE
+pod/seniorapp-5b6fb976c-slwpn   0/1     ContainerCreating   0          1s
+pod/seniorapp-5b6fb976c-wqw7c   1/1     Running             0          2s
+pod/seniorapp-688b4dcdd-jjm46   1/1     Running             0          3m45s
+pod/seniorapp-688b4dcdd-p4flm   1/1     Running             0          3m43s
+pod/seniorapp-688b4dcdd-v8b88   1/1     Terminating         0          3m41s
+
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/seniorapp   3/3     2            3           55m
+
+NAME                                   DESIRED   CURRENT   READY   AGE
+replicaset.apps/seniorapp-5948694898   0         0         0       22m
+replicaset.apps/seniorapp-5b6fb976c    2         2         1       55m <<------- to v1
+replicaset.apps/seniorapp-688b4dcdd    2         2         2       39m <<------- from v2
+
+worker1@worker1-k8s:~/update$ kubectl get all -n update
+NAME                            READY   STATUS        RESTARTS   AGE
+pod/seniorapp-5b6fb976c-c296b   1/1     Running       0          3s
+pod/seniorapp-5b6fb976c-slwpn   1/1     Running       0          5s
+pod/seniorapp-5b6fb976c-wqw7c   1/1     Running       0          6s
+pod/seniorapp-688b4dcdd-p4flm   1/1     Terminating   0          3m47s
+
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/seniorapp   3/3     3            3           55m
+
+NAME                                   DESIRED   CURRENT   READY   AGE
+replicaset.apps/seniorapp-5948694898   0         0         0       22m
+replicaset.apps/seniorapp-5b6fb976c    3         3         3       55m <<------- to v1
+replicaset.apps/seniorapp-688b4dcdd    0         0         0       39m <<------- from v2
+
+--------------------------------------------------------------------------------------------------------
+
+				       Service
+	<------------------------------Access----------------------->
+   <-internal->					    <-------------external----------->
+    clusterIP					NodePort			Loadbalancer
+Pod A	    Pod B	  		             services ports ranges 30000--->32767
+service---->service				-----outside cluster----|----------inside cluster----------
+*pods communicate to other pod through their services		  ->H.w node-- 			-->port:80-->Pod
+and services send requests to their pods   		  user---- 	      --><-service-> ----->p:31000-->Pod Front
+through ports							  ->H.w	node--	 N.P	 L.B	-->p:30000-->Pod DataBase
+
+*user want to communicate with pod, user send request to any h.w node (server) that is out side cluster, both NodePort and LoadBalancer
+do the same job, they take the requests from hardware and map them to a specefic pod, these requests came to service and mapped depending
+on port for e.g 30000 is pod of DB, so for port mapping service must book a port on node, becasue user send request through ip/port.
+
+*main diff bet N.P and L.B is that load balancer gurantees balance, requests are sent to server of lower requests untill both are the same
+and the sends requests equally
+
+DNS in kubernetes = ingress controller
+	
+service	
+1-create stable endpoint(like a URL)
+2-map PodIP to endpoint
+3-Discover Pods(labels) & remap new IP with endpoint
+
+worker1@worker1-k8s:~/update$ kubectl get pods -n update --show-labels
+NAME                        READY   STATUS    RESTARTS   AGE   LABELS
+seniorapp-5b6fb976c-c296b   1/1     Running   0          34m   app=seniorapp,pod-template-hash=5b6fb976c <--same label cause same deployment
+seniorapp-5b6fb976c-slwpn   1/1     Running   0          34m   app=seniorapp,pod-template-hash=5b6fb976c <--same label cause same deployment
+seniorapp-5b6fb976c-wqw7c   1/1     Running   0          34m   app=seniorapp,pod-template-hash=5b6fb976c <--same label cause same deployment
+
+worker1@worker1-k8s:~/update$ kubectl get svc -n update
+No resources found in update namespace.
+
+worker1@worker1-k8s:~/update$ kubectl get endpoints -n update
+No resources found in update namespace.
+
+worker1@worker1-k8s:~/update$ sudo vi service-clusterip.yml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: seniorapp-svc
+  namespace: update
+spec:
+  type: ClusterIP
+  selector:
+    app: seniorapp
+  ports:
+  - targetPort: 80    بقولها انتي كسيرفس لما بتستقبلي ريكويستات بتوديها فين
+
+worker1@worker1-k8s:~/update$ kubectl get svc -n update
+NAME            TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE
+seniorapp-svc   ClusterIP   10.100.63.9   <none>        80/TCP    102s
+
+worker1@worker1-k8s:~/update$ kubectl get endpoints -n update
+NAME            ENDPOINTS                                      AGE
+seniorapp-svc   10.244.0.77:80,10.244.0.78:80,10.244.0.79:80   2m15s
+
+worker1@worker1-k8s:~/update$ kubectl delete pod seniorapp-5b6fb976c-c296b -n update
+pod "seniorapp-5b6fb976c-c296b" deleted
+
+worker1@worker1-k8s:~/update$ kubectl get pods -n update -o wide
+NAME                        READY   STATUS    RESTARTS   AGE   IP            NODE       NOMINATED NODE   READINESS GATES
+seniorapp-5b6fb976c-6mkg8   1/1     Running   0          9s    10.244.0.80   minikube   <none>           <none>
+seniorapp-5b6fb976c-slwpn   1/1     Running   0          95m   10.244.0.78   minikube   <none>           <none>
+seniorapp-5b6fb976c-wqw7c   1/1     Running   0          95m   10.244.0.77   minikube   <none>           <none>
+
+worker1@worker1-k8s:~/update$ kubectl get endpoints -n update
+NAME            ENDPOINTS                                      AGE
+seniorapp-svc   10.244.0.77:80,10.244.0.78:80,10.244.0.80:80   4m24s
+
+worker1@worker1-k8s:~/update$ cp service-clusterip.yml service-lb.yml
+
+worker1@worker1-k8s:~/update$ sudo vi service-lb.yml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: seniorapp-svc-lb
+  namespace: update
+spec:
+  type: LoadBalancer
+  selector:
+    app: seniorapp
+  ports:
+  - port: 80
+    nodePort: 30500
+
+worker1@worker1-k8s:~/update$ kubectl get svc -n update
+NAME               TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+seniorapp-svc      ClusterIP      10.100.63.9     <none>        80/TCP         9m21s
+seniorapp-svc-lb   LoadBalancer   10.107.157.37   <pending>     80:30500/TCP   47s
+
+worker1@worker1-k8s:~/update$ kubectl get endpoints -n update
+NAME               ENDPOINTS                                      AGE
+seniorapp-svc      10.244.0.77:80,10.244.0.78:80,10.244.0.80:80   8m50s
+seniorapp-svc-lb   10.244.0.77:80,10.244.0.78:80,10.244.0.80:80   16s
+
+both services are same but one internally and other expose to people outside (80:30500/TCP)
+
+worker1@worker1-k8s:~/update$ cp service-clusterip.yml service-lb.yml
+worker1@worker1-k8s:~/update$ sudo vi service-lb.yml
+worker1@worker1-k8s:~/update$ kubectl apply -f service-lb.yml
+service/seniorapp-svc-lb created
+worker1@worker1-k8s:~/update$ kubectl get endpoints -n update
+NAME               ENDPOINTS                                      AGE
+seniorapp-svc      10.244.0.77:80,10.244.0.78:80,10.244.0.80:80   8m50s
+seniorapp-svc-lb   10.244.0.77:80,10.244.0.78:80,10.244.0.80:80   16s
+worker1@worker1-k8s:~/update$ kubectl get svc -n update
+NAME               TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+seniorapp-svc      ClusterIP      10.100.63.9     <none>        80/TCP         9m21s
+seniorapp-svc-lb   LoadBalancer   10.107.157.37   <pending>     80:30500/TCP   47s
+worker1@worker1-k8s:~/update$ kubectl get pods - update
+Error from server (NotFound): pods "-" not found
+Error from server (NotFound): pods "update" not found
+worker1@worker1-k8s:~/update$ kubectl get pods -n update
+NAME                        READY   STATUS    RESTARTS   AGE
+seniorapp-5b6fb976c-6mkg8   1/1     Running   0          9m31s
+seniorapp-5b6fb976c-slwpn   1/1     Running   0          104m
+seniorapp-5b6fb976c-wqw7c   1/1     Running   0          104m
+
+worker1@worker1-k8s:~/update$ kubectl exec -it -n update seniorapp-5b6fb976c-6mkg8 -- bash
+root@seniorapp-5b6fb976c-6mkg8:/usr/local/apache2# echo pod1111111 > htdocs/index.html
+root@seniorapp-5b6fb976c-6mkg8:/usr/local/apache2# exit
+exit
+worker1@worker1-k8s:~/update$ kubectl exec -it -n update seniorapp-5b6fb976c-slwpn -- bash
+root@seniorapp-5b6fb976c-slwpn:/usr/local/apache2# echo pod222222 > htdocs/index.html                 
+root@seniorapp-5b6fb976c-wqw7c:/usr/local/apache2# exit
+exit
+worker1@worker1-k8s:~/update$ kubectl exec -it -n update seniorapp-5b6fb976c-wqw7c -- bash
+root@seniorapp-5b6fb976c-wqw7c:/usr/local/apache2# echo pod3333333 > htdocs/index.html
+root@seniorapp-5b6fb976c-wqw7c:/usr/local/apache2# exit
+exit
+worker1@worker1-k8s:~/update$ kubectl get svc -n update
+NAME               TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+seniorapp-svc      ClusterIP      10.100.63.9     <none>        80/TCP         17m
+seniorapp-svc-lb   LoadBalancer   10.107.157.37   <pending>     80:30500/TCP   9m3s
+
+worker1@worker1-k8s:~/update$ kubectl get nodes -o wide
+NAME       STATUS   ROLES           AGE   VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION       CONTAINER-RUNTIME
+minikube   Ready    control-plane   65d   v1.30.0   192.168.49.2   <none>        Ubuntu 22.04.4 LTS   5.15.0-122-generic   docker://26.1.1
+
+worker1@worker1-k8s:~/update$ curl 192.168.49.2:30500
+pod1111111
+worker1@worker1-k8s:~/update$ curl 192.168.49.2:30500
+pod222222
+worker1@worker1-k8s:~/update$ curl 192.168.49.2:30500
+pod1111111
+worker1@worker1-k8s:~/update$ curl 192.168.49.2:30500
+pod1111111
+worker1@worker1-k8s:~/update$ curl 192.168.49.2:30500
+pod3333333
+worker1@worker1-k8s:~/update$ curl 192.168.49.2:30500
+pod1111111
+worker1@worker1-k8s:~/update$ curl 192.168.49.2:30500
+pod1111111
+worker1@worker1-k8s:~/update$ curl 192.168.49.2:30500
+pod1111111
+worker1@worker1-k8s:~/update$ curl 192.168.49.2:30500
+pod222222
+worker1@worker1-k8s:~/update$ curl 192.168.49.2:30500
+pod3333333
+
+worker1@worker1-k8s:~/update$ sudo vi loop.sh
+
+#!/bin/bash
+
+while [ true ]
+do
+        curl 192.168.49.2:30500
+        sleep 1
+        echo "-----------------"
+done
+
+worker1@worker1-k8s:~/update$ ./loop.sh
+pod1111111
+-----------------
+pod222222
+-----------------
+pod1111111
+-----------------
+pod1111111
+-----------------
+pod222222
+-----------------
+pod222222
+-----------------
+pod1111111
+-----------------
+pod222222
+-----------------
+pod3333333
+-----------------
+pod3333333
+-----------------
+pod1111111
+-----------------
+pod3333333
+-----------------
+pod1111111
+-----------------
+pod1111111
+-----------------
+pod222222
+^C

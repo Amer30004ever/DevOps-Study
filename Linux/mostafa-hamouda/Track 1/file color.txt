@@ -1,0 +1,3 @@
+white  ---->  normal  file
+blue  ---->  directory
+lemon green   ---->   executable file

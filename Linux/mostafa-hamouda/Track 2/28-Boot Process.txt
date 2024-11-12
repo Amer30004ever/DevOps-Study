@@ -1,0 +1,24 @@
+# ls -lh /etc/grub2.cfg ----> is a soft-link 
+                            and main config file of Grub in /boot
+
+# less /boot/grub2 ----> Grub config files
+grub.cfg 
+
+# du -sh /boot/grub2 ----> Second Stage
+8.1M  /boot/grub2
+
+# less /boot/grub2/grub.cfg
+vimlinuz-3.10.0-327.x86_64 ----> Kernel name 
+
+# ls -l /boot
+vimlinuz-3.10.0-327.x86_64
+
+initramfs it has the files of kernel and this allows the memory foot print of kernel
+          to be small so kernel wont use much memory
+
+1-kernel loads
+2-initramfs loads some drivers
+3-mouunt fs as ro
+4-remount fs as rw
+5-call systemd : after called its calls other services and run it
+

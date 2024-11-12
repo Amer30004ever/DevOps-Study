@@ -1,0 +1,18 @@
+ctrl + a  ----> begining of line
+
+ctrl + e  ----> end of line
+
+ctrl + k  ----> delete from cursor to the end
+
+ctrl + u  ----> delete from cursor to the begining
+
+ctrl + d  ---->  log out from root or user
+
+shift + pgup  ---->   go page up
+
+shift + pgdwn  ---->  go page down
+
+ctrl + z  ---->  pause command
+
+ctrl + c  ---->  terminate command
+          ---->  delete all line

@@ -1,0 +1,78 @@
+4 >= ----> 2 * RAM
+4 <= ----> 1.5 * RAM
+RAM > 8 ----> 1 * RAM
+RAM >= 16 ----> 0.5 * RAM
+
+#free -m
+         total used free shared  cache  available
+Mem:     1985  611  393  11      918    1138
+swap:    2047   0  2047
+
+#cat /proc/swaps
+/dev/dm-1      partition   2097148  0  -1  ----> swap size 2G
+                             2G
+
+partition swap:
+--------------
+#lvcreate --size 2G --name lvswap data
+#lvs
+lvswap    2G
+#mkswap /dev/data/lvswap  --> fs name of swap is "swap"
+#free -m
+swap  2047 ---> still didnt add the size 2G
+#swapon /dev/data/lvswap --> activate the partition to be used as a swap
+#free -m
+swap  4095 ---> size added
+#vim /etc/fstab --> for swap to be exist on reboot
+/dev/data/lvswap swap swap defaults 0 0
+#mount -a ---> good no errors
+#cat /proc/swaps
+/dev/dm-1      partition   2097148  0  -1
+/dev/dm-7      partition   2097148  0  -2
+#ls -l /dev/data/lvswap
+lrwxrwxrwx               /dev/data/lvswap ..> ../dm-7   -->dm:device mapper
+
+Deactivate partition swap:
+-------------------------
+#vim /etc/fstab
+/dev/data/lvswap swap swap defaults 0 0 --> delete this line
+#swapoff /dev/data/lvswap
+or
+sudo swapoff /dev/dm-7
+
+#free -m
+swap  2047 ---> swap size reduced
+#lsblk
+sdb                         8:32   0    20G  0 disk
+└─sdb3                      8:35   0     5G  0 part
+  └─data-lvswap           253:1    0     2G  0 lvm  [SWAP] ---> partition still existed cause the space was take from vg data under sdb that is free
+
+#lvs
+lvswap  data  2G  --> and LV still exist, u only deavtivated it
+
+sudo lvremove data
+Do you really want to remove and DISCARD active logical volume data/lvswap? [y/n]: y
+  Logical volume "lvswap" successfully removed
+=================================================================================
+File swap:
+---------
+#dd if=/dev/zero of=/root/myswap bs=1M count=2048 --> will create file "swap" in /root with "zeros" data with size 1M*2048=2G
+#mkswap /root/myswap
+#swapon /root/myswap  -> insecure permisiion 0644, 600 suggested
+#free -m
+swap 4095
+#swapoff /root/myswao
+#chmod 600 /root/myswap
+#swapon /root/myswap
+#vim /etc/fstab
+/root/myswap   swap swap defaults 0 0 ---> add for automount
+#mount -a
+
+Deactivate File swap:
+--------------------
+#vim /etc/fstab
+/root/myswap   swap swap defaults 0 0 ---> remove
+#swapoff /root/myswap
+#free -m
+swap 2047
+#rm /root/myswap --> delete its file

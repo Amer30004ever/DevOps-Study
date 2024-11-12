@@ -1,0 +1,98 @@
+Shrink LVM:
+----------
+lvreduce must be with fs unmounted and must check size after reduction not less than data existed 
+#lvs
+oracle data    35g
+#df -h
+/dev/mapper/data-oracle  35G   /data
+#umount /data
+#e2fsck -f /dev/data/oracle ---> force file system check
+#resize2fs /dev/data/oracle 30G
+#lvreduce -L -5G /dev/data/oracle
+#mount /dev/data/oracle /data
+#df -h
+/dev/mapper/data-oracle  30G   /data
+--------------------------------------------
+#umount /data
+#lvs
+#lvremove /dev/data/oracle
+#vgremove data
+#pvremove /dev/md0
+#pvremove /dev/md1
+#cat /proc/mdstat 
+md0 md1
+#mdadm --stop /dev/md0
+#mdadm --stop /dev/md1
+#mdadm --zero-superblock /dev/sd[bcde]
+--------------------------------------------
+LVM Stripping:
+-------------
+#pvcreate /dev/sd[bcde]
+#pvs
+#vgcreate data /dev/sd[bcde]
+#vgs
+#vgdisplay data
+cur pv  4 ---> current pv
+#lvcreate --size 40G --name oracle -i 4 data ---> i:strips --> distribute data on 4 parts equally
+#lvs
+oracle data   40g
+#lvdisplay -m /dev/data/oracle ---> m:mapping --> LVM is linear by default ,must ask to strip
+#dmsetup deps /dev/data/oracle ---> dm:device mapper
+4 dependencies : (8,64)(8,48)(8,32)(8,16)
+#mkfs.ext4 /dev/data/oracle
+#mount /dev/data/oracle /data
+
+snapshot:
+--------
+#cp -r /usr /data
+#cp -r /etc /data
+#du -sh /data
+1.1G /data
+#df -h
+/dev/mapper/data-oracle  40G 1.1G  /data
+#lvcreate --size 2G --name oracle-snap --snapshot /dev/data/oracle --> --snapshot or -s
+#lvs
+oracle-snap data --swi-a-s 2.00g oracle 0.0 --> -s:snapshot 0.0:% of used space from snapshot
+#lvdisplay /dev/data/oracle-snap
+lv snapshot status    active destination for Oracle
+#cd /data
+etc usr
+data]#rm -rf /usr
+#lvs
+oracle-snap               2.00g  oracle 0.21 ---> started using the space when i deleted /usr
+data]#ls
+etc
+#umount /data  --> check not mounted in other place
+#lvconvert --merge /dev/data/oracle-snap
+oracle: Merged 99%
+#ls /data
+etc usr ---> /usr file is backuped back
+#cp -r /var /data
+#lvs
+oracle-snap               2.00g  oracle 4.28 --> when copying or deleting the % used increased
+#rm -rf /var
+oracle-snap               2.00g  oracle 6.02
+
+removing snapshot:
+-----------------
+#lvremove /data/data/oracle-snap
+#ls /data
+etc usr  ---> data still existed
+
+manual resizing to snapshot:
+---------------------------
+#lvextend --szie 2g /dev/data/oracle-snap
+#lvs
+oracle-snap               4.00g
+
+#Automatic resizing to snapshot:
+-------------------------------
+#vim /etc/lvm/lvm.conf
+####setting this to 100 disable automatic extension
+snapshot_autoextend_threshold=100 ---> change this % to 80 
+snapshot_autoextend_percent=20 --> %
+
+this mean when it reach 100% snapshot_autoextend_threshold will be disabled even if not hashed
+so the percent must be under 100% for snapshot_autoextend_threshold to work
+
+

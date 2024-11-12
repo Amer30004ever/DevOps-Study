@@ -1,0 +1,79 @@
+systemd taegets = modes - GUI
+                        - minimal
+init - run levels 
+0 power off
+1 single user mode (trouble shooting)
+2 multi user without GUI & without NFS server
+3 command line interface (CLI) TTY - multi user without GUI
+4 unused
+5 multi user with GUI
+6 reboot     
+
+systemd targets 
+0 power off
+1 rescure target
+2,3 multi-user target
+5 graphical target 
+6 reboot
+
+# systemctl get_default
+graphical.target
+# systemctl set_default multi-user.target ----> must reboot to take effect
+removed symlink /etc/systemd/system/default.target
+created symlink fom /etc/systemd/system/default.target to /usr/lib/systemd/system/multi-user.target
+
+# systemctl get_default
+multi-user.target
+# reboot
+
+# runlevel ----> to know in which run level u r
+ N 3
+ N:precious 3:is the current
+
+# systemctl isolate graphical.target ---->  will go to GUI while in terminal (same session)and dont need to restart
+
+# runlevel ----> init 
+3 5
+
+# systemctl isolate multi-user.target ----> will go to multi-user.target from GUI
+
+# systemctl poweroff ----> change m target from GUI to poweroff
+
+# init 6 -------> reboot
+# telinit  #runlevel
+# ls /etc/systemd  ------------> config files of systemd
+
+# ls -l /etc/systemd
+# ls -l /etc/systemd/system  -------------> soft link files and points to /usr/lib/systemd
+
+# ls /usr/lib/systemd ----> original Config files of systemd
+                          to enable a service its take a soft link from /usr and put it in /etc
+
+# ls /usr/lib/systemd/system/sshd.service -l
+-rw-r--r--......................../usr/lib/systemd/system/sshd.service
+
+# cat /usr/lib/systemd/system/sshd.service
+
+# ls -l /etc/systemd/system/multi-user.target.wants/sshd.service
+lrwxrwxrwx............/etc/systemd/system/multi-user.target.wants/sshd.service(blue color) .> /usr/lib/systemd/system/sshd.service(original file)                        
+
+# systemctl disable sshd.service ----> delete the soft link in /etc to disable
+ removed symlink /etc/systemd/system/multi-user.target.wants/sshd.service
+
+# systemctl enable sshd.service ----> make soft link in /etc to enable
+ init:
+ -----
+# chkconfig sshd on ----> change file name and put "s" before
+# chkconfig sshd off ----> change file name and put "k" before
+# ls -l /etc/systemd/system/default.target
+lrwxrwxrwx...../etc/systemd/system/default.target -> /lib/systemd/system/multi-user.target
+
+# systemctl list-units ----> status of all unit files of systemd
+# vim /etc/cups/cups-file.conf
+ ruin the file...write any thing
+ wq
+
+# service cups restart
+# systemctl list-units
+# systemctl list-units | grep -i failed ---> search in all of    failed services
+# systemctl list-unit-files

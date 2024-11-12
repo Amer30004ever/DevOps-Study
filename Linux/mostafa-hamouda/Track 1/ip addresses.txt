@@ -1,0 +1,5 @@
+Introduction
+Method 1: Using the command ifconfig
+Method 2: Using command ip a -------------------working
+Method 3: Using the command nmcli
+Method 4: Using the command ip add

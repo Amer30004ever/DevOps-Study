@@ -1,0 +1,454 @@
+*net config
+*pub/private key
+*copy key to remote hosts
+*python3
+*ansible
+		*Ansible component/config
+ansible.cfg					inventory
+------------					Managed Hosts
+remote user					-------------
+port ss						[groupName]
+forks						name					
+privileges					ip
+						[group2]
+						name
+						ip	
+
+
+		Manage Nodes using Ansible
+	Ad-Hoc				Playbook
+	-----				--------
+	(imperative)			(Declarative)	
+	CMD				yaml
+	singletask			multi-task
+	
+#ansible [group] -m shell -a "cmd+options"
+      	 [hosts]
+
+
+Master:
+-----
+nmtui
+100
+ssh-keygen
+sudo vi /etc/hosts
+192.168.2.101 node1
+192.168.2.102 node2
+ping node1
+ping node2
+ssh-copy-id amer@node1
+ssh-copy-id amer@node2
+ssh amer@node1
+exit
+ssh amer@node2
+exit
+sudo dnf install python3 ansible -y
+ansible --version
+sudo vi /etc/ansible/ansible.cfg
+
+
+
+[defaults]
+
+inventory      = 
+forks          = 5
+remote+port	=22
+remote_user	=remote
+host_key_checking	= false
+#timeout		= 20
+
+[privilege_escalation]
+become 		= True
+become_method	= sudo
+become_user	= root 
+become_ask_pass	= False
+:x
+sudo vim /etc/ansible/servers.txt
+[production]
+node1
+node2
+
+[test]
+servera
+serverb
+serverc
+
+[database]
+10.0.0.10
+10.0.0.11
+node1
+10.0.0.12
+
+sudo vi /etc/ansible/ansible.cfg
+inventory      = /etc/ansible/servers.txt
+:x
+
+ansible-inventory --graph  <----test config
+
+ansible production -m ping  <----test reachability
+
+ansible production,\!node1 -m ping  <---- and not node 1
+
+ansible production,database,\!10.0.0.12 -m ping
+
+ansible all,\!10.0.0.11 -m ping
+
+ansible all,\!database -m ping
+
+ansible test -m ping
+
+ansible database -m ping
+
+ansible production -m shell -a "mkdir /home/test-ansible"
+
+**********
+ansible production,\!node1 -m shell -a "rm -rf /home/test-ansible"
+node2 | CHANGED | rc=0 >>
+
+CHANGED = اتنفذ , rc = return code (redirection) 0 = success
+					       1 = fail
+**********
+
+ansible production -m shell -a "systemctl restart sshd"
+
+ansible production -m shell -a "apt install ftp -y"  <-- ubuntu
+
+ansible production -m shell -a "dnf install ftp -y"  <-- RHEL9
+
+ansible production -m shell -a "reboot"
+
+****************
+amer@master:~$ ansible node1 -m shell -a "reboot"
+node1 | FAILED! => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "module_stderr": "Shared connection to node1 closed.\r\n",
+    "module_stdout": "sudo: /etc/sudoers is owned by uid 1000, should be 0\r\nsudo: no valid sudoers sources found, quitting\r\nsudo: unable to initialize policy plugin\r\n",
+    "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error",
+    "rc": 1
+}
+هو الامر اشتغل واتنفذ لكن جاب كدا عشان المفروض مستني اجابه علي تنفيذ الامر ومجتش نتيجه ان المكنه اترسترت
+*****************
+
+ansible production -m shell -a "uptime"
+node2 | CHANGED | rc=0 >>
+ 02:22:33 up  1:44,  2 users,  load average: 0.02, 0.03, 0.10
+
+ansible-doc -l | wc -l  <---- modules******
+8000
+ansible-doc -l
+
+
+
+
+
+
+
+
+node1
+----
+nmtui
+101
+sudo apt install openssh-server
+sudo adduser remote
+sudo vi /etc/sudoers  OR su - , visudo /etc/sudoers >> amer    ALL=(ALL)       ALL
+                                  visudo -f /etc/sudoers
+remote ALL=(ALL) NOPASSWD: ALL
+sudo apt update
+sudo apt install python3
+
+
+node2 
+----
+nmtui
+102
+sudo useradd remote
+passwd remote
+sudo vi /etc/sudoers  OR su - , visudo /etc/sudoers >> amer    ALL=(ALL)       ALL
+                                  visudo -f /etc/sudoers
+remote ALL=(ALL) NOPASSWWD: ALL
+su - remote
+sudo dnf update
+sudo dnf install python3
+
+-------------------------------------------------------------
+linux CMD			   arch			Ansible Modules(tools)
+---------    redhat------ubuntu--- linux-suze					---------------
+packages --> dnf/yum/rpm/apt/dpkg/apk/zypper  		package		
+
+users -->adduser/useradd/passwd/usermod/userdel/chage   user
+
+groups --> groupadd/groupmod/groupdel/groupmems		group
+
+files --> touch/mkdir/rm/chown/chgrp/chmod		file
+
+Master:
+-----
+ansible production -m file -a "path=/home/test-ad-hoc state=directory mode=770 owner=gamal group=adm" 
+
+ansible-doc -l							      mode=u+rwx,g+rwx,o-rwx
+
+ansible-doc package		
+ansible-doc user
+ansible-doc group
+ansible-doc file
+
+node1
+----
+ls -l
+
+node2
+----
+ls -l
+
+-------------------
+group devops ,id 2000
+
+amer@master:~$ ansible-doc group
+
+amer@master:~$ ansible node2 -m group -a "name=devops state=present gid=2000"
+
+node2 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": true,
+    "gid": 2000,
+    "name": "devops",
+    "state": "present",
+    "system": false
+}
+
+
+node1:
+-----
+grep devops /etc/groups <-before
+grep devops /etc/groups <-after
+
+node2:
+------
+grep devops /etc/groups <-before
+[amer@node2 ~]$ grep devops /etc/group <-after
+devops:x:2000:
+
+
+----------
+user ali id=1500 shell=bash memebergroups devops,admin
+
+amer@master:~$ ansible-doc group 
+
+amer@master:~$ ansible node2 -m group -a "name=admin state=present gid=2001"
+node2 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": true,
+    "gid": 2001,
+    "name": "admin",
+    "state": "present",
+    "system": false
+}
+
+
+amer@master:~$ ansible node2 -m user -a "name=ali uid=1500 shell=/bin/bash groups=devops,admin append=yes"
+node2 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": true,
+    "comment": "",
+    "create_home": true,
+    "group": 1500,
+    "groups": "devops,admin",
+    "home": "/home/ali",
+    "name": "ali",
+    "shell": "/bin/bash",
+    "state": "present",
+    "system": false,
+    "uid": 1500
+}
+
+
+node1:
+----
+id ali <-before
+id ali <-after
+
+node2:
+----
+[amer@node2 ~]$ id ali <-before
+id: ‘ali’: no such user
+
+[amer@node2 ~]$ id ali <-after
+uid=1500(ali) gid=1500(ali) groups=1500(ali),2000(devops),2001(admin)
+
+----------------------------------
+amer@master:~$ ansible-doc service 
+
+ansible production -m service -a "name=sshd state=restarted enabled=yes"
+
+node1:
+----
+systemctl status sshd
+
+node2:
+----
+systemctl status sshd
+
+
+amer@master:~$ ansible node2 -m service -a "name=crond state=stopped enabled=no"
+
+[amer@node2 ~]$ sudo systemctl status crond
+● crond.service - Command Scheduler
+     Loaded: loaded (/usr/lib/systemd/system/crond.service; enabled; preset: enabl>
+     Active: active (running) since Sun 2024-10-20 12:44:57 EEST; 14h ago
+   Main PID: 796 (crond)
+      Tasks: 2 (limit: 10887)
+     Memory: 1.5M
+        CPU: 525ms
+     CGroup: /system.slice/crond.service
+             ├─ 796 /usr/sbin/crond -n
+             └─5729 /usr/sbin/anacron -s
+
+[amer@node2 ~]$ sudo systemctl status crond <--after
+○ crond.service - Command Scheduler
+     Loaded: loaded (/usr/lib/systemd/system/crond.service; disabled; preset: enab>
+     Active: inactive (dead) since Mon 2024-10-21 03:29:03 EEST; 4s ago
+   Duration: 14h 44min 5.926s
+    Process: 796 ExecStart=/usr/sbin/crond -n $CRONDARGS (code=exited, status=0/SU>
+   Main PID: 796 (code=exited, status=0/SUCCESS)
+      Tasks: 1 (limit: 10887)
+     Memory: 596.0K
+        CPU: 527ms
+     CGroup: /system.slice/crond.service
+             └─5729 /usr/sbin/anacron -s
+
+Oct 21 03:01:01 node2 anacron[5729]: Anacron started on 2024-10-21
+Oct 21 03:01:01 node2 anacron[5729]: Will run job `cron.daily' in 31 min.
+Oct 21 03:01:01 node2 anacron[5729]: Jobs will be executed sequentially
+Oct 21 03:01:01 node2 run-parts[5731]: (/etc/cron.hourly) finished 0anacron
+Oct 21 03:01:01 node2 CROND[5715]: (root) CMDEND (run-parts /etc/cron.hourly)
+Oct 21 03:29:03 node2 systemd[1]: Stopping Command Scheduler...
+Oct 21 03:29:03 node2 crond[796]: (CRON) INFO (Shutting down)
+Oct 21 03:29:03 node2 systemd[1]: crond.service: Deactivated successfully.
+
+-------------------------------------
+amer@master:~$ ansible-doc package 
+
+state=absent
+amer@master:~$ ansible node2 -m package -a "name=ftp state=latest"
+node2 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": true,
+    "msg": "",
+    "rc": 0,
+    "results": [
+        "Installed: ftp-0.17-89.el9.x86_64"
+    ]
+}
+
+
+node1:
+----
+ftp
+
+node2:
+----
+[amer@node2 ~]$ ftp
+ftp> exit
+
+-----------------------
+amer@master:~$ ansible-doc package 
+
+amer@master:~$ ansible node2 -m package -a "name=ftp state=absent"
+node2 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": true,
+    "msg": "",
+    "rc": 0,
+    "results": [
+        "Removed: ftp-0.17-89.el9.x86_64"
+    ]
+}
+
+[amer@node2 ~]$ ftp
+-bash: /usr/bin/ftp: No such file or directory
+-----------------------------------------------------------------------------------
+
+Master device:
+-------------
+
+NetworkManager.conf:
+--------------------
+sudo nano /etc/NetworkManager/NetworkManager.conf
+[ifupdown]
+managed=true
+
+sudo systemctl restart NetworkManager
+
+way1:nmc	
+-----
+sudo nmcli connection add type ethernet ifname ens33 ipv4.method manual ipv4.addresses "192.168.1.100/24" ipv4.gateway "192.168.1.1" ipv4.dns "8.8.8.8"
+
+nmcli device status
+
+nmcli connection show
+nmcli connection up ethernet-ens33
+
+way2:----------worked
+----
+sudo nano /etc/netplan/00-installer-config.yaml
+
+network:
+  version: 2r
+  renderer: NetworkManager
+  ethernets:
+    ens33:
+      dhcp4: no
+      addresses: [192.168.2.100/24]
+      gateway4: 192.168.2.2
+      nameservers:
+        addresses:
+          - 8.8.8.8
+
+sudo netplan apply
+
+sudo systemctl restart NetworkManager
+
+nmcli device status
+
+nmcli connection up ethernet-ens33
+
+ip addr show ens33
+
+
+
+Node2:
+-----
+ip addr show
+ens160
+
+sudo nano /etc/sysconfig/network-scripts/ifcfg-<interface_name>
+sudo nano /etc/sysconfig/network-scripts/ifcfg-ens160
+
+TYPE=Ethernet
+BOOTPROTO=none
+NAME=<interface_name>
+DEVICE=<interface_name>
+ONBOOT=yes
+IPADDR=192.168.1.102
+PREFIX=24
+GATEWAY=192.168.1.1
+DNS1=8.8.8.8
+DNS2=8.8.4.4
+
+sudo systemctl restart NetworkManager
+
+ip addr show
+

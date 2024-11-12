@@ -1,0 +1,49 @@
+# ls -l /boot ----> kernel and initramfs files here
+-rw-------. 1 root root 62118308 Jan 13 19:18 initramfs-0-rescue-ec3687080214421abcc8de6d111cf7a8.img
+-rw-------. 1 root root 21699564 Jan 13 19:20 initramfs-3.10.0-1160.el7.x86_64.img
+-rw-------. 1 root root 13778291 Jan 13 19:23 initramfs-3.10.0-1160.el7.x86_64kdump.img
+-rw-r--r--. 1 root root   320648 Oct 19  2020 symvers-3.10.0-1160.el7.x86_64.gz
+-rw-------. 1 root root  3616707 Oct 19  2020 System.map-3.10.0-1160.el7.x86_64
+-rwxr-xr-x. 1 root root  6769256 Jan 13 19:19 vmlinuz-0-rescue-ec3687080214421abcc8de6d111cf7a8
+-rwxr-xr-x. 1 root root  6769256 Oct 19  2020 vmlinuz-3.10.0-1160.el7.x86_64
+
+# less /boot/grub2/grub.cfg  ----> grub config file , has 2 menu entry 1 for original kernel and other rescue version
+menuentry 'CentOS Linux (3.10.0-1160.el7.x86_64) 7 (Core)' --class centos --class gnu-linux --class gnu --class os --unrestricted $menuentry_id_option 'gnulinux-3.10.0-1160.el7.x86_64-advanced-846ff8cb-bdc9-474d-a7c3-908af2f11840' 
+{
+        load_video
+        set gfxpayload=keep
+        insmod gzio
+        insmod part_msdos
+        insmod xfs
+        set root='hd0,msdos1'
+        if [ x$feature_platform_search_hint = xy ]; then
+          search --no-floppy --fs-uuid --set=root --hint-bios=hd0,msdos1 --hint-efi=hd0,msdos1 --hint-baremetal=ahci0,msdos1 --hint='hd0,msdos1'  3ca06d4b-8ce1-4a08-9100-d9470a79b31a
+        else
+          search --no-floppy --fs-uuid --set=root 3ca06d4b-8ce1-4a08-9100-d9470a79b31a
+        fi
+        linux16 /vmlinuz-3.10.0-1160.el7.x86_64 root=/dev/mapper/centos-root ro crashkernel=auto spectre_v2=retpoline rd.lvm.lv=centos/root rd.lvm.lv=centos/swap rhgb quiet
+        initrd16 /initramfs-3.10.0-1160.el7.x86_64.img
+}
+
+# ls -l /boot ----> every kernel have it own initramfs 
+-rw-------. 1 root root 62118308 Jan 13 19:18 initramfs-0-rescue-ec3687080214421abcc8de6d111cf7a8.img
+-rw-------. 1 root root 21699564 Jan 13 19:20 initramfs-3.10.0-1160.el7.x86_64.img
+
+#less /boot/grub2/grub.cfg
+ hd0,msdos1 ---> means root fs is in hard disk 1 in partition 1
+ * the "Grub" starts before "Kernel" starts and before "kernel" gives him any naming convention
+ * the kernel gives the names to disks (hd0-> first disk , hd1->second , hd2) 
+   and the partitions (sda ,sda1 ,sda2) for MBR so Grub dont see these names
+
+   sda1 --> hd0,msdos1 --> disk 1 , patrition 1
+   sda2 --> hd0,msdos2 --> disk 1 , partition 2
+
+# vim /boot/grub2/grub.cfg
+  if [ x$feature_platform_search_hint = xy ]; then
+          search --no-floppy --fs-uuid --set=root --hint-bios=hd0,msdos1 --hint-efi=hd0,msdos1 
+          --hint-baremetal=ahci0,msdos1 --hint='hd0,msdos1'  3ca06d4b-8ce1-4a08-9100-d9470a79b31a
+        else
+          search --no-floppy --fs-uuid --set=root 3ca06d4b-8ce1-4a08-9100-d9470a79b31a
+        fi
+     
+searches in first disk in first partition that have UUID , and if not found then search his UUID

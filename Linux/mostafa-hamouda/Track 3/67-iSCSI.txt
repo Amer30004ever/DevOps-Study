@@ -1,0 +1,96 @@
+server:
+-------
+#yum search target
+#yum install targetcli
+#yum install net-tools
+#targetcli
+/>
+/>exit
+#lsblk
+sda               8:0    0   20G  0 disk
+sdb               8:16   0   20G  0 disk
+#pvcreate /dev/sdb
+Physical volume "/dev/sdb" successfully created.
+#vgcreate data /dev/sdb
+  Volume group "data" successfully created
+#lvcreate --size=19.9G --name=oracle data
+  Rounding up size to full physical extent 19.90 GiB
+#targetcli
+/> ls
+o- / ............................................................................. [...]
+  o- backstores .................................................................. [...]
+  | o- block ...................................................... [Storage Objects: 0]
+  | o- fileio ..................................................... [Storage Objects: 0]
+  | o- pscsi ...................................................... [Storage Objects: 0]
+  | o- ramdisk .................................................... [Storage Objects: 0]
+  o- iscsi ................................................................ [Targets: 0]
+  o- loopback ............................................................. [Targets: 0]
+  
+/>cd /backstores/block
+/backstores/block> create oracle /dev/data/oracle
+Created block storage object oracle using /dev/data/oracle.
+
+/backstores/block> cd /iscsi
+/iscsi> create iqn.2024-03.com.mostafa.server
+Created target iqn.2024-03.com.mostafa.server.
+Created TPG 1.
+Global pref auto_add_default_portal=true
+Created default portal listening on all IPs (0.0.0.0), port 3260.
+
+/iscsi> ls
+o- iscsi .................................................................. [Targets: 1]
+  o- iqn.2024-03.com.mostafa.server .......................................... [TPGs: 1]
+    o- tpg1 ..................................................... [no-gen-acls, no-auth]
+      o- acls ................................................................ [ACLs: 0]
+      o- luns ................................................................ [LUNs: 0]
+      o- portals .......................................................... [Portals: 1]
+        o- 0.0.0.0:3260 ........................................................... [OK]
+
+        /iscsi> cd iqn.2024-03.com.mostafa.server/tpg1/acls
+/iscsi/iqn.20...ver/tpg1/acls> create iqn.2024-03.com.mostafa.client
+Created Node ACL for iqn.2024-03.com.mostafa.client
+/iscsi/iqn.20...com/tpg1/acls> ls /
+o- / ............................................................................. [...]
+  o- backstores .................................................................. [...]
+  | o- block ...................................................... [Storage Objects: 1]
+  | | o- oracle .................... [/dev/data/oracle (19.9GiB) write-thru deactivated]
+  | |   o- alua ....................................................... [ALUA Groups: 1]
+  | |     o- default_tg_pt_gp ........................... [ALUA state: Active/optimized]
+  | o- fileio ..................................................... [Storage Objects: 0]
+  | o- pscsi ...................................................... [Storage Objects: 0]
+  | o- ramdisk .................................................... [Storage Objects: 0]
+  o- iscsi ................................................................ [Targets: 1]
+  | o- iqn.2024-03.com.mostafa.com ........................................... [TPGs: 1]
+  |   o- tpg1 ................................................... [no-gen-acls, no-auth]
+  |     o- acls .............................................................. [ACLs: 1]
+  |     | o- iqn.2024-03.com.mostafa.client ........................... [Mapped LUNs: 0]
+  |     o- luns .............................................................. [LUNs: 0]
+  |     o- portals ........................................................ [Portals: 1]
+  |       o- 0.0.0.0:3260 ......................................................... [OK]
+  o- loopback ............................................................. [Targets: 0]
+
+/iscsi/iqn.20...ver/tpg1/acls> cd ..
+/iscsi/iqn.20...a.server/tpg1> cd luns
+/iscsi/iqn.20...ver/tpg1/luns> create /backstores/block/oracle
+Created LUN 0.
+Created LUN 0->0 mapping in node ACL iqn.2024-03.com.mostafa.client
+
+/iscsi/iqn.20...ver/tpg1/acls> cd iqn.2024-03.com.mostafa.client/
+/iscsi/iqn.20...ostafa.client> set auth userid=mostafa
+Parameter userid is now 'mostafa'.
+/iscsi/iqn.20...ostafa.client> set auth password=redhat
+Parameter password is now 'redhat'.
+
+# less /etc/target/saveconfig.json
+
+# netstat -ntlp | grep -i 3260
+tcp        0      0 0.0.0.0:3260            0.0.0.0:*               LISTEN      -       
+
+systemctl status firewalld.service
+active (running) enabled;
+
+# firewall-cmd --add-port=3260/tcp --permanent
+success
+
+Client:
+-------

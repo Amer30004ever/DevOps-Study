@@ -1,0 +1,44 @@
+#useradd amer
+#id amer
+#ls /home/
+amer ahmed mostafa
+#passwd amer
+newpassword:
+retype new apassword: (8char)
+#passwd root  ---->  if root
+#groupadd dcadmins
+#groupadd dbadmins
+#groupadd network admins
+#cat /etc/passwd
+user1:x:1004:1001: :/home user1:/bin/bash
+#cat /etc/shadow  <----  x  <---- password (hashed)
+                         x ---> ! = password not set
+networkadmins:!: :user1,ali
+: : ----> group admin is not set
+user1 ---> user and member in group networkadmins
+#cat /etc/group
+ali:x:1001:
+#cat /etc/gshadow
+
+#useradd -g dcadmins user1  ----> change primary group of a user1
+#usermod -G networkadmins user1  ----> make secondary group for user1 if he dont have a secondary group
+#usermod -G dbadmins user1  ----> will change secondary group for user1 from networkadmins to dbadmins
+#usermod -a -G networkadmins  ----> will add a group to secondary group list
+
+any file created in a user have owner ship to this user and to a group
+
+#userdel amer
+#cat /etc/passwd
+amer  ---> XXXX doesn't exist
+#ls /home/
+amer ahmed ali  --->  amer files still exist
+#cat /etc/group
+amer ---> XXXX doesn't exist
+
+if u have a user called ahmed and u didnt specify a primary group for him when
+creating ,when u delete it his primary group will be deleted also
+
+
+
+
+

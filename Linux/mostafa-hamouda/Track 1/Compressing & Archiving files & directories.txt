@@ -1,0 +1,41 @@
+Files:
+-----
+gzip:
+----
+#ls -lR | > myfile
+#ls -lh myfile
+#less myfile
+#gzip myfile
+#ls -lh myfile.gz
+#gunzip myfile.gz
+#ls -lh
+
+bzip2:
+-----
+#bzip2 myfile
+#ls -lh
+#bunzip2 myfile.bz2
+---------------------------
+#time gzip myfile
+#ls -lh myfile.gz
+#gunzip myfile.gz
+#time bzip2 myfile
+
+tar:
+---
+cf هى اختصار ل create file 
+xf فهى اختصار ل extract file 
+مثالـ
+tar cf etc.tar etc/
+tar xf etc.tar etc/
+
+cvf create verbose file  ورينى وانت بتضغط
+----------------------
+tar cvfz etc.tar.gz etc/ 
+
+xvf extract verbose file وريني وانت بتفك الضغط
+----------------------
+tar xvfz etc.tar
+
+ انما بقى لو هتستخدم الـ2bzip هيكون الـsyntax كده 
+tar cvfj etc-backup.tar.bz2 etc/

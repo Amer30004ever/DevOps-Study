@@ -1,0 +1,215 @@
+Quota --> total space that user can write
+Cgroups --> speed used to write
+
+1-must say  you are using Quota while mounting fs
+2-enable Quota
+
+cases:
+-----
+1-have fs created before but Quota wasn't enabled  on it from start so Quota DB wasn't existed
+  so after enabling Quota you must create DB of Quota
+2-Quota existed on the fs and was on and active and the you turned Quota off and users wrote data on the fs
+  so the Quota in not up-to-date so you have to recreate the Quota
+
+ Quota can be applied per user, on a specific user (ali,moustafa) or on awhole group, you can make a group
+ called "data base backup" the one who can write in it are the members of the group "data base backup" so
+ the Quota is applied on all team members so if the directory quota is 50G so any member in this group can
+ write up to 5G and if all the group members wrote, they all together can write up to 50G only.
+ so this can be applied on user or group or on both
+
+while creating quota:
+--------------------
+1-when implementing quota you need to tell per size(5G) or per number of files(5 files) for inodes for
+  not loosing your space
+2-soft limit is the space when reached a warning pops-up & hard limit is the space you have, you can cross
+  the soft limit untill reaching hard limit
+
+#df -h
+/dev/mapper/data-oracle
+#umount /data
+ umount: /data: target is busy
+#lsof /dta  --> shows files opened from this path
+       PID
+ bash  8309
+#kill -9 8309
+#lsof /data  --> nothing opened
+#umount /data
+#cat /etc/fstab  --> nothing automounted for fs i will delete
+#lvs
+ lvswap
+ oracle
+ oracle-snap
+#lvremove /dev/data/lvswap
+#lvremove /dev/data/oracle-snap
+#lvremove /dev/data/oracle
+#lvs
+
+creating Quota:
+--------------
+#vgs
+ data   19.99 g
+#lvcreate --name=oracle --size=5G data
+#lvs
+ oracle data   5g  --> created
+#mkfs.ext4 /dev/data/oracle
+#mount /dev/data/oracle /data
+#mount --> all mounted devices
+ /dev/mapper/data-oracle ...................... -->nothing says Quota is enabled when mounted by default
+#umount /data
+#mount -o usrquota,grpquota /dev/data/oracle /data
+  o:option
+#mount
+ /dev/mapper/data-oracle         (quota,usrquota,grpquota,...) --> settings added
+#umount /data
+#df -h --> not mounted
+#vim /etc/fstab
+ /dev/data/oracle /data ext4 defaults,usrquota,grpquota 0 0
+#mount -a
+#df -h --> now mounted
+#quotaon /data
+  can't find /data/aquota.group
+  can't find /data/aquota.user   both are the DB files
+#quotacheck -cvug /data  --> building the Quota DB
+  -cvug  c:create v:verpose u:user g:group
+ your kernel probably supports journal quota but you are not using it
+#ls /data
+ aquota.group  aquota.user  --> DB files created
+#quotaon /data
+#cat /etc/passwd
+#edquota -u ali --> will edit the quota of user ali
+                            block speace                file numbers
+  file system            blocks   soft   hard   grace  inodes soft hard grace
+/dev/mapper/data-oracle    0   1000000 20000000          0   --> change soft,hard (100000,200000)
+                    0:dont change it
+#edquota -g (group name)
+#repquota --> rep commands
+#ls -ld /data
+ drwxr-xr-x     /data
+#chmod o+w /data
+#su - ali
+ali]#cd /data
+ali data]#touch test
+ali data]#repquota /data
+          cannot open quota file
+root]#repquota /data
+      root
+      ali -- 0 100000 20000 1 --> ali appeared because he started using quota
+         left(-):block limit , right(-):file limit
+ali data]#dd if=/dev/zero of=bigfile1 bs=1M count=50
+root]#repquota /data
+      ali -- 51200  --> ali wrote data = 50M
+ali data]#dd if=/dev/zero of=bigfile2 bs=1M count=70
+          dm-3: warning user block quota exceeded
+           73 MB copied
+root]#repquota /data
+      ali +- 122800
+     (+):crossed limit , (-):didn't cross limit
+ali data]#dd if=/dev/zero of=bigfile3 bs=1M count=100
+           dm-3 write failed: user block limit reached
+            79 MB copied
+root]#repquota /data
+  file system           blocks   soft   hard  grace  inodes
+      ali +-            200000 100000 200000  6days    4
+ali data]#rm bigfile1 bigfile2 bigfile3
+root]#repquota /data
+  file system           blocks   soft   hard  grace  inodes
+      ali          --      0     100000 20000           1
+       (+) -> (-)  ----> because i deleted files , grace -> gone
+root]#edquota -u ali
+  file system            blocks   soft   hard  grace inodes soft hard
+ /dev/mapper/data-oracle    0   1000000 20000000       1      5   8     -->change soft,hard(5,8)
+root]#watch repquota /data
+ali data]#ls
+          test
+ali data]#touch test2
+root]#repquota /data
+  file system            blocks   soft   hard  grace inodes soft hard
+ /dev/mapper/data-oracle    0   1000000 20000000       2      5   8
+ali data]#touch test3
+ali data]#touch test4
+ali data]#touch test5
+ali data]#touch test6
+          dm-3: warning user file quota exceeded
+ali data]#touch test7
+ali data]#touch test8
+ali data]#touch test9
+          dm-3: write failed user limit file reached
+root]#repquota /data
+  file system                 blocks   soft   hard  grace inodes soft hard
+ /dev/mapper/data-oracle  -+    0   1000000 20000000        8      5   8
+root]#cat /etc/group
+      dcadmins   dbadmins
+root]#edquota -g dcadmins
+file system                 blocks   soft   hard  grace inodes soft hard
+/dec/mapper/data-oracle  --   0     250000 350000          8    20   25   ----> change soft,hard(20,25)
+root]#repquota -g /data  --> repquota for group
+ali data]#dd if=/dev/zero of=bigfile3 bs=1M count=100
+          dd: failed to open 'bigfile3': Disk quota exceeded
+root]#repquota /data
+file system                 blocks   soft   hard  grace inodes soft hard
+ /dev/mapper/data-oracle  -+    0   1000000 20000000        8      5   8
+
+root]#repquota -g /data
+file system                 blocks   soft   hard  grace inodes soft hard
+/dec/mapper/data-oracle  --   0     250000 350000          8    20   25  
+group still have quota to write but user dont have quota so u must delete files
+ali data]#rm test test2
+ali data]#dd if=/dev/zero of=bigfile3 bs=1M count=100
+          dm-3: warning user block quota exceeded   --> because quota is 100MB and i wrote them now
+           105 MB copied
+root]#repquota /data
+  file system                blocks   soft     hard    grace  inodes soft hard grace
+ /dev/mapper/data-oracle ++  102400   1000000 20000000 6days    8      5   8   6days
+     (+)(+) --> user crossed soft limit for files and blocks
+root]#repquota -g /data
+file system                  blocks   soft   hard   grace inodes soft hard grace
+/dec/mapper/data-oracle  --  102400  250000 350000           8    20   25  
+#quota -g dcadmins === #repquota -g /data
+#quota -u ali
+ file system                blocks   soft     hard    grace  inodes soft hard grace
+********grace period: is the period from which system starts treating you as if u reached hard limit means after
+                      6 days if u didnt delete files as if u reached hard limit
+********            : grace time starts counting after reaching soft limit
+#edquota -u ali
+                           block grace           inode grace
+/dev/mapper/data-oracle      unset              603971 seconds
+                        change to--> 5minutes   change to-->3minutes
+root]#repquota /data
+file system                  blocks   soft   hard      grace   inodes soft hard grace
+ /dev/mapper/data-oracle  -+  1024   1000000 20000000            7      5   8   00:03
+                                          no grace for block because didnt reach soft limit
+ali data]#dd if=/dev/zero of=bigfile3 bs=1M count=100
+root]#repquota /data
+file system                  blocks   soft   hard      grace   inodes soft hard grace
+ /dev/mapper/data-oracle  -+  1024   1000000 20000000  00:05     7      5   8   00:02 --> grace time decreasing
+root]#repquota /data
+file system                  blocks   soft   hard      grace   inodes soft hard grace
+ /dev/mapper/data-oracle  -+  1024   1000000 20000000  00:00     7      5   8   
+                                        00:00 greace time reached
+ali data]#dd if=/dev/zero of=bigfile3 bs=1M count=5
+          dm-3: write failed, user blockquota exceeded too long
+
+turn off quota:
+--------------
+root]#quotaoff /data
+ali data]#dd if=/dev/zero of=bigfile3 bs=1M count=1000
+          1G copied
+ali data]#du -sh
+          1.1G
+root]#quotaon /data
+root]#repquota /data
+file system                   blocks     soft   hard      grace   inodes soft hard grace
+ ali                      +-  122880   1000000 20000000   00:00     7      5   8   
+*******you wrote file while quota was off so quota didnt see the written files because DB wasn't updated, but
+       before you update the DB the quota must be off or the quota will go down
+root]#quotacheck -vug /data  ---> to update quota
+      quotacheck: Quota for uses is enabled.......so quota check might damage the file please turn quota off
+      or use -f
+root]#quotaoff /data
+root]#quotacheck -vug /data  ---> to update quota
+root]#quotaon /data
+root]#repquota /data
+file system                   blocks     soft   hard      grace   inodes soft hard grace
+ ali                 +-      1146884   1000000 20000000   00:00     7      5   8   
+****blocks used is more than hard limit only in one case that the quota was turned on then turned off then
+    data was written and then quota turned on
