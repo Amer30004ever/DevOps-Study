@@ -1,0 +1,837 @@
+part1:
+-----
+				Git Arch
+	<-----------------------------V---------------------------->
+working tree 			  index 			Repository
+-----------			(stage area)			----------
+(code)		#add		------------	  #commit	(code)
+editable   -------------->	code review	------------->	not-editable
+	   
+	    #rm --cached (new file)
+	   <--------------
+		#restore
+					not recommended
+			#commit -am (bypass add(a), put message(m))
+----------------------------------------------------------------------->
+
+			#restore
+<-----------------------------------------------------------------------
+
+
+part2:
+------
+amer@master:~$ sudo apt install git -y
+
+amer@master:~$ git
+
+start a working area (see also: git help tutorial)
+   clone     Clone a repository into a new directory
+   init      Create an empty Git repository or reinitialize an existing one
+
+work on the current change (see also: git help everyday)
+   add       Add file contents to the index
+   mv        Move or rename a file, a directory, or a symlink
+   restore   Restore working tree files
+   rm        Remove files from the working tree and from the index
+
+examine the history and state (see also: git help revisions)
+   bisect    Use binary search to find the commit that introduced a bug
+   diff      Show changes between commits, commit and working tree, etc
+   grep      Print lines matching a pattern
+   log       Show commit logs
+   show      Show various types of objects
+   status    Show the working tree status
+
+grow, mark and tweak your common history
+   branch    List, create, or delete branches
+   commit    Record changes to the repository
+   merge     Join two or more development histories together
+   rebase    Reapply commits on top of another base tip
+   reset     Reset current HEAD to the specified state
+   switch    Switch branches
+   tag       Create, list, delete or verify a tag object signed with GPG
+
+collaborate (see also: git help workflows)
+   fetch     Download objects and refs from another repository
+   pull      Fetch from and integrate with another repository or a local branch
+   push      Update remote refs along with associated objects
+
+redhat or centos:
+-----------------
+dnf install git
+
+
+amer@master:~$ mkdir git
+amer@master:~$ cd git/
+amer@master:~/git$ mkdir project1
+amer@master:~/git$ cd project1/
+amer@master:~/git/project1$ git init
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint:
+hint:   git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint:   git branch -m <name>
+Initialized empty Git repository in /home/amer/git/project1/.git/
+
+/home/amer/git/project1/.git/ --> hidden folder that save & track any changes happen and if this folder
+deleted it means the repo is deleted
+
+amer@master:~/git/project1$ git config --global user.name "Amer Magdi"
+amer@master:~/git/project1$ git config --global user.email "amer30004ever@hotmail.com"
+
+amer@master:~/git/project1$ git config --global --get-all user.name
+Amer Magdi
+amer@master:~/git/project1$ git config --global --get-all user.email
+amer30004ever@hotmail.com
+
+amer@master:~/git$ git init project2
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint:
+hint:   git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint:   git branch -m <name>
+Initialized empty Git repository in /home/amer/git/project2/.git/
+amer@master:~/git$ ls
+project1  project2
+
+amer@master:~/git/project1$ git status
+On branch master
+
+No commits yet
+
+nothing to commit (create/copy files and use "git add" to track)
+
+amer@master:~/git/project1$ vim file1 <--create
+welcome to version controll system
+:wq
+
+amer@master:~/git/project1$ git status
+On branch master
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)  <------
+        file1
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+amer@master:~/git/project1$ git add file1
+amer@master:~/git/project1$ git status
+On branch master
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)  <-----------
+        new file:   file1
+
+amer@master:~/git/project1$ git rm --cached file1  <-----------new file
+rm 'file1'
+amer@master:~/git/project1$ git status
+On branch master
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        file1
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+amer@master:~/git/project1$ ls
+file1   <--------------------------------file only unstaged not deleted
+
+amer@master:~/git/project1$ vim file1
+welcome to version controll system
+second line <---------------------------------------add
+
+amer@master:~/git/project1$ git status
+On branch master
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        file1
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+amer@master:~/git/project1$ git add file1
+amer@master:~/git/project1$ git status
+On branch master
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+        new file:   file1
+
+amer@master:~/git/project1$ git commit -m "first commit"
+[master (root-commit) ef13d0b] first commit
+ 1 file changed, 2 insertions(+)
+ create mode 100644 file1
+
+amer@master:~/git/project1$ git status
+On branch master
+nothing to commit, working tree clean <--- files you have same as repo
+
+amer@master:~/git/project1$ rm file1
+amer@master:~/git/project1$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)  <-----to be deleted too from repo
+  (use "git restore <file>..." to discard changes in working directory) <---- to retrive file from repo to your local
+        deleted:    file1
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+amer@master:~/git/project1$ ls
+amer@master:~/git/project1$ git restore file1 <----------------------- old file to restore to working tree
+amer@master:~/git/project1$ ls
+file1
+amer@master:~/git/project1$ git status
+On branch master
+nothing to commit, working tree clean
+
+amer@master:~/git/project1$ git add . <------- (.) to add all files
+
+amer@master:~/git/project1$ vim file1
+welcome to version controll system
+second line
+3rd line <--------------------------------------------add
+amer@master:~/git/project1$ git add .
+amer@master:~/git/project1$ git status
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage) <--- because this file not new and already staged before
+        modified:   file1
+
+git restore file1 ---> will restore file1 from repo file1: welcome to version controll system /second line
+
+amer@master:~/git/project1$ git restore --staged file1 <--- will unstage file1:welcome to version controll system/second line/3rd line 
+and no changes in repo
+
+amer@master:~/git/project1$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   file1
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+amer@master:~/git/project1$ vim file1
+welcome to version controll system
+second line
+3rd line
+4th line <--------------------------------------------add
+
+amer@master:~/git/project1$ git add .
+amer@master:~/git/project1$ git commit -m "4th line"
+[master 9abd5ec] 4th line
+ 1 file changed, 2 insertions(+)
+amer@master:~/git/project1$ git status
+On branch master
+nothing to commit, working tree clean
+
+amer@master:~/git/project1$ git log
+commit 9abd5ec370989862b72a5bfa7238b3f76d0c3a48 (HEAD -> master)
+Author: Amer Magdi <amer30004ever@hotmail.com>
+Date:   Wed Nov 6 00:28:10 2024 +0000
+
+    4th line
+
+commit ef13d0baec322a05eda9052e3b544383cc76e755
+Author: Amer Magdi <amer30004ever@hotmail.com>
+Date:   Wed Nov 6 00:05:27 2024 +0000
+
+    first commit
+
+amer@master:~/git/project1$ sudo vi index.html <--create
+<h1>hello to devops</h1>
+amer@master:~/git/project1$ sudo vi file1
+amer@master:~/git/project1$ git add .
+amer@master:~/git/project1$ git status
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   file1
+        new file:   index.html
+
+amer@master:~/git/project1$ git commit -m "added index.html"
+[master 83b7d5d] added index.html
+ 2 files changed, 2 insertions(+)
+ create mode 100644 index.html
+amer@master:~/git/project1$ git status
+On branch master
+nothing to commit, working tree clean
+amer@master:~/git/project1$ ls
+file1  index,html
+amer@master:~/git/project1$ rm file1  index.html
+rm: remove write-protected regular file 'index.html'? y
+amer@master:~/git/project1$ ls
+amer@master:~/git/project1$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        deleted:    file1
+        deleted:    index.html
+
+no changes added to commit (use "git add" and/or "git commit -a")
+amer@master:~/git/project1$ git restore .
+amer@master:~/git/project1$ ls
+file1  index.html
+amer@master:~/git/project1$ git log
+commit 83b7d5d315c90b2e2da3c4e6931b0c6b740bf6ff (HEAD -> master)
+Author: Amer Magdi <amer30004ever@hotmail.com>
+Date:   Wed Nov 6 00:36:31 2024 +0000
+
+    added index.html
+
+commit 9abd5ec370989862b72a5bfa7238b3f76d0c3a48
+Author: Amer Magdi <amer30004ever@hotmail.com>
+Date:   Wed Nov 6 00:28:10 2024 +0000
+
+    4th line
+
+commit ef13d0baec322a05eda9052e3b544383cc76e755
+Author: Amer Magdi <amer30004ever@hotmail.com>
+Date:   Wed Nov 6 00:05:27 2024 +0000
+
+    first commit
+--------------------------------------------------------------------------------------------------
+part3:
+-----
+amer@master:~/git/project1$ vi index.html
+
+<h1>hello to devops</h1>
+<h1>hello to devops</h1> <--------------------------------------------add
+
+amer@master:~/git/project1$ git status
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   index.html
+
+amer@master:~/git/project1$ git commit -am "direct commit"
+[master 37a2462] direct commit
+ 1 file changed, 1 insertions(+)
+ create mode 100644 index.html
+
+amer@master:~/git/project1$ git status
+On branch master
+nothing to commit, working tree clean
+
+amer@master:~/git/project1$ cat index.html
+<h1>hello to devops</h1>
+<h1>hello to devops</h1>
+amer@master:~/git/project1$ rm index.html
+amer@master:~/git/project1$ ls
+file1
+amer@master:~/git/project1$ git restore index.html
+amer@master:~/git/project1$ git status
+On branch master
+nothing to commit, working tree clean
+amer@master:~/git/project1$ ls
+file1  index.html
+amer@master:~/git/project1$ cat index.html
+<h1>hello to devops</h1>
+<h1>hello to devops</h1>
+
+master		\/(head)	    \/(head)
+	c1 --> c2 --> c3 --> c4 --> c2
+
+amer@master:~/git/project1$ git reflog
+37a2462 (HEAD -> master) HEAD@{0}: commit: direct commit
+83b7d5d HEAD@{1}: commit: added index.html
+9abd5ec HEAD@{2}: commit: 4th line
+ef13d0b HEAD@{3}: commit (initial): first commit
+ 
+amer@master:~/git/project1$ git diff 37a2462 9abd5ec
+diff --git a/file1 b/file1
+index 27150a8..e225b7b 100644
+--- a/file1
++++ b/file1
+@@ -2,4 +2,3 @@ welcome to version controll system
+ second line
+ 3rd line
+ 4th line
+ 5th line
+diff --git a/index.html b/index.html
+deleted file mode 100644
+index a4f35c8..0000000
+--- a/index.html
++++ /dev/null
+@@ -1,2 +0,0 @@
+-<h1>hello to devops</h1>
+-<h1>hello to devops</h1>
+
+amer@master:~/git/project1$ cat index.html
+<h1>hello to devops</h1>
+<h1>hello to devops</h1>
+amer@master:~/git/project1$ cat file1
+welcome to version controll system
+second line
+3rd line
+4th line
+5th line
+amer@master:~/git/project1$ git reset 9abd5ec --hard
+HEAD is now at 9abd5ec 4th line
+amer@master:~/git/project1$ ls
+file1
+amer@master:~/git/project1$ cat file1
+welcome to version controll system
+second line
+3rd line
+4th line
+amer@master:~/git/project1$ git reflog
+9abd5ec (HEAD -> master) HEAD@{0}: reset: moving to 9abd5ec  <-----
+37a2462 HEAD@{1}: commit: direct commit
+83b7d5d HEAD@{2}: commit: added index.html
+9abd5ec (HEAD -> master) HEAD@{3}: commit: 4th line  <-----
+ef13d0b HEAD@{4}: commit (initial): first commit
+
+amer@master:~/git/project1$ git reset 37a2462 --hard
+Unstaged changes after reset:
+M       file1
+D       index.html
+amer@master:~/git/project1$ git reflog
+37a2462 (HEAD -> master) HEAD@{0}: reset: moving to 37a2462
+9abd5ec HEAD@{1}: reset: moving to 9abd5ec
+37a2462 (HEAD -> master) HEAD@{2}: commit: direct commit
+83b7d5d HEAD@{3}: commit: added index.html
+9abd5ec HEAD@{4}: commit: 4th line
+ef13d0b HEAD@{5}: commit (initial): first commit
+
+amer@master:~/git/project1$ ls
+file1  index.html
+amer@master:~/git/project1$ cat file1
+welcome to version controll system
+second line
+3rd line
+4th line
+5th line
+amer@master:~/git/project1$ cat index.html
+<h1>hello to devops</h1>
+<h1>hello to devops</h1>
+
+amer@master:~/git/project1$ git branch
+* master
+		branch: test  --> c4 --> c5 --> c6-->
+			     /|\	master	   \|/
+master	c1 --> c2 --> c3 --> c4 ------------------> c6 --> c8
+			     \|/		   /|\
+		branch: new   --> c4 --> c6 --> c7-->
+
+amer@master:~/git/project1$ git branch new
+amer@master:~/git/project1$ git branch test
+amer@master:~/git/project1$ git branch
+* master
+  new
+  test
+
+amer@master:~/git/project1$ git switch test
+Switched to branch 'test'
+amer@master:~/git/project1$ git branch
+  master
+  new
+* test
+
+*********when we create a branch, a copy or files from master branch is take to the new created branch
+
+amer@master:~/git/project1$ vim file2 <-----------create
+this file created from test branch  
+
+amer@master:~/git/project1$ vi index.html
+<h1>hello to devops</h1>
+<h1>hello to devops</h1>
+<h1>this change done from test ranch</h1> <----------add
+
+amer@master:~/git/project1$ ls
+file1  file2  index.html
+amer@master:~/git/project1$ git status
+On branch test
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   index.html
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        file2
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+amer@master:~/git/project1$ git add .
+amer@master:~/git/project1$ git commit -m "from test branch"
+[test 0b606ad] from test branch
+ 2 files changed, 2 insertions(+)
+ create mode 100644 file2
+amer@master:~/git/project1$ ls
+file1  file2  index.html
+amer@master:~/git/project1$ git status
+On branch test
+nothing to commit, working tree clean
+
+amer@master:~/git/project1$ git branch
+  master
+  new
+* test
+amer@master:~/git/project1$ git switch master
+Switched to branch 'master'
+amer@master:~/git/project1$ git branch
+* master
+  new
+  test
+amer@master:~/git/project1$ ls
+file1  index.html
+amer@master:~/git/project1$ cat index.html
+<h1>hello to devops</h1>
+<h1>hello to devops</h1>
+amer@master:~/git/project1$ git switch test
+Switched to branch 'test'
+amer@master:~/git/project1$ ls
+file1  file2  index.html
+amer@master:~/git/project1$ cat index.html
+<h1>hello to devops</h1>
+<h1>hello to devops</h1>
+<h1>this change done from test ranch</h1>
+
+amer@master:~/git/project1$ git switch master
+Switched to branch 'master'
+amer@master:~/git/project1$ ls
+file1  index.html
+amer@master:~/git/project1$ cat index.html
+<h1>hello to devops</h1>
+<h1>hello to devops</h1>
+amer@master:~/git/project1$ git merge test
+Updating 37a2462..0b606ad
+Fast-forward
+ file2      | 1 +
+ index.html | 1 +
+ 2 files changed, 2 insertions(+)
+ create mode 100644 file2
+amer@master:~/git/project1$ ls
+file1  file2  index.html
+amer@master:~/git/project1$ cat index.html
+<h1>hello to devops</h1>
+<h1>hello to devops</h1>
+<h1>this change done from test ranch</h1> <---------- modified
+
+amer@master:~/git/project1$ git branch
+* master
+  new
+  test
+amer@master:~/git/project1$ git branch -d test  <---------- to delete branch *********** important
+Deleted branch test (was 0b606ad).
+
+amer@master:~/git/project1$ git branch
+* master
+  new
+	   <---------- branch test deleted
+
+------------------------------------------------------------------------------------------------------------
+part 2:
+--------
+amer@master:~$ ssh-keygen
+amer@master:~$ cat /home/amer/.ssh/id_rsa.pub
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC2HU14duDFUbviH7VHEj1nEHo68lJtNaNENVTBbphzTtPAmIBpGqva8EjbBJHgnhN6rqS3NqJ8vUE
+AVDH9Kkag30LQE022+RAnvuba6H1XfhvvTpjzP2s0uQbPitM/ysEqAhrIXcSenAni0Q3C6CYXs+SeXNmn37TAh1mq1R58GJdHOHUjuqI0sFv/Hy8
+1Ixo9JSlm+0bW0RQfTe2vpwetCdG2ko8QqDzO3DoV/oX+7epZ9IJZ0oi5GmaoG1ewWKZyRX8Nyu0kiUun5mo9A4SIBVw1NZKsa/VknCAjo/kI1SC
+Bs3NAB0V/CIqWY+6BcMN45/IGc/0CaC5KOXvBLlUyzJwpk6MOl8vMuCN2HG8KDFLmec5xpCV+F2BEuDVrqFtbk/JDavWqoqO2jamx44/EDQDU6Da
+fkK2oodXKPUGoyDwJuoqgd0vNdOw0DPBO2RPMHgxDyip7mRu2+6dTGAwTEhuGPJMZxVast+zBKXY/W3LtzPWul1B5nzowsYjBuS0= amer@maste
+r  <---------copy
+https://github.com/settings/keys > New SSH key
+Add new SSH Key
+title <----- fill
+key <---------paste
+
+amer@master:~/git$ git clone git@github.com:Amer30004ever/devops15.git <----------------clone *********
+Cloning into 'devops15'...
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+Receiving objects: 100% (3/3), done.
+
+amer@master:~/git$ cd devops15/
+amer@master:~/git/devops15$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+amer@master:~/git/devops15$ git branch
+* main
+amer@master:~/git/devops15$ vim file1.txt <-----------create
+this file related from local repo
+amer@master:~/git/devops15$ vim index.html <-----------create 
+<h1>welcome to devops repo</h1>
+amer@master:~/git/devops15$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        file1.txt
+        index.html
+
+nothing added to commit but untracked files present (use "git add" to track)
+amer@master:~/git/devops15$ git add .
+amer@master:~/git/devops15$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        new file:   file1.txt
+        new file:   index.html
+
+amer@master:~/git/devops15$ git commit -m "devops 15 edit from local repo"
+[main 0fc505f] devops 15 edit from local repo
+ 2 files changed, 2 insertions(+)
+ create mode 100644 file1.txt
+ create mode 100644 index.html
+amer@master:~/git/devops15$ git log
+commit 0fc505f31c2fd0107b5c1adfeef386e002f2cd4f (HEAD -> main)
+Author: Amer Magdi <amer30004ever@hotmail.com>
+Date:   Thu Nov 7 14:12:37 2024 +0000
+
+    devops 15 edit from local repo
+
+commit e2aa729774b76d4b46f83071c2fd8b8321bd6833 (origin/main, origin/HEAD)
+Author: Amer30004ever <91853947+Amer30004ever@users.noreply.github.com>
+Date:   Thu Nov 7 16:09:10 2024 +0200
+
+    Initial commit
+
+amer@master:~/git/devops15$ git push origin <----------------------push
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (4/4), 403 bytes | 403.00 KiB/s, done.
+Total 4 (delta 0), reused 0 (delta 0), pack-reused 0
+To github.com:Amer30004ever/devops15.git
+   e2aa729..0fc505f  main -> main
+at github.com
+look for files uploaded
+
+file1.txt
+index.html
+--------------------------------------------------------------------------------------------------------------
+at github.com
+-------------
+edit file1.txt
+this file related from local repo
+this file added from git hub <----------add
+-commit changes
+
+amer@master:~/git/devops15$ git log
+commit 0fc505f31c2fd0107b5c1adfeef386e002f2cd4f (HEAD -> main, origin/main, origin/HEAD)
+Author: Amer Magdi <amer30004ever@hotmail.com>
+Date:   Thu Nov 7 14:12:37 2024 +0000
+
+    devops 15 edit from local repo
+
+commit e2aa729774b76d4b46f83071c2fd8b8321bd6833
+Author: Amer30004ever <91853947+Amer30004ever@users.noreply.github.com>
+Date:   Thu Nov 7 16:09:10 2024 +0200
+
+    Initial commit
+amer@master:~/git/devops15$ ls
+file1.txt  index.html  README.md
+amer@master:~/git/devops15$ cat file1.txt
+this file related from local repo
+
+amer@master:~/git/devops15$ git pull origin <----------------------pull
+remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+Unpacking objects: 100% (3/3), 1012 bytes | 1012.00 KiB/s, done.
+From github.com:Amer30004ever/devops15
+   0fc505f..fb90ded  main       -> origin/main
+Updating 0fc505f..fb90ded
+Fast-forward
+ file1.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+amer@master:~/git/devops15$ cat file1.txt
+this file related from local repo
+this file added from git hub
+amer@master:~/git/devops15$ git log
+commit fb90ded40d86b71320acb3af937ac7aa20b4eb6c (HEAD -> main, origin/main, origin/HEAD)
+Author: Amer30004ever <91853947+Amer30004ever@users.noreply.github.com>
+Date:   Thu Nov 7 16:56:18 2024 +0200
+
+    Update file1.txt
+
+commit 0fc505f31c2fd0107b5c1adfeef386e002f2cd4f
+Author: Amer Magdi <amer30004ever@hotmail.com>
+Date:   Thu Nov 7 14:12:37 2024 +0000
+
+    devops 15 edit from local repo
+
+commit e2aa729774b76d4b46f83071c2fd8b8321bd6833
+Author: Amer30004ever <91853947+Amer30004ever@users.noreply.github.com>
+Date:   Thu Nov 7 16:09:10 2024 +0200
+
+    Initial commit
+---------------------------------------------------------------------------------------------------
+at github.com
+-------------
+create file2
+file2 created from github
+-commit change
+
+amer@master:~/git/devops15$ vim file1.txt
+third line <----------add
+
+amer@master:~/git/devops15$ git add .
+amer@master:~/git/devops15$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   file1.txt
+
+amer@master:~/git/devops15$ git commit -m "add line"
+[main 336c381] add line
+ 1 file changed, 1 insertion(+)
+amer@master:~/git/devops15$ git status
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+amer@master:~/git/devops15$ git push origin
+To github.com:Amer30004ever/devops15.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'github.com:Amer30004ever/devops15.git'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+
+push failed because there are changed made on repo and need to pull first to update local repo before pushing,
+some times pull not work so use "git merge origin/main" <---------------------------**********important
+
+amer@master:~/git/devops15$ git merge origin/main
+Merge made by the 'ort' strategy.
+ file2 | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 file2
+
+amer@master:~/git/devops15$ git push origin
+Enumerating objects: 9, done.
+Counting objects: 100% (8/8), done.
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (5/5), 520 bytes | 260.00 KiB/s, done.
+Total 5 (delta 3), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (3/3), completed with 2 local objects.
+To github.com:Amer30004ever/devops15.git
+   f93c0e4..a558983  main -> main
+---------------------------------------------------
+another retry
+
+from github:
+-----------
+create file3
+
+amer@master:~/git/devops15$ git push origin
+To github.com:Amer30004ever/devops15.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'github.com:Amer30004ever/devops15.git'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+
+amer@master:~/git/devops15$ git pull origin
+remote: Enumerating objects: 4, done.
+remote: Counting objects: 100% (4/4), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 3 (delta 1), reused 0 (delta 0), pack-reused 0 (from 0)
+Unpacking objects: 100% (3/3), 940 bytes | 940.00 KiB/s, done.
+From github.com:Amer30004ever/devops15
+   a558983..3686da2  main       -> origin/main
+Updating a558983..3686da2
+Fast-forward
+ file 3 | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 file 3
+
+amer@master:~/git/devops15$ git add .
+amer@master:~/git/devops15$ git commit -m "4th line"
+[main 88e5884] 4th line
+ 1 file changed, 1 insertion(+)
+
+amer@master:~/git/devops15$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   file1.txt
+
+amer@master:~/git/devops15$ git push origin
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 290 bytes | 290.00 KiB/s, done.
+Total 3 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To github.com:Amer30004ever/devops15.git
+   3686da2..88e5884  main -> main
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
