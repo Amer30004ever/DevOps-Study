@@ -7,3 +7,13 @@
 
 #tf variable files, may include sensitive data
 *.tfvars
+
+terraform.exe
+
+cli .txt
+
+*.lock.*
+
+.gitignore
+
+.$Day1 - Warm-up.drawio.bkp
