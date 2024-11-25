@@ -6,6 +6,7 @@ variable "availability_zone" {}
 variable "env_prefix" {}
 variable "my_ip" {}
 variable "instance_type" {}
+variable my_publick_key_location {}
 
 resource "aws_vpc" "app-vpc" {
   cidr_block = var.cidr_blocks_vpc
@@ -109,6 +110,9 @@ data "aws_ami" "latest-amazon-linux-image" {
   value = data.aws_ami.latest-amazon-linux-image.id #aws_ami_id = "ami-00ec1ed16f4837f2f", compare output with original latest
 }*/
 
+output "ec2_public_ip" {
+  value = aws_instance.app-server.public_ip
+}
 resource "aws_instance" "app-server" {
   ami = data.aws_ami.latest-amazon-linux-image.id
   instance_type = var.instance_type
@@ -120,6 +124,17 @@ resource "aws_instance" "app-server" {
   associate_public_ip_address = true
   #key_name = "ubuntu-key" # key name if created from console
   key_name = aws_key_pair.ssh-key.key_name # key name if created from terraform
+  
+  /*user_data = <<EOF
+            #!/bin/bash
+            sudo yum update -y && sudo yum install -y docker
+            sudo systemctl start docker
+            sudo usermod -aG docker ec2-user
+            docker run -p 8080:80 nginx
+                EOF
+  */
+  user_data = file("entry-script.sh") 
+
   tags = {
     Name = "${var.env_prefix}-server"
   }
@@ -129,5 +144,9 @@ resource "aws_instance" "app-server" {
 
 resource "aws_key_pair" "ssh-key" {
   key_name = "server-key"
-  public_key = file("id_rsa.pub")  #ssh-keygen to generate a key
+  #public_key = "ssh-rsa AAADSalaldASdlDSlASD2LkAS32D5l8kkjsdAL7SDoi6A5SDjl5S4DLKj21SDkj1 asds@gmail.com"
+  #public_key = var.my_publick_key
+  #public_key = file("id_rsa.pub")  #ssh-keygen to generate the key id_rsa.pub
+  public_key = file(var.my_publick_key_location)
+  #public_key = file("C:\\Users\\user\\Desktop\\id_rsa.pub") 
 }
