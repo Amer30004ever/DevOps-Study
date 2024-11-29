@@ -36,3 +36,11 @@ variable "my_publick_key" {
 variable "my_publick_key_location" {
     default = "C:\\Users\\MegaStore\\.ssh\\id_ed25519.pub" #<---this path syntax works too
 } 
+
+variable "transition" {
+  type = list(string)
+}
+
+variable "bucket_name" {
+  type = string
+}

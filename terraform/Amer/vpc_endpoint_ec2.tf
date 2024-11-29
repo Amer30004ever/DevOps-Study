@@ -62,3 +62,14 @@ resource "aws_vpc_endpoint" "ec2" {
 #    - Used with Gateway Load Balancers
 #    - Enables traffic interception through 3rd party appliances
 #    - Use cases: Network security, monitoring, traffic inspection
+
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.us-west-2.s3"
+  vpc_endpoint_type = "Gateway"
+
+  # Route Table IDs associated with the endpoint
+  route_table_ids = [
+    aws_route_table.rt1.id,
+  ]
+}
