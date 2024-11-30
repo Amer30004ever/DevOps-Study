@@ -51,3 +51,42 @@ resource "aws_db_instance" "default" {
     "Owner" = var.tags.Owner
   }
 }
+
+#all attributes
+resource "aws_db_instance" "name" {
+    allocated_storage = 20
+    engine = "postgres"
+    engine_version = "15.3"
+    instance_class = "db.t3.micro"
+    username = "admin"
+    password = "securepassword"
+    skip_final_snapshot = true
+    db_subnet_group_name = aws_db_subnet_group.default.name
+    vpc_security_group_ids = [aws_security_group.rds.id]
+    storage_encrypted = true
+    publicly_accessible = false
+    multi_az = true
+    
+    backup_retention_period = 7
+    backup_window = "00:00-00:30"
+    copy_tags_to_snapshot = true
+    deletion_protection = true
+    
+    enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+    performance_insights_enabled = true
+    
+    performance_insights_retention_period = 7
+    monitoring_interval = 60
+    monitoring_role_arn = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    iam_database_authentication_enabled = true
+    parameter_group_name = "default.postgres15"
+    option_group_name = "default:postgres15"
+    
+    storage_type = "gp2"
+    tags = {
+        Name = "RDS"
+    }
+
+    
+  
+}
