@@ -42,3 +42,23 @@ resource "aws_default_security_group" "default-sg" {
     Name = "${var.env_prefix}-default-sg"
   }
 }
+
+
+#3
+resource "aws_security_group" "ForgTech_sg" {
+    name = "allow-all"
+    vpc_id = aws_vpc.vpc.id
+    ingress {
+        from_port = 5432
+        to_port = 5432
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    tags = var.tags
+}
