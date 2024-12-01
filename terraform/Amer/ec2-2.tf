@@ -46,3 +46,20 @@ resource "aws_instance" "app-server" {
     }
 
 }
+
+#3
+resource "aws_instance" "bastion" {
+  ami           = "ami-0c02fb55956c7d316" # Amazon Linux 2 AMI in us-east-1
+  instance_type = "t3.micro"
+  subnet_id     = aws_subnet.private[0].id
+  associate_public_ip_address = true
+  security_groups = [aws_security_group.rds.id]
+  tags           = local.common_tags
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo yum install -y postgresql",
+      "sudo yum install -y pgadmin4"
+    ]
+  }
+}
