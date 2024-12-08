@@ -32,7 +32,9 @@ Update the kubeconfig: If the IP has changed, update the kubeconfig file with th
 
 Example:
 
-kubectl config set-cluster <CLUSTER_NAME> --server=https://<new_ip>:6443
+		     kubectl config set-cluster <CLUSTER_NAME> --server=https://<new_ip>:6443
+master@master-k8s:~$ kubectl config set-cluster Amer-Cluster --server=https://192.168.2.130:6443
+
 Check Cluster Nodes: If possible, use SSH or console access to verify the status of the node with the IP 192.168.222.161.
 
 Re-initialize (if necessary): If the issue persists, and you're using kubeadm, you might need to reinitialize the cluster or reconfigure the kubeconfig:
