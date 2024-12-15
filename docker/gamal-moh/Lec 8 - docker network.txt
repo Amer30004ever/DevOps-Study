@@ -14,10 +14,11 @@ Commands:
   prune       Remove all unused networks
   rm          Remove one or more networks
 
+# --driver bridge (Default Network Driver)
+amer@strong-man:~$ docker network create mynet1 --subnet 10.10.10.0/24 --gateway 10.10.10.1 --driver bridge
 
-docker network create mynet1 --subnet 10.10.10.0/24 --gateway 10.10.10.1 --driver bridge
-
-docker network create mynet2 --subnet 20.20.20.0/24 --gateway 20.20.20.1 --driver bridge --internal
+# --internal (no internet)
+amer@strong-man:~$ docker network create mynet2 --subnet 20.20.20.0/24 --gateway 20.20.20.1 --driver bridge --internal
 
 amer@strong-man:~$ docker network ls
 NETWORK ID     NAME      DRIVER    SCOPE
@@ -37,11 +38,11 @@ Deleted Networks:
 mynet1
 mynet2
 
-docker run -d --name laba --hostname laba --restart always -p 90:80 --network mynet1 httpd
+amer@strong-man:~$ docker run -d --name laba --hostname laba --restart always -p 90:80 --network mynet1 httpd
 static ip optional(--ip 10.10.10.30)
 
 
-docker run -d --name labb --hostname labb --restart always -p 91:80 --network mynet1 httpd
+amer@strong-man:~$ docker run -d --name labb --hostname labb --restart always -p 91:80 --network mynet1 httpd
 
 $ docker exec -it laba bash
 root@lab1:/usr/local/apache2# apt install iputils-ping net-tools
@@ -73,9 +74,9 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
 *******************************************
 **sudo apt install iputils-ping net-tools**
 *******************************************
-docker inspect laba
+amer@strong-man:~$ docker inspect laba
 
-docker inspect labb
+amer@strong-man:~$ docker inspect labb
 
                     "Gateway": "10.10.10.1",
                     "IPAddress": "10.10.10.3",
@@ -94,16 +95,16 @@ d415130e0c0b34ddb54617eb79041cf314a0ed6fa15d242ccd2f31bee50924bf
 docker run -d --name laby --hostname laby --restart always -p 101:80 --network mynet2 httpd
 02f115ad28c474ee8292268e3b998dec577c6f3200a352421f5815582d2e47f1
 
-docker inspect labx | grep -i ipaddress
+amer@strong-man:~$ docker inspect labx | grep -i ipaddress
             "SecondaryIPAddresses": null,
             "IPAddress": "",
                     "IPAddress": "20.20.20.2",
 
 -i : case sensitive              tail -1 : last line
-docker inspect laby | grep -i ipaddress | tail -1
+amer@strong-man:~$ docker inspect laby | grep -i ipaddress | tail -1
                     "IPAddress": "20.20.20.3",
 
-docker network connect mynet2 laba
+amer@strong-man:~$ docker network connect mynet2 laba
 
 root@lab1:/usr/local/apache2# ping 20.20.20.3
 PING 20.20.20.3 (20.20.20.3) 56(84) bytes of data.

@@ -1,0 +1,1102 @@
+utility with docker to manage my containers but not included inside docker
+
+>docker --version
+
+>docker-compose --version
+
+for a container:
+---------------
+we build image
+>docker build -t my-node-app .
+
+then we create a container
+>docker run --name my-node-app-container -d -p 4000:4000 my-node-app
+
+
+for docker-compose:
+------------------
+i need to create a file called docker-compose.yml
+
+u need to specify a version
+web browser --> seach : docker compose version
+
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	build: .                    ##from docker file
+	volumes: 
+	   - ./src:/app/src:ro
+	ports:
+ 	   -"4000:4000"
+
+>docker-compose --help
+
+>docker-compose up -d
+d: detach (background)
+
+>docker ps
+my-express-app-node-app
+
+>docker-compose down 
+to close container
+
+----------------------------------------------------------------------------------------------
+Environment Variables:
+---------------------
+in:
+--
+development
+production
+testing
+
+port
+
+pass ENV variables through Dockerfile:
+-------------------------------------
+i want to pass the environment variables to the container with Dockerfile + index.js
+
+index.js file:
+-------------
+
+const PORT = 4000;
+now this port is constant
+
+change it to
+
+i will use environment variable to pass to the application the port it will listen to
+const PORT = process.env.PORT || 4000; 
+
+Dockerfile:
+----------
+"ENV key=value"
+
+will be
+
+ENV PORT=4000
+EXPOSE $PORT
+
+pass ENV variables through cli:
+------------------------------
+i can use flag in the command to pass environment variable to the container
+
+> docker run --help
+-e, --env list   set environment variables
+
+>docker run --name my-node-app-container -v ${pwd}/src:/app/src:ro --env PORT=4000 --env NODE_ENV=development -d -p 4000:4000 my-node-app
+
+>docker ps
+my-node-app
+
+>docker exec -it my-node-app-container bash
+     /app# printenv
+
+YARN_VERSION=1.22.19
+HOSTNAME=943b39717184
+NODE_ENV=development ----------> environment variables i passed inside container and my app can use it normally
+PWD=/app
+HOME=/root
+PORT=4000 ---------------> environment variables i passed inside container and my app can use it normally
+NODE_VERSION=14.19.3
+TERM=xterm
+SHLVL=1
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+_=/usr/bin/printenv
+
+there is some environment variables i passed & other environment variables are by default inside container and mt app can use it normally
+
+or through a file .env that i will set its destination in the cli
+
+.env file:
+----------
+PORT=4000
+NODE_ENV=development
+DB_HOST=12345
+
+>docker run --name my-node-app-container -v ${pwd}/src:/app/src:ro --env-file ./.env -d -p 4000:4000 my-node-app
+
+>docker exec -it my-node-app-container bash
+     /app# printenv
+
+YARN_VERSION=1.22.19
+DB_HOST=12345  ----------> environment variables i passed inside container and my app can use it normally
+HOSTNAME=943b39717184
+NODE_ENV=development ----------> environment variables i passed inside container and my app can use it normally
+PWD=/app
+HOME=/root
+PORT=4000 ---------------> environment variables i passed inside container and my app can use it normally
+NODE_VERSION=14.19.3
+TERM=xterm
+SHLVL=1
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+_=/usr/bin/printenv
+
+Docker-compose.yml:
+------------------
+docker-compose environment list:
+-------------------------------
+
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	build: .                    ##from docker file
+	volumes: 
+	   - ./src:/app/src:ro
+	ports:
+ 	   -"4000:4000"
+	environment:
+	   - PORT=4000
+	   - NODE_ENV=production
+
+>docker-compose up -d
+
+>docker exec -it express-node-app-container bash
+/app# printenv
+
+YARN_VERSION=1.22.19
+HOSTNAME=943b39717184
+NODE_ENV=production ----------> environment variables i passed inside container and my app can use it normally
+PWD=/app
+HOME=/root
+PORT=4000 ---------------> environment variables i passed inside container and my app can use it normally
+NODE_VERSION=14.19.3
+TERM=xterm
+SHLVL=1
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+_=/usr/bin/printenv
+
+>docker-compose down
+
+docker-compose .env file:
+------------------------
+.env file:
+----------
+PORT=4000
+NODE_ENV=development
+DB_HOST=12345
+DB_PASSWORD=password
+
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	build: .                    ##from docker file
+	volumes: 
+	   - ./src:/app/src:ro  ##bind mount
+	ports:
+ 	   -"4000:4000"
+	env_file:
+	   - ./.env
+
+>docker-compose up -d
+
+>docker exec -it express-node-app-container bash
+/app# printenv
+
+YARN_VERSION=1.22.19
+DB_HOST=12345 ----------> environment variables i passed inside container and my app can use it normally
+HOSTNAME=943b39717184
+NODE_ENV=development ----------> environment variables i passed inside container and my app can use it normally
+PWD=/app
+HOME=/root
+DB_PASSWORD=password ----------> environment variables i passed inside container and my app can use it normally
+PORT=4000 ---------------> environment variables i passed inside container and my app can use it normally
+NODE_VERSION=14.19.3
+TERM=xterm
+SHLVL=1
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+_=/usr/bin/printenv
+
+> docker-compose down
+
+----------------------------------------------------------------------------------------------------------
+manage my application in some environments:
+------------------------------------------
+you have to create a docker-compose file for each environment like : staging ,production ,testing
+
+we will suppose we have 2 environments development and production and we will create 2 docker-compose files
+for them because my application will have different setup and setting based on your environment
+
+refrence: docker-compose-ref.yml
+--------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	build: .                    ##from docker file
+	volumes: 
+	   - ./src:/app/src:ro
+	ports:
+ 	   -"4000:4000"
+	env_file:
+	   - ./.env
+
+development: docker-compose.dev.yml
+-----------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	build: .                    ##from docker file
+	volumes: 
+	   - ./src:/app/src:ro
+	ports:
+ 	   -"4000:4000"
+	environment:
+	   - NODE_ENV=development
+
+production: docker-compose.prod.yml
+----------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	build: .                    ##from docker file
+	ports:
+ 	   -"4000:4000"
+	environment:
+	   - NODE_ENV=production
+	env_file:
+	   - ./.env
+
+.env file:
+----------
+PORT=4000
+DB_HOST=12345
+DB_PASSWORD=password
+
+for docker-compose.dev.yml container:
+----======================-----------
+> docker-compose -f docker-compose.dev.yml up -d 
+-f: from file [filename.yml]
+
+> docker ps
+my-express-app_node-app
+
+web browser ---> localhost:4000
+Hello Tresmerge! hello
+running
+
+> docker exec -it my-node-app-container bash
+     /app# printenv
+
+YARN_VERSION=1.22.19
+DB_HOST=12345 ----------> environment variables i passed inside container and my app can use it normally
+HOSTNAME=943b39717184
+NODE_ENV=development ----------> environment variables i passed inside container and my app can use it normally
+PWD=/app
+HOME=/root
+DB_PASSWORD=password ----------> environment variables i passed inside container and my app can use it normally
+PORT=4000 ---------------> environment variables i passed inside container and my app can use it normally
+NODE_VERSION=14.19.3
+TERM=xterm
+SHLVL=1
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+_=/usr/bin/printenv
+
+     /app# exit
+
+and change in index.js file:
+---------------------------
+'<h1>Hello Tresmerge! dev</h1>'
+
+web browser ---> localhost:4000
+Hello Tresmerge! dev
+changed
+
+> docker-compose -f docker-compose.dev.yml down
+
+for docker-compose.prod.yml container:
+----=======================----------
+
+>docker-compose -f docker-compose.prod.yml up -d
+
+> docker ps
+my-express-app_node-app
+
+> docker exec -it my-node-app-container bash
+     /app# printenv
+
+YARN_VERSION=1.22.19
+DB_HOST=12345 ----------> environment variables i passed inside container and my app can use it normally
+HOSTNAME=943b39717184
+NODE_ENV=production ----------> environment variables i passed inside container and my app can use it normally
+PWD=/app
+HOME=/root
+DB_PASSWORD=password ----------> environment variables i passed inside container and my app can use it normally
+PORT=4000 ---------------> environment variables i passed inside container and my app can use it normally
+NODE_VERSION=14.19.3
+TERM=xterm
+SHLVL=1
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+_=/usr/bin/printenv
+
+     /app# exit
+
+web browser ---> localhost:4000
+Hello Tresmerge! hello
+
+'hello' still exist because in "docker-compose.prod.yml" i removed the bind mount so any change i will make
+in "idex.js" will not be made because i didnt make the sync
+
+>docker-compose -f docker-compose.prod.yml down
+--------------------------------------------------------
+--------------------------------------------------------
+mainly the 2 files docker-compose.dev.yml , docker-compose.prod.yml the same except for binding for volumes that
+i removed and the environment is development for "dev.yml" and the environment is production for "prod.yml" ,
+but i dont need to repeat same things for each of them and if i will change something in file of them i must 
+change the other file so i can create file "docker-compose.yml" and will have the common things and the docker-compose
+for each environment will have the setting for this environment 
+
+docker-compose.yml:
+------------------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	build: .                    ##from docker file
+	ports:
+ 	   -"4000:4000"
+	env_file:
+	   - ./.env
+
+development: docker-compose.dev.yml
+-----------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	volumes: 
+	   - ./src:/app/src:ro
+	environment:
+	   - NODE_ENV=development
+
+production: docker-compose.prod.yml
+----------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	environment:
+	   - NODE_ENV=production
+
+for docker-compose.dev.yml container:
+----======================-----------
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+and change in index.js file:
+---------------------------
+'<h1>Hello Tresmerge! dev</h1>'
+
+web browser ---> localhost:4000
+Hello Tresmerge! dev
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
+
+for docker-compose.prod.yml container:
+----=======================----------
+>docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+web browser ---> localhost:4000
+'<h1>Hello Tresmerge! hello</h1>'
+
+because the last image i build had 'hello'
+so let's build new image
+
+>docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
+
+>docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+--build: to build the image then run the container
+
+web browser ---> localhost:4000
+Hello Tresmerge! dev
+
+and change in index.js file:
+---------------------------
+'<h1>Hello Tresmerge! prod</h1>'
+
+web browser ---> localhost:4000
+Hello Tresmerge! dev
+
+'prod' not applied because i removed 'bind-mount' from "docker-compose.prod.yml"
+
+> docker exec -it my-node-app-container bash
+     /app# ls
+docker-compose-ref.yml  docker-compose.prod.yml  node_modules       package.json
+docker-compose.dev.yml  docker-compose.yml       package-lock.json  src
+
+i dont needd all docker-compose files to be copied in the container so i will add 'docker-compose*' to ".dockerignore"
+file
+.dockerignore:
+-------------
+/node_modules
+Dockerfile
+.env
+docker-compose*
+
+     /app# cd node_modules
+     /app/node_modules# ls  ---> all my packages in node_modules folder
+	nodemon
+
+my app is running in 'production' environment and when i navigate 'localhost:4000' changes not applied but 'nodemon' 
+installed inside container because we splitted "docker-compose" file based on my environment but in all the 
+environments it will execute the line in file of "docker-compose" that is "build: ." that will build image from "Dockerfile" and in my "Dockerfile" 
+i make 'RUN npm install' that will install all dependencies ;development dependencies and production dependencies regardless what environment you 
+are in and run the command 'CMD ["npm", "run", "star-dev"]' that runs command from "package.json" file that is '"start-dev": "nodemon src/index.js"'
+that installs 'nodemon' package in the container
+
+==================================================================================================================================================
+Multi-Stage Dockerfile
+======================
+The "docker-compose" file is a short-cut for the command i execute in the cli to build the docker container from the image specified in Dockerfile
+ but the "Dockerfile" is the details of the app and the dependencies and the packages,...  of the image i will build 
+
+i can make 2 docker files ,1 for each invironment and this is not wrong but i will make 1 docker file to solve the problem of diff. invironment
+
+i will take 'build: .' from services: > node-app: in "docker-compose.yml" file and put it in the 2 docker-compose production files docker-compose.dev.yml 
+,docker-compose.prod.yml
+
+Dockerfile:
+----------
+FROM node:14
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 4000
+
+CMD ["npm", "run", "start-dev"]
+
+docker-compose.yml:
+------------------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	ports:
+ 	   -"4000:4000"
+	env_file:
+	   - ./.env
+
+development: docker-compose.dev.yml
+-----------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	build: ./Dockerfile.dev
+	volumes: 
+	   - ./src:/app/src:ro
+	environment:
+	   - NODE_ENV=development
+
+production: docker-compose.prod.yml
+----------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	build: ./Dockerfile.prod
+	environment:
+	   - NODE_ENV=production
+
+--------------------------------------------------------------------------------------------------
+development: docker-compose.dev.yml
+-----------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	build:
+	  context: .
+	  args:
+	    - NODE_ENV=development
+	volumes: 
+	   - ./src:/app/src:ro
+	environment:
+	   - NODE_ENV=development
+	command: npm run start-dev
+
+production: docker-compose.prod.yml
+----------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	build:
+	  context: .
+	  args:
+	    - NODE_ENV=production
+	environment:
+	   - NODE_ENV=production
+	command: npm start
+
+Dockerfile:
+----------
+FROM node:14
+
+WORKDIR /app
+
+COPY package.json .
+
+ARG NODE_ENV  ##argument
+
+RUN if ["$NODE_ENV" = "production"]; \            ## \ to continue the command in nexr libe
+	then npm install --only=production; \
+	else npm install; \
+	fi				##fi to close the condition
+##check the NODE_ENV environment value if "production" then make npm install but for production dependencies only 
+##else make npm install
+
+COPY . .
+
+EXPOSE 4000
+
+CMD ["npm", "run", "start-dev"]
+
+docker-compose.yml:
+------------------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	ports:
+ 	   -"4000:4000"
+	env_file:
+	   - ./.env
+
+for docker-compose.dev.yml container:
+----=======================----------
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+
+>docker ps
+express-node-app-container 
+
+>docker exec -it express-node-app-container build
+	/app# ls
+node_modules package-lock.json package.json src
+
+no Dockerfile , docker-compose* files because i added them to ".dockerignore" file
+
+.dockerignore:
+-------------
+/node_modules
+Dockerfile
+.env
+docker-compose*
+
+	/app# cd node_modules
+	/app/node_modules: ls
+nodemon
+
+	/app/node_modules: ls -d node*  ##to search for files start with node
+nodemon
+
+>docker logs express-node-app-container
+[nodemon] 2.0.16
+
+working with nodemon
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
+
+for docker-compose.prod.yml container:
+----=======================----------
+>docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+
+>docker exe -it express-node-app-container build
+	/app# cd node_modules
+	/app/node_modules: ls
+	/app/node_modules: ls -d node*  ##to search for files start with node == "nodemon"
+       No such file
+
+>docker logs express-node-app-container
+
+app is running without "nodemon"
+
+>docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
+
+------------------------------------------------------------------------------------------------------
+Docker file as multi-stage environment:
+======================================
+
+Dockerfile:
+----------
+FROM node:14 as base
+
+
+FROM base as development
+
+WORKDIR /app
+COPY package.json .
+RUN npm install
+COPY . .
+EXPOSE 4000
+CMD ["npm", "run", "start-dev"]
+
+FROM base as production
+
+WORKDIR /app
+COPY package.json .
+RUN npm install --only=production
+COPY . .
+EXPOSE 4000
+CMD ["npm", "start"]
+
+development: docker-compose.dev.yml
+-----------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	build:
+	  context: .
+	  target: development
+	volumes: 
+	   - ./src:/app/src:ro
+	environment:
+	   - NODE_ENV=development
+	command: npm run start-dev
+
+production: docker-compose.prod.yml
+----------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	build:
+	  context: .
+	  target: production
+	environment:
+	   - NODE_ENV=production
+	command: npm start
+
+docker-compose.yml:
+------------------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	ports:
+ 	   -"4000:4000"
+	env_file:
+	   - ./.env
+
+for docker-compose.prod.yml container:
+----=======================----------
+>docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+
+>docker logs express-node-app-container
+	without nodemon
+
+>docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
+
+for docker-compose.dev.yml container:
+----=======================----------
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+
+>docker logs express-node-app-container
+[nodemon]
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
+
+===================================================================================================================================================
+Docker with MongaDB & NodeJS:
+============================
+web browser >> dockerhub >> search mongo >> official img >> copy lines under 'services' ,mongo: and paster it in "docker-compose" file
+
+docker-compose.yml:
+------------------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	ports:
+ 	   -"4000:4000"
+	env_file:
+	   - ./.env
+    mongo:
+	image: mongo
+	restart: always
+	environment:
+	   MONGO_INITDB_ROOT_USERNAME: root
+	   MONGO_INITDB_ROOT_PASSWORD: example
+
+for docker-compose.dev.yml container:
+----=======================----------
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+
+>docker ps
+my-express-app_mongo_1  ##the continer name auto generated from -- my-express-app : is the folder name ,mongo : name of the service
+express-node-app-container
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
+----------------------------------------------------------------------------------------------------
+
+web browser >> seacrch google > mongoose >> copy
+
+> npm i mongoose
+
+index.js:
+--------
+const express = require('express');
+const mongoose = require('mongoose');
+
+const PORT = process.env.PORT || 4000;
+const app = express();
+
+//connect db
+const DB_USER = 'root';
+const DB_PASSWORD = 'example';
+const DB_PORT = 27017;
+
+const URI = 'mongodb://${DB_USER}:${DB_PASSWORD}@host:${DB_PORT}';
+mongoose
+  .connect(URI)
+  .then(() => console.log('connected to db...'))
+  .catch((err) => console.log('failed to connect to db', err));
+
+app.get('/', (req, res) => res.send('<h1>Hello Tresmerge! dev</h1>'));
+
+app.listen(PORT, () => console.log(`app is up and running on port: ${PORT}`));
+
+for docker-compose.dev.yml container:
+----=======================----------
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+
+>>docker ps
+my-express-app_mongo_1       ##the continer name auto generated from -- my-express-app : is the folder name ,mongo : name of the service
+express-node-app-container
+
+>docker logs express-node-app-container -f 
+-f: to follow -> logs will remain opened and any update will show up
+
+>docker inspect my-express-app_mongo_1   ##to inpect a container
+"Networks": {
+	"IPAddress": "172.27.0.2"
+}
+
+index.js: add and edit
+--------
+const DB_HOST = '172.27.0.2'  ##add
+
+const URI = 'mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}';  ##edit host, add ${DB_HOST}
+
+after saving the index.js file the log will show up 'connected to db...' 
+
+>docker network ls
+bridge
+host
+my-express-app_default
+
+>docker network inspect my-express-app_default   ##to inspect a network
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
+
+---------------
+
+docker can server the ip address throught the service name 'mongo'
+
+index.js: edit
+--------
+const DB_HOST = 'mongo' ##edit
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+
+>docker logs express-node-app-container -f 
+connected to db...
+
+>docker exec -it my-express-app_mongo_1 bash
+	#mogo -u root -p example
+		>show dbs;
+		admin	0.00GB
+		config  0.00GB
+		local   0.00GB
+		
+		>use testDB
+		switched to db testDB
+
+		>db.books.insert({ title: "book 1"})
+		writeResult({nInserted : 1})
+
+		>db.books.find()
+ 		{"_id" : ObjectId("a56s4ds5d4as5da1sd65"), "title" : "book 1" }
+
+		>exit
+	#exit
+
+insted of logging to the container and then logging to db, i can login to db directly executing the db logging command 
+directly insted of 'bash'
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml mongo -u root -p example
+								------------------------
+		>show dbs;
+		admin	0.00GB
+		config  0.00GB
+		local   0.00GB
+		testDB  0.00GB
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml mongo -u root -p example
+								------------------------
+		>show dbs;
+		admin	0.00GB
+		config  0.00GB
+		local   0.00GB
+
+testDB was deleted because i restared the container and the container is a process running in the memory so it will be deleted as i restart the container
+so this db must be set to be stored in the hard drive
+
+=======================================================================================================================================
+
+Docker with Mongo-Express:
+=========================
+web browser >> dockerhub >> search mongo >> official img >> search down the page 'Where to Store Data'
+
+1.create adata directory on a suitable volumeon your host system e.g /my/own/datadir
+2-start your mongo container like this:
+	$docker run --name some-mongo -v /my/own/datadir:/data/db -d mongo
+
+so when you run the machine it will get the data from local directory /my/own/datadir to the machine directory /data/db
+
+>docker ps
+my-express-app_mongo_1  
+express-node-app-container
+
+>docker exec -it my-express-app_mongo_1 bash
+	# ls
+	data
+
+	#cd data
+	/data# ls
+	db
+
+so '/data/db' is the sortage of mongo container
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
+
+----------------------------
+> docker volume ls  
+
+> docker volume rm [volume name]
+
+> docker volume prune  ##will delete all unused volumes from log time
+-----------------------------
+
+docker-compose.yml:
+------------------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	ports:
+ 	   -"4000:4000"
+	env_file:
+	   - ./.env
+    mongo:
+	image: mongo
+	restart: always
+	volumes:
+	  - mongo-db:/data/db  ##anonymus volume not blind volume e.g './app:/data/db' which is from a destintaion
+	environment:
+	   MONGO_INITDB_ROOT_USERNAME: root
+	   MONGO_INITDB_ROOT_PASSWORD: example
+	volume:
+	  mongo-db:
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+>docker ps
+my-express-app_mongo_1  
+express-node-app-container
+
+> docker volume ls  
+my-express-app_mongo-db  ##the volume name auto generated from -- my-express-app : is the folder name ,mongo-db : the volume i named
+
+>docker exec -it my-express-app_mongo_1 mongo -u root -p example
+					------------------------
+		> show dbs;
+ 		 admin	0.00GB
+		 config  0.00GB
+		 local   0.00GB
+
+		> use testDB
+		 switched to db testDB
+
+		>db.books.insert({ title: "book 1"})
+		writeResult({nInserted : 1})
+
+		>db.books.find()
+ 		{"_id" : ObjectId("a56s4ds5d4as5da1sd65"), "title" : "book 1" }
+
+		>exit
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
+
+> docker volume ls  
+my-express-app_mongo-db  ##volume still exist
+
+>docker exec -it my-express-app_mongo_1 mongo -u root -p example
+					------------------------
+		>show dbs;
+		admin	0.00GB
+		config  0.00GB
+		local   0.00GB
+		testDB  0.00GB  ##testDB exists because its now stored on hard drive
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
+
+you stop the container but the volume exists
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml down -v ##not suggested in a real DB
+-v: if u want to delete the volume after stopping the container
+------------------------------------------------------------------------------------------------------------
+mongo-express:
+=============
+web browser >> dockerhub >> search mongo >> official img >> copy lines under 'services' ,mongo-express: and paste 
+it in "docker-compose" file
+
+docker-compose.yml:
+------------------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	ports:
+ 	   -"4000:4000"
+	env_file:
+	   - ./.env
+    mongo:
+	image: mongo
+	restart: always
+	volumes:
+	  - mongo-db:/data/db  ##anonymus volume not blind volume e.g './app:/data/db' which is from a destintaion
+	environment:
+	   MONGO_INITDB_ROOT_USERNAME: root
+	   MONGO_INITDB_ROOT_PASSWORD: example
+
+    mongo-express:
+	image: mongo-express
+	restart: always
+	ports:
+	  - 8081:8081   #mongo-express is an app like node-app but with GUI so it must expose port to talk with and access the app
+	environment:
+	  ME_CONFIG_MONGODB_ADMINUSERNAME: root
+	  ME_CONFIG_MONGODB_ADMINPASSWORD: example
+	  ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/ ##mongo-express passes the URL as environment variable
+
+    volume:
+	mongo-db:
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+
+web browser ---> localhost:8081
+
+=============================================================================================================================
+
+Docker with Redis:
+=================
+
+web browser ---> redis.io  ##redis is an open source in memory data store used as a database, cache, streaming engine and message broker
+
+Use cases"
+--------
+1-Real-time data store  ##to make a real-time app
+2-Caching & session storage  ##it stores its data in memory, so accessing data from memory will be faster than accessing data from hard drive
+3-streaming & messaging 
+
+web browser ---> dockerhub >> search 'redis' >> official package
+
+if u didnt find its instructions in docker-compose file, u will at least find how to run its container
+
+docker-compose.yml:
+------------------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	ports:
+ 	   -"4000:4000"
+	env_file:
+	   - ./.env
+    mongo:
+	image: mongo
+	restart: always
+	volumes:
+	  - mongo-db:/data/db  ##anonymus volume not blind volume e.g './app:/data/db' which is from a destintaion
+	environment:
+	   MONGO_INITDB_ROOT_USERNAME: root
+	   MONGO_INITDB_ROOT_PASSWORD: example
+
+    mongo-express:
+	image: mongo-express
+	restart: always
+	ports:
+	  - 8081:8081   #mongo-express is an app like node-app but with GUI so it must expose port to talk with and access the app
+	environment:
+	  ME_CONFIG_MONGODB_ADMINUSERNAME: root
+	  ME_CONFIG_MONGODB_ADMINPASSWORD: example
+	  ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/ ##mongo-express passes the URL as environment variable
+
+    redis:
+	image: redis
+
+    volume:
+	mongo-db:
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+>docker ps
+my-express-app_mongo_1
+my-express-app_mongo-express_1  
+my-express-app_redis_1
+express-node-app-container
+
+the containers in docker-compose file dont run in the order specified in the file, so if the app container runs before the 
+container of the data base, so when the app connects to the database will fail because data base didnt run, so if u want to 
+gurantee an order for containers u need to make 'depends on'
+
+docker-compose.yml:
+------------------
+version: "3"
+services:                           ##we need to define services or containers
+    node-app:
+	container_name: express-node-app-container
+	ports:
+ 	   -"4000:4000"
+	env_file:
+	   - ./.env
+	depends_on:
+	   -mongo
+    mongo:
+	image: mongo
+	restart: always
+	volumes:
+	  - mongo-db:/data/db  ##anonymus volume not blind volume e.g './app:/data/db' which is from a destintaion
+	environment:
+	   MONGO_INITDB_ROOT_USERNAME: root
+	   MONGO_INITDB_ROOT_PASSWORD: example
+
+    mongo-express:
+	image: mongo-express
+	restart: always
+	ports:
+	  - 8081:8081   #mongo-express is an app like node-app but with GUI so it must expose port to talk with and access the app
+	environment:
+	  ME_CONFIG_MONGODB_ADMINUSERNAME: root
+	  ME_CONFIG_MONGODB_ADMINPASSWORD: example
+	  ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/ ##mongo-express passes the URL as environment variable
+	depends_on:
+	   -mongo
+
+    redis:
+	image: redis
+
+    volume:
+	mongo-db:
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
+
+>docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+-------------------
+web browser ---> redis nodejs
+
