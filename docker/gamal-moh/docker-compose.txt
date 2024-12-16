@@ -41,6 +41,9 @@ my-express-app-node-app
 >docker-compose down 
 to close container
 
+>docker-compose up -d --build
+to build image and run the compose
+
 ----------------------------------------------------------------------------------------------
 Environment Variables:
 ---------------------
