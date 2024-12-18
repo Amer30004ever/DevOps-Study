@@ -1,3 +1,12 @@
+Learn Linux with Keroles 
+1.58K subscribers
+
+https://www.youtube.com/@learnlinuxwithkeroles
+
+01-Bash Scripting "Intro"
+=========================
+02-Variables and Control Operators
+==================================
 amer@amer:~$ env
 
 SHELL=/bin/bash
@@ -7,7 +16,20 @@ XDG_SESSION_TYPE=tty
 MOTD_SHOWN=pam
 HOME=/home/amer
 LANG=en_US.UTF-8
-LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
+LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=3
+7;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz
+=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01
+;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2
+=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;3
+1:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.w
+im=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.b
+mp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=
+01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01
+;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;3
+5:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.d
+l=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;
+36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:
+*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
 SSH_CONNECTION=192.168.2.1 52172 192.168.2.132 22
 LESSCLOSE=/usr/bin/lesspipe %s %s
 XDG_SESSION_CLASS=user
@@ -119,7 +141,20 @@ XDG_SESSION_TYPE=tty
 MOTD_SHOWN=pam
 HOME=/home/amer
 LANG=en_US.UTF-8
-LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
+LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=3
+7;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz
+=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01
+;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2
+=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;3
+1:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.w
+im=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.b
+mp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=
+01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01
+;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;3
+5:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.d
+l=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;
+36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:
+*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
 SSH_CONNECTION=192.168.2.1 52406 192.168.2.132 22
 LESSCLOSE=/usr/bin/lesspipe %s %s
 XDG_SESSION_CLASS=user
@@ -167,4 +202,701 @@ red
 
 #every open bash is opened from the previous bash.. 
 #current bash(child) can use old bashes(parent) variables --but-- old bashes(parent) cant use variables of new bashes(child)
-------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
+
+amer@amer:~$ declare --help
+declare: declare [-aAfFgiIlnrtux] [-p] [name[=value] ...]
+    Set variable values and attributes.
+
+    Declare variables and give them attributes.  If no NAMEs are given,
+    display the attributes and values of all variables.
+
+    Options:
+      -f        restrict action or display to function names and definitions
+      -F        restrict display to function names only (plus line number and
+                source file when debugging)
+      -g        create global variables when used in a shell function; otherwise
+                ignored
+      -I        if creating a local variable, inherit the attributes and value
+                of a variable with the same name at a previous scope
+      -p        display the attributes and value of each NAME
+
+    Options which set attributes:
+      -a        to make NAMEs indexed arrays (if supported)
+      -A        to make NAMEs associative arrays (if supported)
+      -i        to make NAMEs have the `integer' attribute
+      -l        to convert the value of each NAME to lower case on assignment
+      -n        make NAME a reference to the variable named by its value
+      -r        to make NAMEs readonly
+      -t        to make NAMEs have the `trace' attribute
+      -u        to convert the value of each NAME to upper case on assignment
+      -x        to make NAMEs export
+
+    Using `+' instead of `-' turns off the given attribute.
+
+    Variables with the integer attribute have arithmetic evaluation (see
+    the `let' command) performed when the variable is assigned a value.
+
+    When used in a function, `declare' makes NAMEs local, as with the `local'
+    command.  The `-g' option suppresses this behavior.
+
+    Exit Status:
+    Returns success unless an invalid option is supplied or a variable
+    assignment error occurs.
+
+-----------------------------------------
+amer@amer:~$ declare -u sport=BasketBall
+
+amer@amer:~$ declare -p | grep sport
+
+	declare -- _="sport=BasketBall"
+	declare -u sport="BASKETBALL"
+
+amer@amer:~$ echo $sport
+BASKETBALL
+
+amer@amer:~$ declare -l sport=BasketBall
+
+amer@amer:~$ echo $sport
+basketball
+
+amer@amer:~$ unset sport
+amer@amer:~$ echo $sport
+----------------------------------------------
+amer@amer:~$ man bash
+
+
+              command1 && command2
+
+       command2 is executed if, and only if, command1 returns an exit status of zero
+       (success).
+
+       An OR list has the form
+
+              command1 || command2
+
+       command2  is  executed if, and only if, command1 returns a non-zero exit sta‐
+       tus.  The return status of AND and OR lists is the exit status  of  the  last
+       command executed in the list.
+
+amer@amer:~$ ls file1 && chmod 644 file1
+ls: cannot access 'file1': No such file or directory
+
+amer@amer:~$ echo "hello" >> file1
+amer@amer:~$ ls file1 && chmod 644 file1
+file1
+
+amer@amer:~$ ls file2 || echo "file2 doesn't exist"
+ls: cannot access 'file2': No such file or directory
+file2 doesn't exist
+
+amer@amer:~$ ls file1 || echo "file1 doesn't exist"
+file1
+=================================================================================
+03-Redirection
+==============
+touch file1
+touch amer.sh
+read -p "please enter your first name: " FIRST_NAME
+read -p "please enter your second name: " SECOND_NAME
+echo "you name is: $FIRST_NAME $SECOND_NAME"
+mkdir testdir
+cp -v amer.sh testdir/ > result.txt
+cat result.txt
+      'file1' -> 'testdir/file1'
+cp -v file2 testdir/ 2>> result-error.txt
+cat result-error.txt
+'file1' -> 'testdir/file1'
+cp: cannot stat 'file2': No such file or directory
+# stdout ">"  && stderr "2>"
+----------------------------------------------------------
+touch file{1..5}
+ls
+file1 file2 file3 file4 file5
+ls -l file{1..6} > ls-result.txt 2> error.txt
+cat error.txt
+ls: cannot access 'file6': No such file or directory
+cat ls-result.txt
+-ew-------, 1 root root 0 Dec 16 15:57 file1
+-ew-------, 1 root root 0 Dec 16 15:57 file2
+-ew-------, 1 root root 0 Dec 16 15:57 file3
+-ew-------, 1 root root 0 Dec 16 15:57 file4
+-ew-------, 1 root root 0 Dec 16 15:57 file5
+------------------------------------------------
+cat << EOF
+>this is my first script
+>Author: Amer
+>date
+>linux
+>EOF
+---------------------------------------
+ls file{1..6} | tee ls-result.txt  <---show output and error and only save output
+cat ls-result.txt
+file1 
+file2 
+file3 
+file4 
+file5
+================================
+04-Provide input to script
+====================
+vi script.sh
+#!/bin/bash
+read input
+echo $input
+
+#read is a command that reads from your terminal
+read -p "please enter you name: " input2
+echo $input2
+
+read -p 'please enter you age: ' YOUR_AGE
+echo "you are $YOUR_AGE years old !!!" <------ should be double quotes not single quotes
+
+read -s pass <----- -s: make txt invisible
+echo $pass
+--------------------------------------------
+vi test-script.sh
+#!/bin/bash
+echo "command is 0$"
+echo "first parameter $1"
+
+./test-script.sh
+command is ./test-script.sh
+first parameter
+
+./test-script.sh var1 var2
+command is ./test-script.sh
+first parameter var1
+
+vi test-script.sh
+#!/bin/bash
+echo "all parameters $@"
+
+./test-script.sh var1 var2 var3 var4
+all parameters var1 var2 var3 var4
+-------------------------------------------------------------
+getent passwd amer  <------ get entery for user amer  == /etc/passwd
+amer:x:1000:1000::/home/amer:/bin/bash
+---------------------------
+vi script2.sh
+echo "please enter your username:"
+read username
+echo "your username is: $username"
+
+./script2.sh
+please enter your username:
+amer
+your yousername is: amer
+------------------------------------------------------------------------------------------------------------
+echo -e "your home dir contains these files: /n $(ls -l)"
+------------------------
+echo "please enter your username: "
+read username
+homedir= $(getent passwd $username | awk -F : '(print $6)')
+echo -e "your home dir contains these files: /n $(ls -l $homedir)"
+---------------------------
+username=$1
+read username
+homedir= $(getent passwd $username | awk -F : '(print $6)')
+echo -e "your home dir contains these files: /n $(ls -l $homedir)"
+==================================
+05-Loops
+========
+ifconfig
+10.184.149.209
+
+vi for-loop.sh
+#!/bin/bash
+for host in {200..210}; do
+            ping -c 1 10.184.149.$host
+done
+
+./for-loop.sh
+------------------------------
+vi mkdir-loop.sh
+#!/bin/bash
+for host in {2..4}; do
+              mkdir new_dir"$host"
+done
+
+./mkdir-loop.sh
+ls
+new_dir2 new_dir3 new_dir4
+------------------
+vi while_loop.sh
+#!/bin/bash
+for host in {1..4}; do
+             while [ $host -lt 2 ]; do  <---- [ <-leave_spaces_between_brackets-> ] , lt: less_than  , ;--> semi column
+                                        echo "host is $host"
+              done
+done
+
+./while_loop.sh
+host is 1
+host is 1
+host is 1
+.
+.
+infinite
+------------------
+vi while_loop.sh
+#!/bin/bash
+for host in {1..4}; do
+             while [ $host -le 2 ]; do  <-- le : less than or equal
+                                        echo "host is $host"
+                                        host=$(($host+1)) <--barancies for ((equation))
+              done
+done
+
+vi while_loop.sh
+1
+2
+2
+------------------------------------------
+طول مالحاجه موجوده بعمل عكسها
+لحد ميبقي ال host اكبر من 3
+vi until_loop.sh
+#!/bin/bash
+for host in {1..4}; do
+             untill [ $host -ge 3 ]; do  <-- ge : greater  than or equal
+                                        echo "host is $host"
+                                        host=$(($host+1)) <--barancies for ((equation))
+              done
+done
+
+./until_loop.sh
+1
+2
+2
+----------------------------
+echo $UID
+uid=o(root) gid=0(root) groups=0(root)
+
+vi uid_loop.sh
+#!/bin/bash
+user_id=$(echo $UID)
+while [ $user_id == 0 ]; do
+             echo "Welcome to my script"
+             user_id=$(($user_id+1))
+done
+while [ $user_id != 0 ]; do
+             echo "Not Authorized"
+done
+
+./uid_loop.sh
+==================================
+06-If and Case function
+===================
+#!/bin/bash
+echo "what's the weather temperature ?"
+read weather_temp
+if [ $weather_temp -lt 10 ]
+       then
+                echo "weather is freezing !!!!!!"
+elif [ $weather_temp -lt 20 ]
+       then
+                echo "weather is cold !!!!"
+elif [ $weather_temp -lt 30 ]
+       then
+                echo "weather is fine !!!"
+ fi
+----------------------------------
+#!/bin/bash
+if [ -e test_file1 ]  <-------- -e: check file exist
+           then
+                      echo "file existed"
+            else
+                       echo "file doesnot exist"
+fi     
+--------------------------------------------------------------------
+#!/bin/bash
+if [ -e backup_file ]
+        then
+                  echo "backup file exist :) "
+         else
+                  echo "file does not exist :( :( :( !!!!!!!!"
+                  read -p "would you like to create the backup file ? " answer
+                              if [ $answer == yes ]
+                                           then
+                                                     echo "ok i will create it for you !!!"
+                                                      touch backup_file
+                                            else
+                                                     echo "ok i will not create the backup file :( :( :( !!!!!!"
+                                  fi
+fi
+-------------------------
+$? return vaule if 1 then sucess if 0 then fail
+for exaple when ping if i make $? in cli it will return value 0 which means host is unreachable or 1 if host is available
+man test
+man bash
+=============================
+07-text Manipulation التلاعب بالنص
+=================
+ls -l
+total 81
+-rwx--------, 1 root toot 189 Dec 16 15:34 amer.sh
+-rwx--------, 1 root toot 53 Dec 16 15:34 error.txt
+-rwx--------, 1 root toot 0 Dec 16 15:34 file1
+-rwx--------, 1 root toot 165 Dec 16 15:34 file2
+-rwx--------, 1 root toot 0 Dec 16 15:34 file3
+ls -l | grep -v -i Total | awk '{ print "Owner is " $3 " for Dir " $NF }'   <---- $NF:last column اللي هو سم الملف
+ls -l | grep -v total | awk '{ print "Owner is " $3 " for Dir " $NF }'
+-v: reverse selection  -i: ignore
+Owner is root for Dir amer.sh
+Owner is root for Dir error.txt
+Owner is root for Dir file1
+Owner is root for Dir file2
+Owner is root for Dir file3
+------------------------------------------------
+man tr    tr: translate
+vi test_file
+caaaaaat
+staaar
+dooooog
+caaataaalooog
+cat test_file | tr -s [:alnum:]       -s: squeeze  alnum: alpha numerical
+cat
+dog
+star
+catalog
+----------------------
+cat test_file | tr -s [:alnum:] | tr [:lower:] [:upper:]    <---- 2 filter and the second will change lower case to upper case
+CAT
+DOG
+STAR
+CATALOG
+-----------------------------
+^: carrot sign: means start with  --  am$ : ends with  -- ^$: empty lines ,  -v ^$ : exclude empty lines
+vim change_dir_names.sh
+#!/bin/bash
+DIR_PATH=$1
+DIRS_LIST=$( ls -l | grep ^d | awk '{ print $NF }' )
+echo $DIR
+
+./change_dir_names.sh
+---------------------------
+vim change_dir_names.sh
+#!/bin/bash
+DIR_PATH=$1
+DIRS_LIST=$( ls -l | grep ^d | awk '{ print $NF }' )
+for DIR in $DIRS_LIST ; do
+              NEW_DIR_NAMES-$( echo $DIR |tr [:lower:] [:upper:] )
+              mv $DIR $NEW_DIR_NAMES
+done
+------------------------
+USERNAME=Amer
+echo -e "Welcome \n $USERNAME"    <------   -e: enhanced
+Welcome
+   AMer
+echo -e "Welcome \t $USERNAME"    <------   -t: tab
+Welcome             Amer
+===============================
+08-functions
+==========
+vi test_function.sh
+#!/bin/bash
+welcone_user () {
+                 echo -e "Hey $1 \nWelcome onboard !!!!!\n"
+}
+welcome_user Amer
+welcome_user Mohamed
+welcome_user Ibrahim
+
+./test_function.sh
+Hey Amer
+Welcome onboard !!!!!!
+
+Hey Mohamed
+Welcome onboard !!!!!!
+Hey Ibrahim
+Welcome onboard !!!!!!
+------------------------------------------------
+vi test_function.sh
+#!/bin/bash
+welcone_user () {
+                 echo -e "Hey $1 \nWelcome onboard !!!!!\n"
+}
+welcome_user $1
+
+# here we have 2 $1.. the first one is for the command we execute and the second one is from the function
+
+./test_function Amer
+Hey Amer
+Welcome onboard !!!!!!
+
+Explanation:
+-=-=-=-=-=-=
+how $1 behaves in both the script level and function level.
+-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+1-You run the script with:
+./test_function Amer
+$1 in the script equals Amer.
+
+2-The script calls the function:
+welcome_user $1
+$1 here refers to the script's $1 (which is Amer).
+
+So the function is called like this:
+welcome_user Amer
+
+Inside the function welcome_user:
+$1 now refers to the first argument passed to the function, which is Amer.
+
+3-Inside the function, the following line runs:
+echo -e "Hey $1 \nWelcome onboard !!!!!\n"
+
+$1 inside the function equals Amer, so the output is:
+
+Hey Amer 
+Welcome onboard !!!!!
+======================================================================================================
+09-diff between Globbing & Regex
+================================
+Globbing:
+=========
+amer@amer:~$ echo .*
+. .. .bash_history .bash_logout .bashrc .cache .docker .kube .lesshst .local .minikube .npm .profile .ssh .sudo_as_admin_successful .viminfo .Xauthority
+
+amer@amer:~$ echo .[!.]*
+.bash_history .bash_logout .bashrc .cache .docker .kube .lesshst .local .minikube .npm .profile .ssh .sudo_as_admin_successful .viminfo .Xauthority
+
+amer@amer:~$ echo *.*
+docker-compose.yml kubectl.sha256 reinstall_kubernetes.sh
+------------------------
+amer@amer:~$ mkdir newdir{1..5}
+amer@amer:~$ ls newdir{1..5}
+newdir1:
+
+newdir2:
+
+newdir3:
+
+newdir4:
+
+newdir5:
+
+amer@amer:~$ ls newdir{1,3,5}
+newdir1:
+
+newdir3:
+
+newdir5:
+----------------------
+amer@amer:~$ echo {01..15}
+01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+
+amer@amer:~$ echo "{01..15}"
+{01..15}
+---------------------------
+amer@amer:~$ echo "this is      test"
+this is      test
+amer@amer:~$ echo  this is      test
+this is test
+-------------------------
+amer@amer:~$ DIR_CONTENT=$(ls -l)
+
+amer@amer:~$ echo $DIR_CONTENT
+total 48764 drwxrwxr-x 2 amer amer 4096 Dec 17 23:20 newdir1 drwxrwxr-x 2 amer 
+amer 4096 Dec 17 23:20 newdir1 newdir5 drwxrwxr-x 2 amer amer 4096 Dec 17 23:20 newdir2 drwxrwxr-x 2 
+amer amer 4096 Dec 17 23:20 newdir3 drwxrwxr-x 2 amer amer 4096 Dec 17 23:20 newdir4 drwxrwxr-x 2 
+amer amer 4096 Dec 17 23:20 newdir5 drwxr-xr-x 3 root root 4096 Sep 24 22:49 persist -rwxr-xr-x 1 
+root root 2491 Dec 15 01:39 reinstall_kubernetes.sh
+
+amer@amer:~$ echo "$DIR_CONTENT"
+total 48764
+drwxrwxr-x 2 amer amer     4096 Dec 17 23:20 newdir1
+drwxrwxr-x 2 amer amer     4096 Dec 17 23:20 newdir[1..5]
+drwxrwxr-x 2 amer amer     4096 Dec 17 23:20 newdir2
+drwxrwxr-x 2 amer amer     4096 Dec 17 23:20 newdir3
+drwxrwxr-x 2 amer amer     4096 Dec 17 23:20 newdir4
+drwxrwxr-x 2 amer amer     4096 Dec 17 23:20 newdir5
+drwxr-xr-x 3 root root     4096 Sep 24 22:49 persist
+-----------------------------------------
+amer@amer:~$ echo "price is $20.00"
+price is 0.00
+
+amer@amer:~$ echo "price is \$20.00"   <----solution
+price is $20.00
+----------------------
+amer@amer:~$ echo "price is \$20.00 $30.00 $40.00"
+price is $20.00 0.00 0.00
+
+amer@amer:~$ echo 'price is $20.00 $30.00 $40.00'   <----solution
+price is $20.00 $30.00 $40.00
+---------------------------------
+Regex:  matches on a text
+======
+amer@amer:~$ cat docker-compose.yml
+version: '2'
+services:
+    opencats:
+      container_name: opencats_web
+      image: prooph/nginx:www
+      ports:
+          - "80:80"
+          - "443:443"
+      volumes_from:
+        - opencatsdata
+
+    php:
+      container_name: opencats_php
+      image: opencats/php-base:7.2-fpm-alpine
+      volumes_from:
+        - opencatsdata
+
+    opencatsdata:
+      container_name: opencats_data
+      image: busybox
+      volumes:
+        - ..:/var/www/public
+      command: "true"
+
+    opencatsdb:
+      container_name: opencats_mariadb
+      image: mariadb
+      ports:
+        - 3306:3306
+      environment:
+        - MYSQL_ROOT_PASSWORD=root
+        - MYSQL_USER=dev
+        - MYSQL_PASSWORD=dev
+        - MYSQL_DATABASE=cats
+      volumes:
+        - ../test/data:/docker-entrypoint-initdb.d
+        - ./persist/mysql:/var/lib/mysql
+
+    phpmyadmin:
+      container_name: opencats_phpmyadmin
+      image: phpmyadmin/phpmyadmin
+      ports:
+        - 8080:80
+      links:
+        - opencatsdb:db
+      environment:
+        - PMA_HOST=db
+        - PMA_USER=dev
+        - PMA_PASSWORD=dev
+
+amer@amer:~$ grep image docker-compose.yml  <---------search for text in file
+      image: prooph/nginx:www
+      image: opencats/php-base:7.2-fpm-alpine
+      image: busybox
+      image: mariadb
+      image: phpmyadmin/phpmyadmin
+
+amer@amer:~$ grep -o image docker-compose.yml
+image
+image
+image
+image
+image
+
+
+amer@amer:~$ grep ^ser docker-compose.yml  <--- begin with
+services:
+
+amer@amer:~$ grep dev$ docker-compose.yml   <--- end with
+        - MYSQL_USER=dev
+        - MYSQL_PASSWORD=dev
+        - PMA_USER=dev
+        - PMA_PASSWORD=dev
+
+amer@amer:~$ grep "dev$" docker-compose.yml  <---- double quotes preffered
+        - MYSQL_USER=dev
+        - MYSQL_PASSWORD=dev
+        - PMA_USER=dev
+        - PMA_PASSWORD=dev
+
+------------------------------------------
+Basic Expressions(BRE) & Extended Expressions(ERE):
+-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+References and useful links 
+https://en.wikibooks.org/wiki/Regular...
+https://tldp.org/LDP/abs/html/globbin...
+https://man7.org/linux/man-pages/man7...
+https://regex101.com
+
+amer@amer:~$ grep --help
+Usage: grep [OPTION]... PATTERNS [FILE]...
+Search for PATTERNS in each FILE.
+Example: grep -i 'hello world' menu.h main.c
+PATTERNS can contain multiple patterns separated by newlines.
+
+Pattern selection and interpretation:
+  -E, --extended-regexp     PATTERNS are extended regular expressions
+  -F, --fixed-strings       PATTERNS are strings
+  -G, --basic-regexp        PATTERNS are basic regular expressions
+  -P, --perl-regexp         PATTERNS are Perl regular expressions
+  -e, --regexp=PATTERNS     use PATTERNS for matching
+  -f, --file=FILE           take PATTERNS from FILE
+  -i, --ignore-case         ignore case distinctions in patterns and data
+      --no-ignore-case      do not ignore case distinctions (default)
+  -w, --word-regexp         match only whole words
+  -x, --line-regexp         match only whole lines
+  -z, --null-data           a data line ends in 0 byte, not newline
+
+Miscellaneous:
+  -s, --no-messages         suppress error messages
+  -v, --invert-match        select non-matching lines
+  -V, --version             display version information and exit
+      --help                display this help text and exit
+
+Output control:
+  -m, --max-count=NUM       stop after NUM selected lines
+  -b, --byte-offset         print the byte offset with output lines
+  -n, --line-number         print line number with output lines
+      --line-buffered       flush output on every line
+  -H, --with-filename       print file name with output lines
+  -h, --no-filename         suppress the file name prefix on output
+      --label=LABEL         use LABEL as the standard input file name prefix
+  -o, --only-matching       show only nonempty parts of lines that match
+  -q, --quiet, --silent     suppress all normal output
+      --binary-files=TYPE   assume that binary files are TYPE;
+                            TYPE is 'binary', 'text', or 'without-match'
+  -a, --text                equivalent to --binary-files=text
+  -I                        equivalent to --binary-files=without-match
+  -d, --directories=ACTION  how to handle directories;
+                            ACTION is 'read', 'recurse', or 'skip'
+  -D, --devices=ACTION      how to handle devices, FIFOs and sockets;
+                            ACTION is 'read' or 'skip'
+  -r, --recursive           like --directories=recurse
+  -R, --dereference-recursive  likewise, but follow all symlinks
+      --include=GLOB        search only files that match GLOB (a file pattern)
+      --exclude=GLOB        skip files that match GLOB
+      --exclude-from=FILE   skip files that match any file pattern from FILE
+      --exclude-dir=GLOB    skip directories that match GLOB
+  -L, --files-without-match  print only names of FILEs with no selected lines
+  -l, --files-with-matches  print only names of FILEs with selected lines
+  -c, --count               print only a count of selected lines per FILE
+  -T, --initial-tab         make tabs line up (if needed)
+  -Z, --null                print 0 byte after FILE name
+
+Context control:
+  -B, --before-context=NUM  print NUM lines of leading context
+  -A, --after-context=NUM   print NUM lines of trailing context
+  -C, --context=NUM         print NUM lines of output context
+  -NUM                      same as --context=NUM
+      --group-separator=SEP  print SEP on line between matches with context
+      --no-group-separator  do not print separator for matches with context
+      --color[=WHEN],
+      --colour[=WHEN]       use markers to highlight the matching strings;
+                            WHEN is 'always', 'never', or 'auto'
+  -U, --binary              do not strip CR characters at EOL (MSDOS/Windows)
+
+When FILE is '-', read standard input.  With no FILE, read '.' if
+recursive, '-' otherwise.  With fewer than two FILEs, assume -h.
+Exit status is 0 if any line is selected, 1 otherwise;
+if any error occurs and -q is not given, the exit status is 2.
+
+
+
+
+
+
+
+
+
+
+
+
+
