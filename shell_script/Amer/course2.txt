@@ -1,0 +1,510 @@
+vi math.sh
+
+#!/bin/bash
+
+echo `expr 5 + 5 `  `:<--- reverse quotes for mathematical equations near number 1 in keyboard
+echo `expr 5 - 5 `
+echo `expr 5 \* 5 `
+echo `expr 5 / 5 `
+------------------------------------------
+#!/bin/bash
+echo "please enter the first number:"
+read FIRST_NUMBER
+echo "please enter the second number"
+read SECOND_NUMBER
+
+echo "addind: `expr $FIRST_NUMBER + $SECOND_NUMBER`"   <---including the expr inside the double quotes
+echo "subtracting: `expr $FIRST_NUMBER - $SECOND_NUMBER`"  <---including the expr inside the double quotes
+echo "multiplying: " `expr $FIRST_NUMBER \* $SECOND_NUMBER`  <--- math expression separate from the text
+echo "divide: " `expr $FIRST_NUMBER / $SECOND_NUMBER` "and remainder is:" `expr $FIRST_NUMBER % $SECOND_NUMBER`<--- math expression separate from the text
+------------------------------------------------------------
+touch variable
+rm variable
+echo $?  <------ done correctly return 0
+0
+rm v
+rm: cannot remove 'v': NO such file or directory
+echo $?  <------- done with error return 1
+1
+-----------------------------
+vi math.sh
+
+#!/bin/bash
+X=$1   <---- first positioner variable   ******
+Y=$2   <---- second positioner variable  ******
+echo `expr $X + $Y `  `
+echo `expr $X - $Y `
+echo `expr $X \* $Y `
+echo `expr $X / $Y `
+
+./math.sh 5 10
+-----------------------------
+vi math.sh
+
+#!/bin/bash
+echo `expr $1 + $2 `  `
+echo `expr $1 - $2 `
+echo `expr $1 \* $2 `
+echo `expr $1 / $2 `
+
+./math.sh 5 10
+----------------------------
+set 1 2 3 4 5  <------- to set positioner variables
+echo $1
+1
+echo $2
+2
+echo $3
+3
+echo $*  <------ to print all positioner variable
+echo $#  <---------to know how many positioner variables available
+echo H <---- to delete all positioner variables
+echo $1
+H
+echo $#
+1
+========================================
+./math.sh
+
+#!/bin/bash
+echo `expr $1 + $2 `  `
+echo `expr $1 - $2 `
+echo `expr $1 \* $2 `
+echo `expr $1 / $2 `
+
+./math.sh 5.5 10.8
+expr: non-integer argument
+expr: non-integer argument
+expr: non-integer argument
+expr: non-integer argument
+-----------------------
+vi real_numbers.sh
+
+a=10.3
+b=5.6
+c= echo $a + $b | bc  <----- bc: basic calculator: It is a command-line utility in Linux/Unix for performing mathematical calculations.it supports arithmetic operations, floating-point calculations, and more. The command uses bc to evaluate the mathematical expression $a + $b
+echo $c
+
+./real_numbers.sh
+-----------------------------------
+vi real_numbers.sh
+
+a=10.3
+b=5.6
+echo $a + $b | bc 
+echo $a - $b | bc
+echo $a *\ $b | bc
+echo $a / $b | bc
+echo $a % $b | bc
+
+./real_numbers.sh
+=====================================
+absolute_value.sh
+#!/bin/bash
+echo "please enter a number"
+read number
+if [ $number -lt 0 ]
+        then
+           echo "the absolute number is:" `expr $number \* -1 `
+   else
+           echo "the absolute number is:" $number
+fi 
+--------------
+vi calculations.sh
+
+#!/bin/bash
+if [ $1 -lt 0 ]
+           then
+                    echo "the first number is a negative number"
+                     exit
+            elif [ $2 -lt 0 ]
+                      then
+                      echo "the second number is a negative "
+                      exit
+              else
+                      echo "addition: " `expr $1 + $2`
+                      echo "subtraction: " `expr $1 - $2`
+                      echo "mul;tiplication: " `expr $1 \* $2`
+                      echo "division: " `expr $1 / $2`
+                      echo "remainder of division" `expr $1 % $2`
+fi
+
+the script will exit if the first number is negate and will not check second number
+------------------------------
+vi calculations.sh
+
+#!/bin/bash
+if [ $1 -lt 0 ]
+           then
+                    echo "the first number is a negative number"
+            if [ $2 -lt 0 ]
+                      then
+                               echo "the second number is a negative number"
+                      exit
+            fi  
+elif [ $2 -lt 0 ] ;
+         then
+                  echo "the second number is a negative number"
+else
+                      echo "addition: " `expr $1 + $2`
+                      echo "subtraction: " `expr $1 - $2`
+                      echo "mul;tiplication: " `expr $1 \* $2`
+                      echo "division: " `expr $1 / $2`
+                      echo "remainder of division" `expr $1 % $2`
+fi
+
+./calculations.sh 5 -8
+the second number is a gative number
+
+./calculations.sh -1 -3
+the first number is a gative number
+the second number is a gative number
+==============================================
+ls
+file
+vi move.sh
+
+#!/bin/bash
+mv $1 $2
+if [ $? = 0 ]
+      then
+               echo "Correct !! file moved !!!"
+elif [ $? = 1 ]
+         then
+                  echo "Wrong !! file NOT moved !!!"
+fi
+
+./move.sh file1 file99
+Correct !! file moved !!!
+------->execute it again
+
+./move.sh file1 file99
+Wrong !! file NOT moved !!!
+===============================
+vi and-or.sh
+
+if [ $1 -lt 0 -a $2 -lt 0 ]     -a: and
+            then
+                     echo "Both"
+else
+         echo "Not Both"
+fi
+
+./and-or.sh -1 -2
+Both
+
+./and-or.sh -1 2
+Not Both
+
+./and-or.sh 1 -2
+Not Both
+-------------------------
+vi or.sh
+
+if [ $1 -lt 0 -o $2 -lt 0 ]     -o: or
+            then
+                     echo "Either"
+else
+         echo "Neither Negative"
+fi
+
+./or.sh -1 1
+Either
+
+./or.sh 1 -1
+Either
+
+./or.sh 1 1
+Neither Negative
+--------------------------------
+vi negative.sh
+
+#!/bin/bash
+if [ $1 -lt 0 -a $2 -lt 0 ]
+            then
+                     echo "Both numbers are negative !!!"
+elif [ $1 -lt 0 ]
+               then
+                        echo "the first number is negative !!"
+elif [ $2 -lt 0 ]
+               then
+                         echo "the second number is negative !!"
+else
+            echo "Both are Positive !!"
+echo "addition: " `expr $1 + $2`
+echo "subtraction: " `expr $1 - $2`
+echo "mul;tiplication: " `expr $1 \* $2`
+echo "division: " `expr $1 / $2`
+echo "remainder of division" `expr $1 % $2`
+fi
+./negative.sh -1 -1
+Both numbers are negative !!!
+
+./negative.sh -1 1
+the first number is negative !!
+
+./negative.sh 1 -1
+the second number is negative !!"
+
+./negative.sh 1 1
+Both are Positive !!
+2
+0
+1
+1
+0
+-----------------------------------------
+if [ $1 ]   <----check if first positiner variable exist
+            then
+                     echo "position variables exist"
+-------------------------------------------
+if [ !$1 ]    <----check if first positiner variable don't exist
+            then
+                     echo "position variables don't exist"
+                     exit
+fi
+===================
+while:
+=====
+while [  ]   <-----while will keep doing the condition in brackets till it becomes wrong
+----------
+vi while.sh
+
+count=0
+while [ $count -lt 10 ]
+do
+                echo "i'm good"
+                count=`expr $count + 1`
+done
+
+./while.sh
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+-------------------
+untill:
+=======
+vi untill.sh
+
+count=0
+until [ $count -gt 10 ]
+do
+                echo "$count"
+                count=`expr $count + 1`  <--- before equal u dont't need to put $ sign for count
+done 
+
+./untill.sh
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+-----------------------
+for:
+====
+vi for.sh
+
+for item in * <-- item: is  variable, *: all files in current directory
+do
+        echo $item
+done
+
+./for.sh
+absolute.sh
+ask.sh
+bash
+certs
+condition.sh
+expense-tracker
+for.sh
+script.sh
+untill.sh
+while.sh
+
+--------------------------
+vi for2.sh
+
+for item in *
+do
+        if [ -f $item ]  <------------- -f: file ---- will check if the $item is a file
+        then
+                echo $item "is a file"
+        elif [ -d $item ] <------------ -d: directory ---- will check if the $item is a directory
+        then
+                echo $item "is a directory"
+        fi
+done
+
+./for2.sh
+absolute.sh is a file
+ask.sh is a file
+bash is a directory
+certs is a directory
+condition.sh is a file
+expense-tracker is a directory
+for2.sh is a file
+for.sh is a file
+script.sh is a file
+untill.sh is a file
+while.sh is a file
+=========================================
+vi break.sh
+
+total=0
+while [ 0 ]
+do
+        echo "please enter a number: "
+        read number
+        if [ $number -eq -1 ]
+        then
+                break
+        fi
+        total=`expr $total + $number`
+done
+echo "total is: " $total
+
+./break.sh
+please enter a number:
+5
+please enter a number:
+4
+please enter a number:
+1
+please enter a number:
+-1
+total is:  10
+----------------------------------
+vi cont.sh
+
+echo "please enter the total: "
+read total
+echo "please enter the exception: "
+read number
+echo "the sequence is:"
+i=0
+while [ $i -lt $total ]
+do
+	i=`expr $i + 1`
+	if [ $i -eq $number ]  <-- when i=4(number) for example, then skip this number and continue
+	then
+		continue
+	fi
+	sleep 5  <------ will wait 5 sec between every loop
+	echo $i
+done
+
+./cont.sh
+please enter the total:
+6
+please enter the exception:
+4           <----------------- when i=number which is the 4
+the sequence is:
+1
+2
+3
+5
+6
+========================================================
+7-
+ls -l | cut -d " " -f9 > tttt.txt  -d " ": delimiter فاصل و الفاصل هنا مسافه
+file1
+file2
+file3.txt
+
+ls --help | cut -d" " -f1 > ttt.txt
+
+cat tttt.txt | grep "[a-Z]" > tttt.txt  <--- will filter only for all lines that have words from a small
+to Z capital and will ignore empty lines
+=================================================
+17-
+wget cisco.com
+ls
+index.html
+cat index.html | grep "href="
+<li>ca href="//www.cisco.com/cisco/webhelp/index.html">Site Map</a></li>
+      1     /2/            3
+cat index.html | grep "href=" | cut -d "/" -f3
+www.cisco.com
+www.cisco.com aria -labelledby="dw-c-header__logo-title">  <---we need to remove this
+us
+twitter.com
+newroom.cisico.com
+webinars.cisci.com
+
+cat index.html | grep "href=" | cut -d "/" -f3 | cut -d '"' -f1
+www.cisco.com
+www.cisco.com 
+us
+twitter.com
+newroom.cisico.com
+webinars.cisci.com
+
+cat index.html | grep "href=" | cut -d "/" -f3 | cut -d '"' -f1 | grep "cisco" | sort -u  <-- to prevent replication
+
+cat index.html | grep "href=" | cut -d "/" -f3 | cut -d '"' -f1 | grep "cisco" | sort -u > cisco.txt
+
+host cisco.com <--- to get ip
+host cisco.com  | grep "has address"
+e144.dscb.akamaledge.net has address 2.23.96.170
+
+host cisco.com  | grep "has address" | cut -d " " -f4 <-- cut with delimiter speace bec. it has spaces and in 4th place
+vi cisco-ips.sh
+ciscoUrls=$(cat cisco.txt)
+for url in $ciscoUrls
+do
+        ip=$(host $url | grep "has address" | cut -d " " -f4)
+        echo "$url -> $ip"
+done
+
+./cisco-ips.sh
+67.192.93.176
+284.95.85.28
+56.54.191.136
+4.54.48.79
+256.256.251.19
+150.262.251.19
+2.23.189.247
+=======================
+vi host.sh
+if [ $1 ]
+then
+         echo "thanks"
+else
+         echo "please enter a URL"
+fi
+-----------------
+vi host.sh
+if [ $# -ge 1 ]  $#: check the number of position variables
+then
+         echo "thanks"
+else
+         echo "please enter a URL"
+fi
+-------------------------------------------------
+if [ $# -gt 0 ]
+then
+          echo "processing....."
+          sleep 3
+           echo "here it is:"
+           host $1 | grep "has address" | cut -d " " -f4
+else
+           echo "please enter a URL next to the command !!!!"
+fi
+--------------------------
+
+
+
+
