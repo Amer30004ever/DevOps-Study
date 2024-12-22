@@ -503,8 +503,63 @@ then
 else
            echo "please enter a URL next to the command !!!!"
 fi
---------------------------
+=========================================================================
+echo $$  <---- terminal id
+vi myfile.sh
+
+touch myfile.$$
+echo "process id is: " $$
+echo "the file name is myfile.$$"
+echo "file 1" >> myfile.$$
+sleep 2
+echo "file 2" >> myfile.$$
 
 
+Creates an empty file named myfile.<PID>, where <PID> is the process ID of the shell running the script.
+$$ is a special shell variable that contains the current process ID.
+================================================
+vi funtion.sh
 
+print_my_name () {
+        echo "my name is amer"
+}
 
+print_my_name  <----- writing the function will execute what inside the function which is echo
+
+./function.sh
+my name is amer
+-----------------------
+my_function () {
+        ls -l
+}
+my_function
+
+./function.sh
+file1
+file2
+file3
+----------------------------
+vi funtion.sh
+
+print_my_name () {
+        echo $1
+	echo $2
+}
+
+print_my_name Amer Magdi DevOps-Engineer
+
+./function.sh
+Amer Magdi
+DevOps-Engineer
+------------------------
+print_my_name () {
+
+        echo $1
+        echo $2
+}
+
+print_my_name $1 $2
+./function.sh Amer DevOps
+Amer
+DevOps
+============================================THE END
