@@ -261,6 +261,11 @@ Var4-- : 4
 =========================================================
 11-If Statement
 ===============
+if [ condition  ]; 
+then 
+	echo "message"; 
+fi
+------------
 vi if.sh
 
 let age1=$1 age2=$2 age3=$3 age4=$4 age5=$5 age6=$6
@@ -322,13 +327,368 @@ Not Greater than 40
 Not Greater than 50
 Not less than 60
 Not less than 70
+====================================================
+12-If Statement
+===============
+vagrant@Amer:~$ age=21
+vagrant@Amer:~$ if [ $age -eq 21 ]; then echo "True"; fi
+True
+
+vagrant@Amer:~$ age=22
+vagrant@Amer:~$ if [ $age -eq 21 ]; then echo "True"; else echo "False"; fi
+False
+==================================================
+13-If Statement
+===============
+number=$1
+if [ $number -gt 0 ] 
+then 
+	echo "Positive"
+elif [ $number -lt 0 ] 
+then 
+	echo "Negative"
+else
+	echo "Zero"
+fi
+
+vagrant@Amer:~$ ./elif.sh 5
+Positive
+vagrant@Amer:~$ ./elif.sh -1
+Negative
+vagrant@Amer:~$ ./elif.sh 0
+Zero
+===========================================================
+14-If Statement
+===============
+vi job.sh
+
+read -p "please enter your age: " age
+read -p "please enter your GPA: " gpa
+if [ $age -ge 20 ]
+then
+	if [ $gpa -ge 80 ]
+then
+	echo "Accepted"
+else
+	echo "Rejected"
+	fi
+else
+        echo "Rejected"
+fi
+
+vagrant@Amer:~$ ./job.sh
+please enter your age: 20
+please enter your GPA: 80
+Accepted
+vagrant@Amer:~$ ./job.sh
+please enter your age: 22
+please enter your GPA: 79
+Rejected
+vagrant@Amer:~$ ./job.sh
+please enter your age: 19
+please enter your GPA: 80
+Rejected
+
+			another way
+
+vi job2.sh
+
+read -p "please enter your age: " age
+read -p "please enter your GPA: " gpa
+if [ $age -gt 20 ] && [ $gpa -gt 85 ]
+then
+	echo "Accepted"
+else
+	echo "Rejected"
+fi
+
+vagrant@Amer:~$ vi job2.sh
+vagrant@Amer:~$ ./job2.sh
+please enter your age: 20
+please enter your GPA: 85
+Rejected
+vagrant@Amer:~$ ./job2.sh
+please enter your age: 21
+please enter your GPA: 85
+Rejected
+vagrant@Amer:~$ ./job2.sh
+please enter your age: 21
+please enter your GPA: 86
+Accepted
+-----------------------------------------
+vi job3.sh
+
+let age=$1 degree=$2
+if [ $age -gt 20 ] || [ $degree -gt 85 ]
+then
+        echo "Accepted"
+else
+        echo "Rejected"
+fi
+
+vagrant@Amer:~$ ./job3.sh 21 85
+Accepted
+vagrant@Amer:~$ ./job3.sh 20 85
+Rejected
+vagrant@Amer:~$ ./job3.sh 20 86
+Accepted
+----------------------------------------------
+read -p "please enter your age: " age
+read -p "please enter your GPA: " gpa
+let age=$1 degree=$2
+if [ $age -gt 20 ] || ! [ $degree -lt 80 ]   # <------- ! [ True ] = false
+then
+        echo "Accepted"
+else
+        echo "Rejected"
+fi
+========================================================================
+15-If Statement
+===============
+ls
+Amer
+
+vi directory.sh
+
+directory=Amer
+if [ -d $directory ]  <------ -d :check if it is folder and exists
+then
+        echo "folder exist"
+else
+        echo "folder don't exist"
+fi
+
+vagrant@Amer:~$ ./directory.sh
+folder exist
+---------------------
+ls
+bash_scripts
+
+vi directory2.sh
+
+if [ -d bash_scripts ]
+then
+        echo "exist"
+else
+        echo "folder don't exist"
+fi
+
+vagrant@Amer:~$ ./directory2.sh
+folder exist
+--------------------------
+check.sh
+touch file2.sh
+if [ -f file2.sh]  <----- check the file existance
+then
+	echo "file exist"
+else
+	echo "file don't exist"
+fi
+
+vagrant@Amer:~$ ./check.sh
+file exist
+----------------------------------
+ls -l
+drwxrwxr-x 2 vagrant vagrant  4096 Dec 24 16:42  Amer         <---  folder
+-rw-rw-r-- 1 vagrant vagrant     0 Dec 24 16:55  file.sh      <---  file
+
+vi directory3.sh
+
+if [ -e file.sh ] && [ -e Amer ]  <------  -e : check the existance despite it is file or folder
+then
+        echo "exist"
+else
+        echo "don't exist"
+fi
+
+vagrant@Amer:~$ ./directory3.sh
+exist
+--------------------------------
+vi directory5.sh
+
+#1st time checking size
+touch file1.sh
+if [ -s file1.sh ]
+then
+        echo "1st time : size greater than 0"
+else
+        echo "1st time : size is 0"
+fi
+
+#filling file
+echo "just filling the file" > file1.sh
+
+#2nd time checking size
+if [ -s file1.sh ]
+then
+        echo "2nd time : size greater than 0"
+else
+        echo "2nd time : size is 0"
+fi
+
+vagrant@Amer:~$ ./directory5.sh
+1st time : size is 0
+2nd time : size greater than 0
+------------------------------
+vi check.sh
+
+touch file2.sh
+if [ -f file2.sh]  <----- check the file existance
+then
+	echo "file exist"
+else
+	echo "file don't exist"
+fi
+
+vagrant@Amer:~$ ./check.sh
+file exist
+----------------------------------
+vi read.sh
+
+file=file1.sh
+
+#giving read permission
+chmod +r $file
+
+echo "$(ls -l $file)"
+
+#1st time checking permission
+if [ -r $file ]  #<-------- check if file exist and have read permission
+then
+        echo "First time : Has Read Permission"
+else
+        echo "First time : Don't have Read Permission"
+fi
+
+#removing read permission
+chmod -r $file
+
+echo "$(ls -l $file)"
+
+#2nd time checking permission
+if [ -r $file ]
+then
+        echo "Second time : Has Read Permission"
+else
+        echo "Second time : Don't have Read Permission"
+fi
 
 
+vagrant@Amer:~$ ./read.sh
+-r--r--r-- 1 vagrant vagrant 22 Dec 24 17:42 file1.sh
+First time : Has Read Permission
+---------- 1 vagrant vagrant 22 Dec 24 17:42 file1.sh
+Second time : Don't have Read Permission
+-----------------------------------------------
+vi write.sh
 
+file=file1.sh
 
+#giving write permission
+chmod +w $file
 
+echo "$(ls -l $file)"
 
+#1st time checking permission
+if [ -w $file ]  #<-------- check if file exist and have write permission
+then
+        echo "First time : Has write Permission"
+else
+        echo "First time : Don't have write Permission"
+fi
 
+#removing write permission
+chmod -w $file
 
+echo "$(ls -l $file)"
 
+#2nd time checking permission
+if [ -w $file ]
+then
+        echo "Second time : Has write Permission"
+else
+        echo "Second time : Don't have write Permission"
+fi
+
+vagrant@Amer:~$ ./write.sh
+--w--w---- 1 vagrant vagrant 22 Dec 24 17:42 file1.sh
+First time : Has write Permission
+---------- 1 vagrant vagrant 22 Dec 24 17:42 file1.sh
+Second time : Don't have write Permission
+-----------------------------------------------------------------
+vi write.sh
+
+file=file1.sh
+
+#giving write permission
+chmod +w $file
+
+echo "$(ls -l $file)"
+
+#1st time checking permission
+if [ -w $file ]  #<-------- check if file exist and have write permission
+then
+        echo "First time : Has write Permission"
+else
+        echo "First time : Don't have write Permission"
+fi
+
+#removing write permission
+chmod -w $file
+
+echo "$(ls -l $file)"
+
+#2nd time checking permission
+if [ -w $file ]
+then
+        echo "Second time : Has write Permission"
+else
+        echo "Second time : Don't have write Permission"
+fi
+
+vagrant@Amer:~$ ./write.sh
+--w--w---- 1 vagrant vagrant 22 Dec 24 17:42 file1.sh
+First time : Has write Permission
+---------- 1 vagrant vagrant 22 Dec 24 17:42 file1.sh
+Second time : Don't have write Permission
+---------------------------------------------------------------
+vi execute.sh
+
+read -p "please enter the file name : " file
+
+#giving execute permission
+chmod +x $file
+
+echo "$(ls -l $file)"
+
+#1st time checking permission
+if [ -x $file ]  #<---------- check if file exist and have execute permission
+then
+        echo "First time : Has execute Permission"
+else
+        echo "First time : Don't have execute Permission"
+fi
+
+#removing execute permission
+chmod -x $file
+
+echo "$(ls -l $file)"
+
+#2nd time checking permission
+if [ -x $file ]
+then
+        echo "Second time : Has execute Permission"
+else
+        echo "Second time : Don't have execute Permission"
+fi
+
+vagrant@Amer:~$ ./execute.sh
+please enter the file name : file1
+-rwxrwxr-x 1 vagrant vagrant 0 Dec 24 17:42 file1
+First time : Has execute Permission
+-rw-rw-r-- 1 vagrant vagrant 0 Dec 24 17:42 file1
+Second time : Don't have execute Permission
+====================================================================================
+16-Regular Expression
+=====================
 
