@@ -25,7 +25,7 @@ echo "power: " $((var1 ** var2))
 
 read -p "please enter the first number: " var1
 read -p "please enter the second number: " var2
-echo "addition: " 'expr var1 + var2'
+echo "addition: " 'expr $var1 + $var2'
 echo "subtraction: " 'expr var1 - var2'
 echo "multiplication: " 'expr var1 * var2'
 echo "division: " 'expr var1 / var2'
@@ -690,5 +690,171 @@ First time : Has execute Permission
 Second time : Don't have execute Permission
 ====================================================================================
 16-Regular Expression
+===============
+Regular Expression is for searching for a pattern given
+\d , 0 , 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 <-- skip d
+\w , osana , osama_sbeih , nero2002_hero <-- skip word
+\s ,
+[] , [a-z] , [A-Z] , [0-9] , [3,8]
+[0-9] = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+[a-d] = a , b , c , d
+[0-1][0-3] = 00 , 01 , 02 , 03 , 10 , 11 , 12 , 13
+chapter [1-9] = chapter 1 , chapter 2 , ...
+[cC]hapter [1-9] = chapter 9 , Chapter 9
+[A-Za-z][1-9] = A8 , A9 , a1 , w8 , t2
+{} <-- determine the quantity \d{3} = \d\d\d <-- and it is for shortning
+\d\d\d\d\d\d	\d{6} , \w{5} , [A-Z]{2,16}
+[[A-Z]{5}-[A-Z]{10}]  <--- meaning: from 5 letters to 10 letters	****
+* - \d* , \w* 	<--anumber exist or not  <--a word exist or not
++ - \d+ , \w+ 	<--at lest one number <--at least one word
+? - \d? , \w?   <--anumber exist or not  <--a word exist or not
+^ - ^a <--first char start with 'a'
+    ^abc  <--start with abc
+$ - abc$ <-- end with abc
+. - <-any thing can replace the dot letter, number or any char
+\d\d
+\d.\d <-- start and end with number and between them any other char
+\d..\d 3tt5 3tr5 3t?5 3trwe5 <-- start and end with number and between them any thing  
+\d.+\d <-- start and end with number and between them any thing or more
+() <-- for grouping
+(\d[A-Za-z]\d) <-- start and end with a number and between them a letter from a to z capital or small
+(\d[A-Za-z]\d)? <-- 5a6 ? means it will ask for pattern; so it may exist or not
+(\d[A-Za-z]\d)+ <-- 5a6 ,  5a67v9 , 5a67v95r6
+
+====================================================================================
+17-Regular Expression
 =====================
+\+  ---> means + as a sign
+\?  ---> means ? sign
+
+https://regexone.com/
+
+abc..        Letters
+123..        Digits
+\d             Any Digit
+\D             Any Non-digit character
+.                Any Character
+\.               Period
+[abc]         Only abc
+[^abc]        Not a,b, nor c
+[a-z]           Character a to z
+[0-9]           Numbers 0 to 9
+\w              Any Alphanumeric character
+\W              Any Non-alphanumeric character
+{m}             m Repetitions
+{m,n}          m to n Repetition
+*                  Zero or more repetitions
++                 One or more repetitions
+?                  Optional character
+\s                Any Whitespace
+\S                Any Non-whitespace character
+^_$               Starts and ends
+(_)                Capture Group
+(a(bc))         Capture Sub-group
+(.*)                Capture all
+(abc|def)     matches abc or def
+
+Exercise 1: Matching characters
+TaskText 
+match abcdefg
+match abcde
+match abc
+
+answer:
+[a-g]+
+
+Exercise 1½: Matching digits
+match  abc123xyz
+match  define "123"
+match  var g = 123;
+
+answer:
+\D+\d{3}\D+
+
+Exercise 2: Matching with wildcards
+match   cat.
+match   896.
+match   ?=+.
+skip       abc1    <----skip means dont match
+
+answer1:
+...\.
+
+answer2:
+.*[^abc1]
+
+Exercise 3: Matching characters
+match   can
+match   man
+match   fan
+skip   dan
+skip   ran
+skip   pan
+
+answer1:
+[cmf]an
+
+answer2:
+[^drp]an
+
+Exercise 4: Excluding characters
+match   hog
+match   dog
+skip   bog
+
+answer1:
+[hd]og
+
+answer2:
+[^b]og
+
+Exercise 5: Matching character ranges
+match   Ana
+match   Bob
+match   Cpc
+skip   aax
+skip   bby
+skip   ccz
+
+answer:
+[ABC][nop][abc]
+
+Exercise 6: Matching repeated characters
+match   wazzzzzup
+match   wazzzup
+skip       wazup
+
+answer1:
+wa[z]{3,5}up
+(^waz{3,5}up$) <-- start with waz, z:from 3 to 5 times, end with up
+(^[wa]+[z]{3,5}[up]+)  <-- wa:one time or more, z:from 3 to 5 time, up: one time or more
+
+Exercise 7: Matching repeated characters
+match   aaaabcc
+match   aabbbbc
+match   aacc
+skip   a
+
+answer:
+\w{4,7}
+a+b*c+
+a{2,4}b{0,4}c{1,2}
+
+Exercise 8: Matching optional characters
+match1 file found?
+match2 files found?
+match24 files found?
+skipNo files found
+
+answer:
+([1-4]+\s[files]*\s[found]*\?)
+(\d+\sfile[s]*\sfound+\?)
+(\d+ file[s]* found\?)
+
+regular expression part 5
+=====================
+
+
+
+
 

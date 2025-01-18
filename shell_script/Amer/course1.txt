@@ -583,7 +583,7 @@ for DIR in $DIRS_LIST ; do
               NEW_DIR_NAMES-$( echo $DIR |tr [:lower:] [:upper:] )
               mv $DIR $NEW_DIR_NAMES
 done
-------------------------
+------------------------**************************************************important*****
 USERNAME=Amer
 echo -e "Welcome \n $USERNAME"    <------   -e: enhanced
 Welcome

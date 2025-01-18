@@ -1,0 +1,129 @@
+\+  ---> means + as a sign
+\?  ---> means ? sign
+
+https://regexone.com/
+
+abc..        Letters
+123..        Digits
+\d             Any Digit
+\D             Any Non-digit character
+.                Any Character
+\.               Period
+[abc]         Only abc
+[^abc]        Not a,b, nor c
+[a-z]           Character a to z
+[0-9]           Numbers 0 to 9
+\w              Any Alphanumeric character
+\W              Any Non-alphanumeric character
+{m}             m Repetitions
+{m,n}          m to n Repetition
+*                  Zero or more repetitions
++                 One or more repetitions
+?                  Optional character
+\s                Any Whitespace
+\S                Any Non-whitespace character
+^_$               Starts and ends
+(_)                Capture Group
+(a(bc))         Capture Sub-group
+(.*)                Capture all
+(abc|def)     matches abc or def
+
+Exercise 1: Matching characters
+TaskText 
+match abcdefg
+match abcde
+match abc
+
+answer:
+[a-g]+
+
+Exercise 1½: Matching digits
+match  abc123xyz
+match  define "123"
+match  var g = 123;
+
+answer:
+\D+\d{3}\D+
+
+Exercise 2: Matching with wildcards
+match   cat.
+match   896.
+match   ?=+.
+skip       abc1    <----skip means dont match
+
+answer1:
+...\.
+
+answer2:
+.*[^abc1]
+
+Exercise 3: Matching characters
+match   can
+match   man
+match   fan
+skip   dan
+skip   ran
+skip   pan
+
+answer1:
+[cmf]an
+
+answer2:
+[^drp]an
+
+Exercise 4: Excluding characters
+match   hog
+match   dog
+skip   bog
+
+answer1:
+[hd]og
+
+answer2:
+[^b]og
+
+Exercise 5: Matching character ranges
+match   Ana
+match   Bob
+match   Cpc
+skip   aax
+skip   bby
+skip   ccz
+
+answer:
+[ABC][nop][abc]
+
+Exercise 6: Matching repeated characters
+match   wazzzzzup
+match   wazzzup
+skip       wazup
+
+answer1:
+wa[z]{3,5}up
+(^waz{3,5}up$) <-- start with waz, z:from 3 to 5 times, end with up
+(^[wa]+[z]{3,5}[up]+)  <-- wa:one time or more, z:from 3 to 5 time, up: one time or more
+
+Exercise 7: Matching repeated characters
+match   aaaabcc
+match   aabbbbc
+match   aacc
+skip   a
+
+answer:
+\w{4,7}
+a+b*c+
+a{2,4}b{0,4}c{1,2}
+
+Exercise 8: Matching optional characters
+match1 file found?
+match2 files found?
+match24 files found?
+skipNo files found
+
+answer:
+([1-4]+\s[files]*\s[found]*\?)
+(\d+\sfile[s]*\sfound+\?)
+(\d+ file[s]* found\?)
+
+regular expression part 5
+=====================

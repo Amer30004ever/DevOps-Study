@@ -1,0 +1,152 @@
+sudo apt update
+sudo apt upgrade -y 
+sudo apt  install network-manager
+
+Masternode:to Install Kubernetes on 
+Network Adapter should be NAT
+sudo vi /etc/NetworkManager/NetworkManager.conf
+
+[ifupdown]
+managed=true
+
+sudo systemctl restart NetworkManager
+
+sudo vi /etc/netplan/00-installer-config.yaml
+
+network:
+  version: 2r
+  renderer: NetworkManager
+  ethernets:
+    ens33:
+      dhcp4: no
+      addresses: [192.168.2.150/24]	
+      gateway4: 192.168.2.2
+      nameservers:
+        addresses:
+          - 8.8.8.8
+sudo netplan apply
+sudo systemctl restart NetworkManager
+ip a
+
+Workernode1:
+
+Network Adapter should be NAT
+sudo vi /etc/NetworkManager/NetworkManager.conf
+
+[ifupdown]
+managed=true
+
+sudo systemctl restart NetworkManager
+
+sudo vi /etc/netplan/00-installer-config.yaml
+
+network:
+  version: 2r
+  renderer: NetworkManager
+  ethernets:
+    ens33:
+      dhcp4: no
+      addresses: [192.168.2.151/24]
+      gateway4: 192.168.2.2
+      nameservers:
+        addresses:
+          - 8.8.8.8
+
+sudo netplan apply
+sudo systemctl restart NetworkManager
+
+Workernode2:
+
+Network Adapter should be NAT
+sudo vi /etc/NetworkManager/NetworkManager.conf
+
+[ifupdown]
+managed=true
+
+sudo systemctl restart NetworkManager
+
+sudo vi /etc/netplan/00-installer-config.yaml
+
+network:
+  version: 2r
+  renderer: NetworkManager
+  ethernets:
+    ens33:
+      dhcp4: no
+      addresses: [192.168.2.152/24]
+      gateway4: 192.168.2.2
+      nameservers:
+        addresses:
+          - 8.8.8.8
+
+sudo netplan apply
+sudo systemctl restart NetworkManager
+
+add a working DNS server, such as Google's:
+-----------------------------------------
+sudo vi /etc/resolv.conf
+Add the following lines if they're missing:
+
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+
+Verify System Clock
+sudo timedatectl set-ntp on
+
+sudo vi /etc/hosts
+192.168.2.150 master-node
+192.168.2.151 worker01
+192.168.2.152 worker02
+
+Change the Hostname
+master-node
+-----------
+sudo hostnamectl set-hostname master-node
+worker01
+--------
+sudo hostnamectl set-hostname worker01
+worker02
+-------- 
+sudo hostnamectl set-hostname worker02
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
