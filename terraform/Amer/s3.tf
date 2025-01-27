@@ -176,6 +176,13 @@ resource "aws_s3_bucket_lifecycle_configuration" "lifecycle_1" {
   }
 }
 
+# This resource block configures public access settings for an S3 bucket
+# It creates a public access block configuration for the bucket named 'ForgTech_log_bucket'
+# The following settings are enabled to prevent any public access:
+# - block_public_acls: Prevents creation of public ACLs
+# - block_public_policy: Prevents creation of bucket policies that allow public access  
+# - ignore_public_acls: Ignores any existing public ACLs
+# - restrict_public_buckets: Restricts access to the bucket and its objects
 resource "aws_s3_bucket_public_access_block" "ForgTech_log_bucket_public_access" {
     bucket = aws_s3_bucket.ForgTech_log_bucket.id
     block_public_acls = true
@@ -184,3 +191,26 @@ resource "aws_s3_bucket_public_access_block" "ForgTech_log_bucket_public_access"
     restrict_public_buckets = true
 }
 
+# This resource creates an S3 bucket policy that:
+# - Allows a specific IAM user (Mohamed) to upload objects
+# - Only permits uploads to the "log" directory within the bucket
+# - Uses the s3:PutObject permission to allow object uploads
+# - References the bucket ARN and user ARN dynamically
+resource "aws_s3_bucket_policy" "allow_mohamed_upload" {
+  bucket = aws_s3_bucket.forgtech_bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid = "AllowMohamedUploadToLogDirectory"
+        Effect = "Allow"
+        Principal = {
+          AWS = "${aws_iam_user.Mohamed.arn}"
+        }
+        Action = "s3:PutObject"
+        Resource = "${aws_s3_bucket.forgtech_bucket.arn}/log/*"
+      }
+    ]
+  })
+}
