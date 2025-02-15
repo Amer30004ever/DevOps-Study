@@ -19,6 +19,4 @@ minikube service argocd-server -n argocd
 kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 --decode && echo
 
 # you can change and delete init password
-# create an argoCD configuration file .yaml   ((((application.yml))))
-#to apply that app as cluster you need to apply the application.yaml 
-# using kubectl apply -f application.yaml
+
