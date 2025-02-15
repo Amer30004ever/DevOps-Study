@@ -1,0 +1,21 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amer-cv-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cv
+  template:
+    metadata:
+      labels:
+        app: cv
+    spec:
+      containers:
+      - name: cv
+        image: amer30004ever/proj
+        #imagePullPolicy: Always
+        ports:
+        - containerPort: 80
