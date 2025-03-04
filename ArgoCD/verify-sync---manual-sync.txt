@@ -1,0 +1,6 @@
+#Verify ArgoCD Sync Status
+#Check the sync status of your ArgoCD application to see if there are any errors or if the application is out of sync.
+kubectl get application -n argocd
+
+#If the application is out of sync, you can manually sync it using the ArgoCD CLI or UI:
+argocd app sync vprofile-app
