@@ -1,93 +1,66 @@
-#!/bin/bash
+      # Function to log messages
+      log() {
+          echo -e "\n[INFO] $1\n"
+      }
 
-# Function to log messages
-log() {
-    echo -e "\n[INFO] $1\n"
-}
+      # Install Docker
+      log "Installing Docker..."
+      sudo apt-get update
+      sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      sudo apt-get update
+      sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
-# Define the stable version of kubectl to install
-STABLE_KUBECTL_VERSION="v1.28.2"
+      # Add the vagrant user to the docker group
+      sudo usermod -aG docker vagrant
 
-# Install prerequisites
-log "Installing prerequisites..."
-sudo apt-get update
-sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+      # Verify Docker installation
+      log "Verifying Docker installation..."
+      if ! docker --version; then
+          echo "[ERROR] Docker installation failed. Exiting."
+          exit 1
+      fi
 
-# Add Kubernetes repository and key
-log "Adding Kubernetes repository and key..."
-sudo mkdir -p /etc/apt/keyrings
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
-sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list
+      # Define the stable version of kubectl to install
+      STABLE_KUBECTL_VERSION="v1.28.2"
 
-# Update package index and install kubectl
-log "Installing kubectl..."
-sudo apt-get update
-sudo apt-get install -y kubectl
+      # Add Kubernetes repository and key
+      log "Adding Kubernetes repository and key..."
+      sudo mkdir -p /etc/apt/keyrings
+      curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+      sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list
 
-# Verify kubectl installation
-log "Verifying kubectl installation..."
-if ! kubectl version --client; then
-    echo "[ERROR] kubectl installation failed. Exiting."
-    exit 1
-fi
+      # Update package index and install kubectl
+      log "Installing kubectl..."
+      sudo apt-get update
+      sudo apt-get install -y kubectl
 
-# Install kubectl manually (as a backup)
-log "Installing kubectl manually (as a fallback)..."
-ARCH=$(uname -m)
-if [[ "$ARCH" == "x86_64" ]]; then
-    ARCH="amd64"
-elif [[ "$ARCH" == "aarch64" ]]; then
-    ARCH="arm64"
-else
-    echo "[ERROR] Unsupported architecture: $ARCH. Exiting."
-    exit 1
-fi
-curl -LO "https://dl.k8s.io/release/${STABLE_KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl"
+      # Verify kubectl installation
+      log "Verifying kubectl installation..."
+      if ! kubectl version --client; then
+          echo "[ERROR] kubectl installation failed. Exiting."
+          exit 1
+      fi
 
-# Check if the file was successfully downloaded
-if [ ! -f kubectl ] || [ $(file kubectl | grep -c "ELF") -eq 0 ]; then
-    echo "[ERROR] Failed to download kubectl binary or invalid file. Exiting."
-    exit 1
-fi
+      # Install Minikube
+      log "Installing Minikube..."
+      curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+      sudo install minikube-linux-amd64 /usr/local/bin/minikube
+      rm minikube-linux-amd64
 
-chmod +x kubectl
-mkdir -p ~/.local/bin
-mv kubectl ~/.local/bin/kubectl
-export PATH=$PATH:~/.local/bin
+      # Verify Minikube installation
+      log "Verifying Minikube installation..."
+      if ! minikube version; then
+          echo "[ERROR] Minikube installation failed. Exiting."
+          exit 1
+      fi
 
-# Verify manual installation
-log "Verifying manual kubectl installation..."
-kubectl version --client || {
-    echo "[ERROR] Manual kubectl installation failed. Exiting."
-    exit 1
-}
-
-# Install Minikube
-log "Installing Minikube..."
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-sudo install minikube-linux-amd64 /usr/local/bin/minikube
-rm minikube-linux-amd64
-
-# Verify Minikube installation
-log "Verifying Minikube installation..."
-if ! minikube version; then
-    echo "[ERROR] Minikube installation failed. Exiting."
-    exit 1
-fi
-
-log "Installation of Kubernetes tools complete!"
-
-
-
--------------------------------------------------------------------------
-Make the Script Executable:
-
-chmod +x install_kubernetes_tools.sh
-
-
-Run the Script
-
-sudo ./install_kubernetes_tools.sh
-
+      # Start Minikube with Docker driver as the vagrant user
+      log "Starting Minikube with Docker driver..."
+      sudo -u vagrant minikube start --driver=docker || {
+          echo "[ERROR] Failed to start Minikube. Exiting."
+          exit 1
+      }
