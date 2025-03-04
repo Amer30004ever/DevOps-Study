@@ -12,8 +12,8 @@
       sudo apt-get update
       sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
-      # Add the vagrant user to the docker group
-      sudo usermod -aG docker vagrant
+      # Add the user to the docker group
+      sudo usermod -aG docker $USER
 
       # Verify Docker installation
       log "Verifying Docker installation..."
@@ -58,9 +58,11 @@
           exit 1
       fi
 
-      # Start Minikube with Docker driver as the vagrant user
+      # Start Minikube with Docker driver as the user
       log "Starting Minikube with Docker driver..."
-      sudo -u vagrant minikube start --driver=docker || {
+      sudo -u $USER minikube start --driver=docker || {
           echo "[ERROR] Failed to start Minikube. Exiting."
           exit 1
       }
+systemctl start docker
+minikube start
