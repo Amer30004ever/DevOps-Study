@@ -1,0 +1,81 @@
+Here is a step-by-step guide to installing PostgreSQL on Ubuntu and setting it up with the user gitlab_user, password gitlab_password, and database gitlab_db:
+
+Step 1: Update System Packages
+sudo apt update && sudo apt upgrade -y
+
+Step 2: Install PostgreSQL
+Install the PostgreSQL server package:
+
+sudo apt install -y postgresql postgresql-contrib
+
+Step 3: Switch to the PostgreSQL User
+PostgreSQL runs under the postgres system user by default. Switch to this user to configure the database:
+
+sudo -i -u postgres
+
+Step 4: Open the PostgreSQL Shell
+Enter the PostgreSQL shell with:
+
+psql
+
+Step 5: Create a New Database
+Run the following SQL command to create the database gitlab_db:
+
+
+CREATE DATABASE gitlab_db;
+Step 6: Create a New User
+Create the user gitlab_user with the password gitlab_password:
+
+
+CREATE USER gitlab_user WITH PASSWORD 'gitlab_password';
+Step 7: Grant Privileges
+Grant all privileges on the gitlab_db database to gitlab_user:
+
+
+GRANT ALL PRIVILEGES ON DATABASE gitlab_db TO gitlab_user;
+Step 8: Exit the PostgreSQL Shell
+Exit the shell by typing:
+
+
+\q
+Step 9: Exit the postgres User
+Return to your regular user by typing:
+
+
+exit
+
+Step 10: Verify the Connection
+Use the psql command-line tool to verify the connection to the database:
+
+psql -h localhost -U gitlab_user -d gitlab_db
+
+When prompted, enter the password gitlab_password. If the connection is successful, you'll enter the psql shell connected to gitlab_db.
+
+Optional: Enable Remote Access
+To allow remote access to the PostgreSQL server:
+
+Edit the PostgreSQL configuration file:
+
+
+sudo nano /etc/postgresql/*/main/postgresql.conf
+
+Find and update:
+
+
+listen_addresses = 'localhost'
+Change 'localhost' to '*' to allow connections from all IP addresses.
+
+Edit the pg_hba.conf file:
+
+
+sudo nano /etc/postgresql/*/main/pg_hba.conf
+
+Add a line for remote connections:
+
+host    all             all             0.0.0.0/0               md5
+Restart PostgreSQL:
+
+
+sudo systemctl restart postgresql
+
+Your PostgreSQL server is now ready with the specified user, password, and database.
