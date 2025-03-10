@@ -884,10 +884,291 @@ NOTES:
   export CONTAINER_PORT=$(kubectl get pod --namespace default $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
   echo "Visit http://127.0.0.1:8080 to use your application"
   kubectl --namespace default port-forward $POD_NAME 8080:$CONTAINER_PORT
+----------------------------------------------------------------
+helm package:
+------------
+vagrant@helm:~/documents/helm$ ls
+firstchart
+vagrant@helm:~/documents/helm$ helm package firstchart
+Successfully packaged chart and saved it to: /home/vagrant/documents/helm/firstchart-0.1.0.tgz
+
+vagrant@helm:~/documents/helm$ helm package firstchart --dependencies-update
+
+if this chart depends on other charts, it will pull the latest versions
+of all those charts and upts them under this chart's folder before
+the packaging is done weather that there it is.
+Syntactical issues are indentation issues in the yaml files to use it, use Helm Lint and the Chart
+
+vagrant@helm:~/documents/helm$ helm package firstchart -u
+
+vagrant@helm:~/do
+vagrant@helm:~/documents/helm$ helm lint firstchart
+==> Linting firstchart
+[INFO] Chart.yaml: icon is recommended
+
+1 chart(s) linted, 0 chart(s) failed
+
+lint more than one chart:
+------------------------
+vagrant@helm:~/documents/helm$ helm lint firstchart secondchart
+------------------------------------------------------------------
+vagrant@helm:~/documents/helm$ sudo vi firstchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+  {{"Helm Templating is"  -}} , {{- "Cool"}}  <--- add this line
+
+vagrant@helm:~/documents/helm$ helm template firstchart
+---
+# Source: firstchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+  Helm Templating is,Cool
+metadata:
+  name: release-name-firstchart
+----------------------------
+vagrant@helm:~/documents/helm$ sudo vi firstchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+{{- if .Values.my.flag}}        <----add this function
+{{"Output of if" | nindent 2}}   <----nindent (spaces before "Output of if")
+{{- end}}
+
+vagrant@helm:~/documents/helm$ sudo vi firstchart/values.yaml
+#added by Amer
+my:
+  flag: true   <--- add these values
+
+vagrant@helm:~/documents/helm$ helm template firstchart
+# Source: firstchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+
+  Output of if   <--- have 2 spaces before "Output of if"
+metadata:
+
+----------------------
+vagrant@helm:~/documents/helm$ sudo vi firstchart/values.yaml
+#added by Amer
+my:
+  flag: false  <---change to false
+
+vagrant@helm:~/documents/helm$ helm template firstchart
+# Source: firstchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rele
+-----------------------
+vagrant@helm:~/documents/helm$ sudo vi firstchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+{{- if .Values.my.flag}}    	<---begining    
+{{"Output of if" | nindent 2}}
+{{- else}}
+{{"Output of else" | nindent 2}}   
+{{- end}}			<---end
+
+vagrant@helm:~/documents/helm$ sudo vi firstchart/values.yaml
+#added by Amer
+my:
+  flag: false   <--- 
+
+vagrant@helm:~/documents/helm$ helm template firstchart
+# Source: firstchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+
+  Output of else   <--- 
+metadata:
+---------------------
+vagrant@helm:~/documents/helm$ sudo vi firstchart/values.yaml
+#added by Amer
+my:
+  flag: false
+  values:
+    - egy
+    - india
+    - usa
+    - uk
+
+vagrant@helm:~/documents/helm$ sudo vi firstchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+{{- if .Values.my.flag}}        <---begining
+{{"Output of if" | nindent 2}}
+{{- else}}
+{{"Output of else" | nindent 2}}   
+{{- end}}			<---end
+
+{{- with .Values.my.values}}  		<---begining
+countriesOfDeployment:
+{{- toYaml . | nindent 2}}
+{{- end}}			<---end
+
+vagrant@helm:~/documents/helm$ helm template firstchart
+---
+# Source: firstchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+
+  Output of else
+countriesOfDeployment:
+  - egy
+  - india
+  - usa
+  - uk
+-----------------------------------------------------------
+vagrant@helm:~/documents/helm$ sudo vi firstchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+{{ $myFLAG := "test"}}
+{{ $myFLAG := true}}
+
+{{- if .Values.my.flag}}        <---begining
+{{"Output of if" | nindent 2}}
+{{- else}}
+{{"Output of else" | nindent 2}}   
+{{- end}}         <---end
+
+{{- with .Values.my.values}}         <---begining
+countriesOfDeployment:
+{{- toYaml . | nindent 2}}
+{{- end}}            <---end
+
+vagrant@helm:~/documents/helm$ helm template firstchart
+
+---------------------------------------------------------------
+loop:
+----
+vagrant@helm:~/documents/helm$ sudo vi firstchart/values.yaml
+#added by Amer
+my:
+  flag: false
+  values:
+    - egy
+    - india
+    - usa
+    - uk
+
+vagrant@helm:~/documents/helm$ sudo vi firstchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+{{- if .Values.my.flag}}        
+{{"Output of if" | nindent 2}}
+{{- else}}
+{{"Output of else" | nindent 2}}   
+{{- end}}
+{{- with .Values.my.values}}
+countriesOfDeployment:
+{{- toYaml . | nindent 2}}
+{{- end}}
+
+countriesOfDeployment:			<---add these lines
+{{- range .Values.my.values}}		<---begining
+  - {{ . | upper | quote}}
+{{- end}}			<---end
+
+vagrant@helm:~/documents/helm$ helm template firstchart
+# Source: firstchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+
+  Output of else
+countriesOfDeployment:
+  - egy
+  - india
+  - usa
+  - uk
+
+countriesOfDeployment:
+  - "EGY"
+  - "INDIA"
+  - "USA"
+  - "UK"
+-----------------------------------------------------------
+vagrant@helm:~/documents/helm$ sudo vi firstchart/templates/deployment.yaml
+
+
+apiVersion: apps/v1
+kind: Deployment
+{{- if .Values.my.flag}}        
+{{"Output of if" | nindent 2}}
+{{- else}}
+{{"Output of else" | nindent 2}}   
+{{- end}}
+{{- with .Values.my.values}}
+countriesOfDeployment:
+{{- toYaml . | nindent 2}}
+{{- end}}
+
+countriesOfDeployment:			
+{{- range .Values.my.values}}		<---begining
+  - {{ . | upper | quote}}
+{{- end}}			<---end
+
+countriesOfDeployment:			<---add these lines
+{{- range $key,$value .Values.my.image}}		<---begining
+  - {{ . | upper | quote}}
+{{- end}}			<---end
+--------------------------------------------------------------
+vagrant@helm:~/documents/helm$ sudo vi firstchart/values.yaml
+image:
+  - pullPolicy: "IfNotPresent"
+  - repository: "nginx"
+  - tag: ""
+
+vagrant@helm:~/documents/helm$ sudo vi firstchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+{{- if .Values.my.flag}}        
+{{"Output of if" | nindent 2}}
+{{- else}}
+{{"Output of else" | nindent 2}}   
+{{- end}}
+{{- with .Values.my.values}}
+countriesOfDeployment:
+{{- toYaml . | nindent 2}}
+{{- end}}
+
+countriesOfDeployment:			
+{{- range .Values.my.values}}
+  - {{ . | upper | quote}}
+{{- end}}
+
+countriesOfDeployment:			<---add these lines
+{{- range $key,$value .Values.my.image}}		<---begining
+  - {{ . | upper | quote}}
+{{- end}}			<---end
+
+image:			<---add these lines
+{{- range $key,$value := .Values.image}}		<---begining
+  - {{$key}}: {{$value | quote}}
+{{- end}}			<---end
 
 
 
+vagrant@helm:~/documents/helm$ helm template firstchart
+# Source: firstchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
 
+  Output of else
+countriesOfDeployment:
+  - egy
+  - india
+  - usa
+  - uk
+
+countriesOfDeployment:
+  - "EGY"
+  - "INDIA"
+  - "USA"
+  - "UK"
+  
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: ""
 
 
 
