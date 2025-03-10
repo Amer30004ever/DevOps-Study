@@ -1,0 +1,103 @@
+Explanation of the Vagrantfile
+1-Vagrant API Version:
+
+Vagrant.configure("2") do |config|
+Specifies the version of the Vagrant API to use (version 2 is the latest).
+
+2-Define a VM:
+
+config.vm.define "web" do |web|
+Defines a VM named web. You can define multiple VMs in the same Vagrantfile.
+
+3-Box Configuration:
+
+web.vm.box = "ubuntu/focal64"
+Specifies the base box to use for the VM. In this case, it's Ubuntu 20.04 (Focal Fossa).
+
+4-Hostname:
+
+web.vm.hostname = "web-server"
+Sets the hostname of the VM.
+
+5-Networking:
+
+web.vm.network "private_network", ip: "192.168.33.10"
+Configures a private network with a static IP address.
+
+For a public (bridged) network:
+
+web.vm.network "public_network"
+
+6-Synced Folders:
+
+web.vm.synced_folder "./data", "/vagrant_data"
+Syncs the ./data folder on the host machine with /vagrant_data on the VM.
+
+7-Resource Customization:
+
+web.vm.provider "virtualbox" do |vb|
+  vb.memory = "2048" # 2GB RAM
+  vb.cpus = 2        # 2 CPUs
+end
+Customizes the VM's resources (memory and CPU) for VirtualBox.
+
+8-Provisioning:
+
+Shell Script:
+
+web.vm.provision "shell", path: "provision-web.sh"
+Runs a shell script located at provision-web.sh on the VM.
+
+Inline Shell Script:
+
+db.vm.provision "shell", inline: <<-SHELL
+  sudo yum update -y
+  sudo yum install -y mysql-server
+SHELL
+Runs an inline shell script directly in the Vagrantfile.
+
+Ansible:
+
+lb.vm.provision "ansible" do |ansible|
+  ansible.playbook = "playbook.yml"
+end
+Uses Ansible to provision the VM with a playbook.
+
+9-Global Configuration:
+
+config.vm.provider "virtualbox" do |vb|
+  vb.gui = false
+  vb.name = "vagrant-multi-machine"
+end
+Applies settings to all VMs (e.g., disabling the GUI and setting a custom name).
+
+10-Global Provisioning:
+
+config.vm.provision "shell", inline: <<-SHELL
+  echo "This script runs on all VMs during provisioning."
+SHELL
+Runs a script on all VMs during provisioning.
+
+---------------------------------------------------------
+How to Use This Vagrantfile
+1-Save the file as Vagrantfile in your project directory.
+
+2-Run the following command to start and provision the VMs:
+
+vagrant up
+
+3-To start specific VMs:
+
+vagrant up web
+vagrant up db
+
+4-To SSH into a VM:
+
+vagrant ssh web
+vagrant ssh db
+
+5-To destroy all VMs:
+
+vagrant destroy -f
+
+This Vagrantfile provides a flexible and powerful setup for managing multiple VMs with different configurations. Adjust it as needed for your specific use case!

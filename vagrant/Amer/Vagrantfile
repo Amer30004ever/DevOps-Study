@@ -1,0 +1,92 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Specify the Vagrant API version
+Vagrant.configure("2") do |config|
+
+  # Define a VM named "web"
+  config.vm.define "web" do |web|
+    # Use the Ubuntu 20.04 (Focal Fossa) box
+    web.vm.box = "ubuntu/focal64"
+
+    # Set the hostname for the VM
+    web.vm.hostname = "web-server"
+
+    # Configure a private network with a static IP
+    web.vm.network "private_network", ip: "192.168.33.10"
+
+    # Configure a synced folder between the host and guest
+    web.vm.synced_folder "./data", "/vagrant_data"
+
+    # Customize VM resources (memory and CPUs)
+    web.vm.provider "virtualbox" do |vb|
+      vb.memory = "2048" # 2GB RAM
+      vb.cpus = 2        # 2 CPUs
+    end
+
+    # Provision the VM using a shell script
+    web.vm.provision "shell", path: "provision-web.sh"
+  end
+
+  # Define a second VM named "db"
+  config.vm.define "db" do |db|
+    # Use the CentOS 7 box
+    db.vm.box = "centos/7"
+
+    # Set the hostname for the VM
+    db.vm.hostname = "db-server"
+
+    # Configure a private network with a static IP
+    db.vm.network "private_network", ip: "192.168.33.11"
+
+    # Customize VM resources (memory and CPUs)
+    db.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024" # 1GB RAM
+      vb.cpus = 1        # 1 CPU
+    end
+
+    # Provision the VM using an inline shell script
+    db.vm.provision "shell", inline: <<-SHELL
+      # Update the system
+      sudo yum update -y
+
+      # Install MySQL
+      sudo yum install -y mysql-server
+
+      # Start and enable MySQL service
+      sudo systemctl start mysqld
+      sudo systemctl enable mysqld
+    SHELL
+  end
+
+  # Define a third VM named "loadbalancer"
+  config.vm.define "loadbalancer" do |lb|
+    # Use the Ubuntu 20.04 (Focal Fossa) box
+    lb.vm.box = "ubuntu/focal64"
+
+    # Set the hostname for the VM
+    lb.vm.hostname = "loadbalancer"
+
+    # Configure a bridged network (public network)
+    lb.vm.network "public_network"
+
+    # Provision the VM using Ansible
+    lb.vm.provision "ansible" do |ansible|
+      ansible.playbook = "playbook.yml"
+    end
+  end
+
+  # Global configuration for all VMs
+  config.vm.provider "virtualbox" do |vb|
+    # Enable the GUI for debugging (optional)
+    vb.gui = false
+
+    # Set a custom name for the VirtualBox VM
+    vb.name = "vagrant-multi-machine"
+  end
+
+  # Global provisioning script (runs on all VMs)
+  config.vm.provision "shell", inline: <<-SHELL
+    echo "This script runs on all VMs during provisioning."
+  SHELL
+end
