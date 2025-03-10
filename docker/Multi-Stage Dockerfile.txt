@@ -1,0 +1,45 @@
+Reducing Docker Image Size Using Multi-Stage Builds
+In the world of Docker, the main goal is to save resources, whether in terms of space or time. When I created 
+the Dockerfile to run the application, it worked perfectly, but I discovered that the image size was very large around 220 MB
+That's why I decided to use multi-stage builds, which, in simple terms, involve dividing the image-building process into stages. 
+The idea here is to perform all the necessary steps in the build stage, and then take only the essential components needed to 
+run the application in the production stage. The result? A smaller and more efficient image—its size after modification became 150 MB
+The Dockerfile Before Modification (Without Multi-Stage)
+
+FROM alpine  
+RUN apk add --update nodejs npm  
+COPY . /src  
+WORKDIR /src  
+RUN npm install  
+EXPOSE 8080  
+ENTRYPOINT ["node", "./app.js"]  
+
+The Problem:
+The image was large because all the tools and packages I used during the build process were included in the image, even if they weren't needed to run the application.
+The Dockerfile After Using Multi-Stage Builds
+
+
+# Build stage  
+FROM alpine AS build  
+RUN apk add --no-cache nodejs npm curl  
+COPY . /src  
+WORKDIR /src  
+RUN npm install  
+
+# Production stage  
+FROM alpine AS prod  
+RUN apk add --no-cache nodejs curl  
+COPY --from=build /src /src  
+WORKDIR /src  
+EXPOSE 8080  
+ENTRYPOINT ["node", "./app.js"]  
+
+
+The Idea Behind Multi-Stage Builds
+=In the build stage:
+	-Install all the tools and packages needed for the build.
+	-Run npm install to install the dependencies.
+=In the production stage:
+	-Copy the final files (with the installed dependencies) from the build stage to the final image.
+	-The result? The final image contains only the essential components needed to run the application, which significantly reduces its size.
+
