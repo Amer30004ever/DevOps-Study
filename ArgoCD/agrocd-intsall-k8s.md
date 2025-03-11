@@ -2,7 +2,7 @@
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-sleep 40 
+sleep 100 
 
 # access ArgoCD UI
 kubectl get svc -n argocd
