@@ -1,0 +1,5 @@
+aws iam simulate-principal-policy --policy-source-arn arn:aws:iam::533266962848:user/amer --action-names s3:CreateBucket
+
+An error occurred (AccessDenied) when calling the SimulatePrincipalPolicy operation: User: arn:aws:iam::533266962848:user/amer is not authorized to perform: iam:SimulatePrincipalPolicy on resource: arn:aws:iam::533266962848:user/amer because no permissions boundary allows the iam:SimulatePrincipalPolicy action   aws iam simulate-principal-policy --policy-source-arn arn:aws:iam::533266962848:user/amer --action-names s3:CreateBucketption -2 buckets>        
+
+An error occurred (AccessDenied) when calling the SimulatePrincipalPolicy operation: User: arn:aws:iam::533266962848:user/amer is not authorized to perform: iam:SimulatePrincipalPolicy on resource: arn:aws:iam::533266962848:user/amer because no permissions boundary allows the iam:SimulatePrincipalPolicy action
