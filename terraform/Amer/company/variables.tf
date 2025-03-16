@@ -1,2 +1,0 @@
-variable "subnet" {}
-variable "vpc" {}

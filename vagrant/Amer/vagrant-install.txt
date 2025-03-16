@@ -3,6 +3,6 @@ create new folder and open terminal from it
 check varant version: vagrant -v
 creating vagrant file: vagrant init ubuntu/bionic64
 run vagrant machine on virtual box: vagrant up 
-In the MobaXterm session configuration window, click Advanced SSH Settings.
-Under the Use private key section, browse to the location of the private_key file from Step 1 and select it.
 use mobaxterm to ssh on vagrant using port 2222 and private key located in C:\vagrant\ubuntu-machine\.vagrant\machines\default\virtualbox
+In the MobaXterm session configuration window, click Advanced SSH Settings.
+Under the Use private key section, browse to the location of the private_key file and select it.
