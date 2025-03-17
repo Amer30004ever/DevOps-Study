@@ -1,0 +1,98 @@
+To install and run Rancher, execute the following Docker command on your host:
+
+sudo docker run --privileged -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher
+ 
+To access the Rancher server UI, open a browser and go to the hostname or address where the container 
+was installed. You will be guided through setting up your first cluster. To get started quickly, have 
+a look at out additional resources and getting started guide.
+
+-----------------------------------
+
+To install Rancher Desktop on Ubuntu 22.04, follow these steps. Rancher Desktop provides a local Kubernetes environment 
+using k3s and supports both Docker and containerd as container runtimes.
+
+Step 1: Download Rancher Desktop
+Visit the official Rancher Desktop website: https://rancherdesktop.io/.
+
+Download the .deb package for Ubuntu.
+
+Alternatively, you can download it directly using the terminal:
+
+wget https://github.com/rancher-sandbox/rancher-desktop/releases/download/v1.12.1/rancher-desktop_1.12.1_amd64.deb
+
+Step 2: Install Rancher Desktop
+Navigate to the directory where the .deb file was downloaded (e.g., ~/Downloads).
+
+Install the package using dpkg:
+
+sudo dpkg -i rancher-desktop_1.12.1_amd64.deb
+
+If there are any missing dependencies, fix them by running:
+
+sudo apt --fix-broken install
+
+Step 3: Launch Rancher Desktop
+After installation, you can launch Rancher Desktop from the Applications Menu or by running the following command in the terminal:
+
+rancher-desktop
+
+The first time you launch Rancher Desktop, it will:
+
+Download the necessary components (e.g., k3s, Kubernetes tools).
+
+Set up a local Kubernetes cluster.
+
+Step 4: Configure Rancher Desktop
+Once Rancher Desktop is running, you can configure it via the Settings menu:
+
+Choose the container runtime: Docker or containerd.
+
+Adjust Kubernetes version and resource limits (CPU, memory).
+
+Rancher Desktop will automatically start the Kubernetes cluster. You can check the status in the GUI.
+
+Step 5: Access Kubernetes
+Rancher Desktop installs kubectl automatically. Verify it by running:
+
+kubectl get nodes
+
+You should see a single node (the local machine) in the output.
+
+You can also use nerdctl (for containerd) or docker (if Docker is selected as the runtime) to manage containers.
+
+Step 6: (Optional) Install Rancher CLI
+If you want to manage Rancher-specific resources, you can install the Rancher CLI:
+
+Download the CLI:
+
+wget https://github.com/rancher/cli/releases/download/v2.7.0/rancher-linux-amd64-v2.7.0.tar.gz
+
+Extract the binary:
+
+tar -xzf rancher-linux-amd64-v2.7.0.tar.gz
+
+Move it to /usr/local/bin:
+
+sudo mv rancher-v2.7.0/rancher /usr/local/bin/
+
+Verify the installation:
+
+rancher --version
+
+Step 7: (Optional) Add Rancher Desktop to PATH
+If you want to use Rancher Desktop's tools (like kubectl or nerdctl) from the terminal, add them to your PATH:
+
+Open your shell configuration file (e.g., ~/.bashrc or ~/.zshrc):
+
+nano ~/.bashrc
+
+Add the following line:
+
+export PATH=$PATH:$HOME/.rd/bin
+
+Reload the shell:
+
+source ~/.bashrc
+
+Done!
+You now have Rancher Desktop installed on Ubuntu 22.04, providing a local Kubernetes cluster for development and testing. 
