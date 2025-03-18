@@ -1,0 +1,27 @@
+Vagrant.configure("2") do |config|
+  # Enable and configure hostmanager plugin
+  config.hostmanager.enabled = true 
+  config.hostmanager.manage_host = true
+  
+  ### test vm ###
+  config.vm.define "test" do |test|
+    test.vm.box = "generic/ubuntu2204"  # Ubuntu 22.04 box
+    test.vm.hostname = "test"  # Set hostname to "test"
+    test.vm.network "private_network", ip: "192.168.33.33"  # Assign a static IP
+
+    # VMware Workstation provider configuration
+    test.vm.provider "vmware_desktop" do |vb|
+      vb.memory = "1024"  # Memory 1024MB 
+      vb.gui = false  # Run in headless mode
+      vb.cpus = 2  # Allocate 2 CPUs
+    end
+
+    # Use password-based authentication
+    config.ssh.username = "vagrant"  # Default username for most Vagrant boxes
+    config.ssh.password = "vagrant"  # Default password for most Vagrant boxes
+    config.ssh.insert_key = false    # Disable replacing the insecure key
+
+    # Increase SSH timeout to 10 minutes
+    #config.ssh.timeout = 600
+  end
+end

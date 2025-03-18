@@ -1,0 +1,15 @@
+install vagrant hostmanager Plugin:
+-----------------------------------
+vagrant plugin install vagrant-hostmanager
+
+===================================================================
+VMWare Workstation
+------------------
+Install the VMware Provider Plugin:
+----------------------------------
+vagrant plugin install vagrant-vmware-desktop
+
+Start the VM:
+Run the following command to start the VM with the VMware provider:
+
+vagrant up --provider=vmware_desktop

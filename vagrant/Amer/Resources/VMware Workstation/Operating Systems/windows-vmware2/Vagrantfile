@@ -1,0 +1,31 @@
+Vagrant.configure("2") do |config|
+  # Enable and configure hostmanager plugin
+  config.hostmanager.enabled = false 
+  config.hostmanager.manage_host = false
+  
+  ### Windows 10 VM ###
+  config.vm.define "windows10" do |windows|
+    windows.vm.box = "gusztavvargadr/windows-10"  # Windows 10 box
+		config.vm.box_version = "2202.0.2409"
+    windows.vm.hostname = "windows10"  # Set hostname to "windows10"
+    windows.vm.network "private_network", ip: "192.168.33.33"  # Assign a static IP
+
+    # VMware Workstation provider configuration
+    windows.vm.provider "vmware_desktop" do |vb|
+      vb.memory = "4096"  # Allocate 4GB of RAM (Windows requires more memory)
+      vb.gui = true  # Enable GUI (Windows needs a GUI)
+      vb.cpus = 2  # Allocate 2 CPUs
+    end
+
+    # WinRM configuration for Windows
+    windows.vm.communicator = "winrm"  # Use WinRM instead of SSH
+    windows.vm.guest = :windows  # Specify the guest OS as Windows
+
+    # WinRM credentials
+    windows.winrm.username = "vagrant"  # Default username for Windows boxes
+    windows.winrm.password = "vagrant"  # Default password for Windows boxes
+
+    # Increase WinRM timeout to 10 minutes
+    windows.winrm.timeout = 600
+  end
+end

@@ -1,0 +1,129 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # Use Ubuntu Bionic 64-bit as the base box
+  config.vm.box = "ubuntu/bionic64"
+
+  # Configure the VM provider to allocate 8 GB of memory
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "8192"
+  end
+
+  # Forward ports for Jenkins, Proj, GitLab Runner, Prometheus, and Grafana
+  config.vm.network "forwarded_port", guest: 7000, host: 7000  # Jenkins
+  config.vm.network "forwarded_port", guest: 8081, host: 8081  # Proj
+  config.vm.network "forwarded_port", guest: 8090, host: 8090  # GitLab Runner
+  config.vm.network "forwarded_port", guest: 9090, host: 9090  # Prometheus
+  config.vm.network "forwarded_port", guest: 3000, host: 3000  # Grafana
+  config.vm.network "forwarded_port", guest: 8082, host: 8082  # Guacamole
+  config.vm.network "forwarded_port", guest: 80, host: 8083    # Bitwarden
+  config.vm.network "forwarded_port", guest: 5000, host: 8084  # Whoogle
+  config.vm.network "forwarded_port", guest: 80, host: 8085    # Rancher
+  config.vm.network "forwarded_port", guest: 9000, host: 8086  # SonarQube
+  config.vm.network "forwarded_port", guest: 443, host: 8087   # Nextcloud
+  config.vm.network "forwarded_port", guest: 1194, host: 1194  # OpenVPN
+  config.vm.network "forwarded_port", guest: 53, host: 5353    # Pi-hole DNS
+  config.vm.network "forwarded_port", guest: 80, host: 8088    # Pi-hole Admin
+  
+  # Enable provisioning with a shell script
+  config.vm.provision "shell", inline: <<-SHELL
+    # Update the package list
+    apt-get update
+
+    # Install necessary packages
+    apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+
+    # Add Docker’s official GPG key and the Docker repository
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+    # Update the package list again and install Docker
+    apt-get update
+    apt-get install -y docker-ce
+
+    # Install Docker Compose
+    curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+
+    # Verify Docker and Docker Compose installation
+    docker --version
+    docker-compose --version
+
+    # Pull and run Jenkins
+    docker pull jenkins/jenkins
+	sudo mkdir -p /mnt/jenkins/data
+    docker run -d --name jenkins --restart always -p 7000:8080 jenkins/jenkins
+
+    # Pull and run Proj container
+    docker pull amer30004ever/proj
+    docker run -d --name proj --restart always -p 8081:80 amer30004ever/proj
+
+    # Pull and run GitLab EE
+    docker pull gitlab/gitlab-ee:latest
+    docker run -d --name gitlab --restart always -p 8090:80 gitlab/gitlab-ee:latest
+
+    # Pull and run Prometheus
+    docker pull bitnami/prometheus
+	docker run -d --name prometheus --restart always -p 9090:9090 bitnami/prometheus
+
+    # Pull and run Grafana
+    docker pull grafana/grafana
+	docker run -d --name grafana --restart always -p 3000:3000 grafana/grafana 
+	
+	# Pull and run Guacamole
+    docker pull guacamole/guacd
+    docker run -d --name guacamole -p 8082:8082 guacamole/guacd
+	#docker run -d --name guacamole -p 8082:8082 guacamole/guacamole
+    
+	# Pull and run Bitwarden
+    docker pull bitwarden/server
+	sudo mkdir -p /mnt/bitwarden/data
+	openssl rand -base64 32
+	#6yUkItwGuf260KYc2AW6IwAhZiCTOZB3O+6CKK1ZHbk=
+	sudo docker run -d --name bitwarden --restart always -p 8083:80 -e ADMIN_TOKEN=6yUkItwGuf260KYc2AW6IwAhZiCTOZB3O+6CKK1ZHbk= bitwarden/server:latest
+    #mkdir -p /home/vagrant/vaultwarden_data
+	#docker run -d --name vaultwarden --restart always -p 8083:80 -v /home/vagrant/vaultwarden_data:/data vaultwarden/server:latest
+
+    # Pull and run Whoogle
+    docker pull whoogle/search
+    docker run -d --name whoogle -p 8084:5000 whoogle/search
+
+    # Pull and run Rancher
+    docker pull rancher/rancher
+    docker run -d --name rancher -p 8085:80 rancher/rancher
+
+    # Pull and run SonarQube
+    docker pull sonarqube
+    docker run -d --name sonarqube -p 8086:9000 sonarqube
+
+    # Pull and run Nextcloud
+    docker pull nextcloud
+    docker run -d --name nextcloud -p 8087:443 nextcloud
+
+    # Pull and run OpenVPN
+    docker pull kylemanna/openvpn
+	sudo mkdir -p /home/vagrant/openvpn-config
+	sudo docker run --name openvpn --restart always -d \
+	-v /home/vagrant/openvpn-config:/etc/openvpn \
+	-p 1194:1194/udp --cap-add=NET_ADMIN \
+	kylemanna/openvpn
+	sudo docker run -v /home/vagrant/openvpn-config:/etc/openvpn --rm kylemanna/openvpn ovpn_genconfig -u udp://127.0.0.1
+	sudo docker run -v /home/vagrant/openvpn-config:/etc/openvpn --rm -it kylemanna/openvpn ovpn_initpki
+	sudo chown -R vagrant:vagrant /home/vagrant/openvpn-config
+	sudo chmod -R 755 /home/vagrant/openvpn-config
+	sudo docker run -v /home/vagrant/openvpn-config:/etc/openvpn --rm -it kylemanna/openvpn easyrsa build-client-full amer nopass
+	sudo docker run -v /home/vagrant/openvpn-config:/etc/openvpn --rm kylemanna/openvpn ovpn_getclient amer > /home/vagrant/openvpn-config/amer.ovpn
+
+	#Enter New CA Key Passphrase: artoolkit123
+    #docker run -d --name openvpn -p 1194:1194/udp kylemanna/openvpn
+
+    # Pull and run Pi-hole
+    docker pull pihole/pihole
+    docker run -d --name pihole -p 5353:53/tcp -p 5353:53/udp -p 8088:80 \
+      -v /mnt/pihole:/etc/pihole \
+      -v /mnt/pihole/dnsmasq:/etc/dnsmasq.d \
+      pihole/pihole
+  SHELL
+  
+end
