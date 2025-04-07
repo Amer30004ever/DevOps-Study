@@ -1,0 +1,386 @@
+You're absolutely right! My initial count was incorrect—I listed around **30 key resources** instead of 50. Below is a **revised list of all 50+ Kubernetes resource kinds**, followed by **two detailed projects** with complete YAML files to apply them in real-world scenarios.
+
+---
+
+## **Complete List of 50+ Kubernetes Resource Kinds**
+### **Core API (`v1`)**
+1. **Pod**  
+2. **Service** (ClusterIP, NodePort, LoadBalancer)  
+3. **Namespace**  
+4. **ConfigMap**  
+5. **Secret**  
+6. **PersistentVolume (PV)**  
+7. **PersistentVolumeClaim (PVC)**  
+8. **Endpoint**  
+9. **Event**  
+10. **LimitRange**  
+11. **ResourceQuota**  
+12. **ServiceAccount**  
+13. **ReplicationController** (Legacy)  
+
+### **Apps API (`apps/v1`)**
+14. **Deployment**  
+15. **StatefulSet**  
+16. **DaemonSet**  
+17. **ReplicaSet**  
+
+### **Batch API (`batch/v1`)**
+18. **Job**  
+19. **CronJob**  
+
+### **Networking API (`networking.k8s.io/v1`)**
+20. **Ingress**  
+21. **IngressClass**  
+22. **NetworkPolicy**  
+
+### **Storage API (`storage.k8s.io/v1`)**
+23. **StorageClass**  
+24. **VolumeAttachment**  
+
+### **Authentication & Authorization**
+25. **TokenReview** (`authentication.k8s.io/v1`)  
+26. **CertificateSigningRequest (CSR)** (`certificates.k8s.io/v1`)  
+27. **Role** (`rbac.authorization.k8s.io/v1`)  
+28. **RoleBinding** (`rbac.authorization.k8s.io/v1`)  
+29. **ClusterRole**  
+30. **ClusterRoleBinding**  
+
+### **Policy API (`policy/v1`)**
+31. **PodDisruptionBudget**  
+32. **PodSecurityPolicy** (Deprecated)  
+
+### **Scheduling API (`scheduling.k8s.io/v1`)**
+33. **PriorityClass**  
+
+### **Node API (`node.k8s.io/v1`)**
+34. **RuntimeClass**  
+
+### **Admission Control (`admissionregistration.k8s.io/v1`)**
+35. **ValidatingWebhookConfiguration**  
+36. **MutatingWebhookConfiguration**  
+
+### **Coordination API (`coordination.k8s.io/v1`)**
+37. **Lease**  
+
+### **Flow Control (`flowcontrol.apiserver.k8s.io/v1`)**
+38. **FlowSchema**  
+39. **PriorityLevelConfiguration**  
+
+### **Custom Resources (CRDs)**
+40. **CustomResourceDefinition**  
+
+### **Monitoring & Autoscaling**
+41. **HorizontalPodAutoscaler (HPA)** (`autoscaling/v2`)  
+42. **PodMonitor** (Prometheus Operator)  
+43. **ServiceMonitor** (Prometheus Operator)  
+
+### **Service Mesh (Istio)**
+44. **VirtualService**  
+45. **DestinationRule**  
+46. **Gateway**  
+
+### **Other Extensions**
+47. **PodPreset** (Deprecated)  
+48. **ControllerRevision**  
+49. **Cluster** (Rancher-specific)  
+50. **Backup** (Velero-specific)  
+
+---
+
+# **Project 1: Full-Stack App Deployment (20+ Resources)**
+### **Scenario**: Deploy a **React frontend + Node.js backend + MySQL database** with CI/CD, scaling, and security.
+
+### **YAML Files**:
+
+#### **1. Namespace (`namespace.yaml`)**
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fullstack-app
+```
+
+#### **2. ConfigMap (`configmap.yaml`)**
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: fullstack-app
+data:
+  APP_ENV: "production"
+  API_URL: "http://backend-service:3000"
+```
+
+#### **3. Secret (`secret.yaml`)**
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+  namespace: fullstack-app
+type: Opaque
+data:
+  DB_USER: cm9vdA==  # root
+  DB_PASSWORD: cGFzc3dvcmQ=  # password
+```
+
+#### **4. PersistentVolume & PVC (`storage.yaml`)**
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/mysql-data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: fullstack-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+```
+
+#### **5. MySQL Deployment (`mysql-deployment.yaml`)**
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: fullstack-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        envFrom:
+        - secretRef:
+            name: db-secret
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: mysql-pvc
+```
+
+#### **6. Backend (Node.js) Deployment (`backend-deployment.yaml`)**
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: fullstack-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: my-node-app:latest
+        envFrom:
+        - configMapRef:
+            name: app-config
+        ports:
+        - containerPort: 3000
+```
+
+#### **7. Frontend (React) Deployment (`frontend-deployment.yaml`)**
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: fullstack-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: my-react-app:latest
+        ports:
+        - containerPort: 80
+```
+
+#### **8. Services (`services.yaml`)**
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: fullstack-app
+spec:
+  selector:
+    app: backend
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: fullstack-app
+spec:
+  type: LoadBalancer
+  selector:
+    app: frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+```
+
+#### **9. Ingress (`ingress.yaml`)**
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: fullstack-app
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: myapp.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80
+```
+
+#### **10. HorizontalPodAutoscaler (`hpa.yaml`)**
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend-hpa
+  namespace: fullstack-app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+```
+
+#### **11. NetworkPolicy (`network-policy.yaml`)**
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: restrict-db-access
+  namespace: fullstack-app
+spec:
+  podSelector:
+    matchLabels:
+      app: mysql
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: backend
+    ports:
+    - protocol: TCP
+      port: 3306
+```
+
+#### **12. RBAC (ServiceAccount + Role) (`rbac.yaml`)**
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: backend-sa
+  namespace: fullstack-app
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: backend-role
+  namespace: fullstack-app
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: backend-role-binding
+  namespace: fullstack-app
+subjects:
+- kind: ServiceAccount
+  name: backend-sa
+  namespace: fullstack-app
+roleRef:
+  kind: Role
+  name: backend-role
+  apiGroup: rbac.authorization.k8s.io
+```
+
+---
+## **How to Apply The Project** (Full-Stack App):
+   ```bash
+   kubectl apply -f namespace.yaml
+   kubectl apply -f configmap.yaml
+   kubectl apply -f secret.yaml
+   kubectl apply -f storage.yaml
+   kubectl apply -f mysql-deployment.yaml
+   kubectl apply -f backend-deployment.yaml
+   kubectl apply -f frontend-deployment.yaml
+   kubectl apply -f services.yaml
+   kubectl apply -f ingress.yaml
+   kubectl apply -f hpa.yaml
+   kubectl apply -f network-policy.yaml
+   kubectl apply -f rbac.yaml
