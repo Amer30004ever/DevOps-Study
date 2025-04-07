@@ -82,12 +82,12 @@ Input <-- change behavior of
 
 #ls file2 file22 >>result.txt
 
-#ls file2 file22 >>result.txt 2>>result.txt --> will put output and error in 
-                                                one file result.txt
+#ls file2 file22 >> result.txt 2>> error.txt --> will put output in result.txt 						 and error in error.txt
 or for Redirection:
+------------------
 
-#ls file2 file22 2&>myresult.txt
+#ls file2 file22 2&>myresult.txt ---> will put output and error in one file
 
 and for Append:
-
+--------------
 #ls file2 file22 2&>>myresult.txt
