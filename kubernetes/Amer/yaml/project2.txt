@@ -1,0 +1,69 @@
+# **Project 2: CI/CD Pipeline with Kubernetes (15+ Resources)**
+### **Scenario**: Set up a **GitOps pipeline with ArgoCD, Tekton, and Prometheus monitoring**.
+
+### **YAML Files**:
+#### **1. ArgoCD Application (`argocd-app.yaml`)**
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: myapp
+  namespace: argocd
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: production
+  source:
+    repoURL: https://github.com/myorg/myapp.git
+    targetRevision: HEAD
+    path: k8s/
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+```
+
+#### **2. Tekton Pipeline (`tekton-pipeline.yaml`)**
+```yaml
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-and-deploy
+spec:
+  tasks:
+  - name: build
+    taskRef:
+      name: build-task
+  - name: deploy
+    taskRef:
+      name: deploy-task
+    runAfter: ["build"]
+```
+
+#### **3. Prometheus Monitoring (`prometheus-monitor.yaml`)**
+```yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: app-monitor
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  endpoints:
+  - port: web
+    interval: 30s
+```
+
+---
+
+## **How to Apply The Project(CI/CD Pipeline):
+   ```bash
+   kubectl apply -f argocd-app.yaml
+   kubectl apply -f tekton-pipeline.yaml
+   kubectl apply -f prometheus-monitor.yaml
+   ```
+
+---

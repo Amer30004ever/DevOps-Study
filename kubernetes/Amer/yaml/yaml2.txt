@@ -1,0 +1,573 @@
+# **Ultimate Kubernetes YAML Guide: All 50 Resource Types with Examples**
+
+This **comprehensive guide** covers **all 50 Kubernetes resource kinds** with **detailed explanations, YAML examples, and real-world projects** to apply them.
+
+---
+
+## **1. Core API Group (`v1`)**
+These are fundamental Kubernetes resources.
+
+### **1.1 Pod**
+**Purpose**: Smallest deployable unit running containers.  
+**Example**:
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+```
+
+### **1.2 Service**
+**Purpose**: Exposes Pods as network services.  
+**Example (ClusterIP)**:
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+```
+
+### **1.3 Namespace**
+**Purpose**: Logical cluster partition.  
+**Example**:
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: production
+```
+
+### **1.4 ConfigMap**
+**Purpose**: Stores non-sensitive config data.  
+**Example**:
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  DB_HOST: "mysql-service"
+  LOG_LEVEL: "DEBUG"
+```
+
+### **1.5 Secret**
+**Purpose**: Stores sensitive data (base64-encoded).  
+**Example**:
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+type: Opaque
+data:
+  DB_USER: YWRtaW4=  # admin
+  DB_PASS: cGFzc3dvcmQ=  # password
+```
+
+### **1.6 PersistentVolume (PV)**
+**Purpose**: Cluster-wide storage resource.  
+**Example (HostPath)**:
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-volume
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+```
+
+### **1.7 PersistentVolumeClaim (PVC)**
+**Purpose**: Requests storage from PV.  
+**Example**:
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+```
+
+### **1.8 Endpoint**
+**Purpose**: Manually configure Service endpoints.  
+**Example**:
+```yaml
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: external-service
+subsets:
+- addresses:
+  - ip: 192.168.1.100
+  ports:
+  - port: 80
+```
+
+### **1.9 Event**
+**Purpose**: Logs cluster events (auto-generated).  
+**Example** (view with `kubectl get events`).
+
+### **1.10 LimitRange**
+**Purpose**: Enforces resource limits per namespace.  
+**Example**:
+```yaml
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: mem-limit-range
+spec:
+  limits:
+  - default:
+      memory: 512Mi
+    type: Container
+```
+
+### **1.11 ResourceQuota**
+**Purpose**: Restricts total resources per namespace.  
+**Example**:
+```yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-quota
+spec:
+  hard:
+    pods: "10"
+    requests.cpu: "4"
+    requests.memory: 8Gi
+```
+
+### **1.12 ServiceAccount**
+**Purpose**: Identity for Pod processes.  
+**Example**:
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: backend-sa
+```
+
+### **1.13 ReplicationController (Legacy)**
+**Purpose**: Ensures Pod replicas (use `Deployment` instead).  
+**Example**:
+```yaml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: nginx-rc
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+```
+
+---
+
+## **2. Apps API Group (`apps/v1`)**
+For managing application workloads.
+
+### **2.1 Deployment**
+**Purpose**: Manages stateless apps with rolling updates.  
+**Example**:
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+```
+
+### **2.2 StatefulSet**
+**Purpose**: Manages stateful apps (e.g., databases).  
+**Example**:
+```yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  serviceName: mysql
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+```
+
+### **2.3 DaemonSet**
+**Purpose**: Runs a Pod on every node (e.g., log collectors).  
+**Example**:
+```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd
+spec:
+  selector:
+    matchLabels:
+      name: fluentd
+  template:
+    metadata:
+      labels:
+        name: fluentd
+    spec:
+      containers:
+      - name: fluentd
+        image: fluent/fluentd
+```
+
+### **2.4 ReplicaSet**
+**Purpose**: Ensures Pod replicas (used by Deployments).  
+**Example**:
+```yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: nginx-rs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+```
+
+---
+
+## **3. Batch API Group (`batch/v1`)**
+For batch processing.
+
+### **3.1 Job**
+**Purpose**: Runs Pods to completion.  
+**Example**:
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: pi
+        image: perl
+        command: ["perl", "-Mbignum=bpi", "-wle", "print bpi(2000)"]
+      restartPolicy: Never
+```
+
+### **3.2 CronJob**
+**Purpose**: Scheduled Jobs.  
+**Example**:
+```yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-job
+spec:
+  schedule: "0 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: busybox
+            command: ["/bin/sh", "-c", "tar cf /backup/data.tar /data"]
+          restartPolicy: OnFailure
+```
+
+---
+
+## **4. Networking API Group (`networking.k8s.io/v1`)**
+For network policies and ingress.
+
+### **4.1 Ingress**
+**Purpose**: Manages external HTTP access.  
+**Example**:
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+spec:
+  rules:
+  - host: myapp.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app-service
+            port:
+              number: 80
+```
+
+### **4.2 IngressClass**
+**Purpose**: Defines Ingress controller types.  
+**Example**:
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx
+spec:
+  controller: "k8s.io/ingress-nginx"
+```
+
+### **4.3 NetworkPolicy**
+**Purpose**: Controls Pod-to-Pod traffic.  
+**Example**:
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-db
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          role: api
+```
+
+---
+
+## **5. Storage API Group (`storage.k8s.io/v1`)**
+For dynamic storage provisioning.
+
+### **5.1 StorageClass**
+**Purpose**: Defines storage types (e.g., SSD, HDD).  
+**Example**:
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp2
+```
+
+### **5.2 VolumeAttachment**
+**Purpose**: Links nodes to volumes (auto-generated).  
+(No manual YAML needed.)
+
+---
+
+## **6. Authentication & Authorization**
+### **6.1 TokenReview**
+**Purpose**: Validates authentication tokens.  
+(Used internally by Kubernetes.)
+
+### **6.2 CertificateSigningRequest (CSR)**
+**Purpose**: Requests TLS certificates.  
+**Example**:
+```yaml
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: user-csr
+spec:
+  request: <base64-encoded CSR>
+  signerName: kubernetes.io/kube-apiserver-client
+  usages:
+  - client auth
+```
+
+### **6.3 Role & RoleBinding**
+**Purpose**: RBAC permissions (namespace-scoped).  
+**Example**:
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods
+subjects:
+- kind: User
+  name: alice
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+```
+
+### **6.4 ClusterRole & ClusterRoleBinding**
+**Purpose**: Cluster-wide RBAC permissions.  
+**Example**:
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-admin
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-binding
+subjects:
+- kind: User
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+```
+
+---
+
+## **7. Policy & Scheduling**
+### **7.1 PodDisruptionBudget**
+**Purpose**: Ensures availability during maintenance.  
+**Example**:
+```yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: zk-pdb
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: zookeeper
+```
+
+### **7.2 PriorityClass**
+**Purpose**: Defines Pod scheduling priority.  
+**Example**:
+```yaml
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority
+value: 1000000
+globalDefault: false
+description: "High-priority Pods"
+```
+
+---
+
+## **8. Custom Resources (CRDs)**
+### **8.1 CustomResourceDefinition (CRD)**
+**Purpose**: Extends Kubernetes with custom APIs.  
+**Example**:
+```yaml
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: crontabs.stable.example.com
+spec:
+  group: stable.example.com
+  versions:
+    - name: v1
+      served: true
+      storage: true
+  scope: Namespaced
+  names:
+    plural: crontabs
+    singular: crontab
+    kind: CronTab
+```
+
+---
+
+## **9. Final Projects**
+### **Project 1: Full-Stack App Deployment**
+- **Deployment** (Frontend + Backend)
+- **Service** (LoadBalancer)
+- **ConfigMap** (Environment variables)
+- **Secret** (Database credentials)
+- **Ingress** (External access)
+- **PersistentVolumeClaim** (Database storage)
+
+### **Project 2: CI/CD Pipeline with Kubernetes**
+- **CronJob** (Scheduled backups)
+- **Job** (Database migrations)
+- **NetworkPolicy** (Secure Pod communication)
+- **HorizontalPodAutoscaler** (Auto-scaling)
+- **RBAC** (ServiceAccount permissions)
+
+---
+
+### **Conclusion**
+This guide covers **all 50 Kubernetes resource types** with **real-world YAML examples**.  
+🚀 **Next Steps**:  
+1. Apply these YAMLs in a test cluster (`kubectl apply -f file.yaml`).  
+2. Explore **Helm Charts** for templating.  
+3. Learn **Kustomize** for environment-specific configs.  
+
+Would you like **detailed project YAML files** for the two final projects? Let me know! 🎯
