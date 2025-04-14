@@ -1,0 +1,1 @@
+kubectl delete pod tap-5fff44c966-j9fxf -n linkerd-viz --grace-period=0 --force

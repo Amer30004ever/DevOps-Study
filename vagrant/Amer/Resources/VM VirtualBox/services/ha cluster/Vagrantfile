@@ -1,0 +1,248 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# ========================
+# USER CONFIGURATION
+# ========================
+LOADBALANCERS = 2
+MASTERNODES = 2
+WORKERNODES = 1
+IP_BASE = "10.51.100"
+VM_MEMORY_LB = 2048
+VM_MEMORY_MASTER = 3072
+VM_MEMORY_WORKER = 4096
+VM_CPUS_LB = 1
+VM_CPUS_NODES = 2
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/jammy64"
+  config.vm.box_check_update = false
+  config.vm.synced_folder ".", "/vagrant"
+
+  def common_provisioning(node)
+    node.vm.provision "shell", inline: <<-SHELL
+      apt-get update -qq
+      apt-get install -y containerd apt-transport-https ca-certificates curl ufw gnupg lsb-release
+
+      mkdir -p /etc/containerd
+      containerd config default | tee /etc/containerd/config.toml >/dev/null
+      sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+      systemctl restart containerd
+      systemctl enable containerd
+
+      curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | \
+        gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+      echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /" > /etc/apt/sources.list.d/kubernetes.list
+
+      apt-get update -qq
+      apt-get install -y kubelet kubeadm kubectl
+      apt-mark hold kubelet kubeadm kubectl
+
+      modprobe br_netfilter
+      echo 'br_netfilter' > /etc/modules-load.d/k8s.conf
+      cat <<EOF > /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward = 1
+EOF
+      sysctl --system
+
+      ufw allow from #{IP_BASE}.0/24
+      ufw allow 22/tcp
+      ufw allow 6443/tcp
+      ufw allow 2379:2380/tcp
+      ufw allow 10250/tcp
+      ufw allow 10251/tcp
+      ufw allow 10252/tcp
+      ufw allow 30000:32767/tcp
+      ufw allow 80/tcp
+      ufw allow 443/tcp
+      ufw --force enable
+
+      echo "127.0.0.1 $(hostname)" >> /etc/hosts
+    SHELL
+  end
+
+  (1..LOADBALANCERS).each do |i|
+    config.vm.define "loadbalancer#{i}" do |lb|
+      lb.vm.hostname = "loadbalancer#{i}"
+      lb.vm.network "private_network", ip: "#{IP_BASE}.#{10 + i}"
+
+      lb.vm.provider "virtualbox" do |vb|
+        vb.memory = VM_MEMORY_LB
+        vb.cpus = VM_CPUS_LB
+        vb.name = "loadbalancer#{i}"
+      end
+
+      lb.vm.provision "shell", inline: <<-SHELL
+        apt-get update
+        apt-get install -y haproxy keepalived
+        systemctl enable haproxy keepalived
+
+        cat <<EOF > /etc/haproxy/haproxy.cfg
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    daemon
+    maxconn 2000
+
+defaults
+    log global
+    mode http
+    option httplog
+    option dontlognull
+    timeout connect 5000
+    timeout client 50000
+    timeout server 50000
+
+frontend kubernetes
+    bind *:6443
+    option tcplog
+    mode tcp
+    default_backend kubernetes-master-nodes
+
+backend kubernetes-master-nodes
+    mode tcp
+    balance roundrobin
+    option tcp-check
+    server masternode1 #{IP_BASE}.21:6443 check
+    server masternode2 #{IP_BASE}.22:6443 check
+EOF
+
+        cat <<EOF > /etc/keepalived/keepalived.conf
+vrrp_script chk_haproxy {
+    script "killall -0 haproxy"
+    interval 2
+    weight 2
+}
+
+vrrp_instance VI_1 {
+    interface enp0s8
+    state MASTER
+    virtual_router_id 51
+    priority 101
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 42
+    }
+    virtual_ipaddress {
+        #{IP_BASE}.10/24
+    }
+    track_script {
+        chk_haproxy
+    }
+}
+EOF
+
+        if [ "#{i}" -eq "2" ]; then
+          sed -i 's/priority 101/priority 100/' /etc/keepalived/keepalived.conf
+          sed -i 's/state MASTER/state BACKUP/' /etc/keepalived/keepalived.conf
+        fi
+
+        systemctl restart haproxy keepalived
+
+        ufw allow from #{IP_BASE}.0/24
+        ufw allow 22/tcp
+        ufw allow 80/tcp
+        ufw allow 443/tcp
+        ufw allow 6443/tcp
+        ufw --force enable
+      SHELL
+    end
+  end
+
+  (1..MASTERNODES).each do |i|
+    config.vm.define "masternode#{i}" do |master|
+      master.vm.hostname = "masternode#{i}"
+      master.vm.network "private_network", ip: "#{IP_BASE}.#{20 + i}"
+
+      master.vm.provider "virtualbox" do |vb|
+        vb.memory = VM_MEMORY_MASTER
+        vb.cpus = VM_CPUS_NODES
+        vb.name = "masternode#{i}"
+      end
+
+      common_provisioning(master)
+
+      master.vm.provision "shell", inline: <<-SHELL
+        swapoff -a
+        sed -i '/ swap / s/^/#/' /etc/fstab
+
+        if [ "#{i}" -eq "1" ]; then
+          kubeadm init \
+            --control-plane-endpoint "#{IP_BASE}.10:6443" \
+            --pod-network-cidr=192.168.0.0/16 \
+            --upload-certs \
+            --apiserver-cert-extra-sans=#{IP_BASE}.10 \
+            --v=5
+
+          mkdir -p /home/vagrant/.kube
+          cp /etc/kubernetes/admin.conf /home/vagrant/.kube/config
+          chown vagrant:vagrant /home/vagrant/.kube/config
+
+          sudo -u vagrant kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml
+
+          until sudo -u vagrant kubectl get nodes | grep -q "Ready"; do
+            echo "Waiting for API server to be ready..."
+            sleep 10
+          done
+
+          JOIN_CMD_MASTER="$(kubeadm token create --print-join-command) --control-plane --certificate-key $(kubeadm init phase upload-certs --upload-certs | tail -1)"
+          JOIN_CMD_WORKER="$(kubeadm token create --print-join-command)"
+
+          echo "#!/bin/bash" > /vagrant/join-master.sh
+          echo "$JOIN_CMD_MASTER" >> /vagrant/join-master.sh
+          chmod +x /vagrant/join-master.sh
+
+          echo "#!/bin/bash" > /vagrant/join-worker.sh
+          echo "$JOIN_CMD_WORKER" >> /vagrant/join-worker.sh
+          chmod +x /vagrant/join-worker.sh
+        else
+          until [ -f /vagrant/join-master.sh ]; do
+            echo "Waiting for join-master.sh to be available..."
+            sleep 10
+          done
+
+          until curl -k https://#{IP_BASE}.10:6443/healthz &>/dev/null; do
+            sleep 5
+          done
+
+          bash /vagrant/join-master.sh
+        fi
+      SHELL
+    end
+  end
+
+  (1..WORKERNODES).each do |i|
+    config.vm.define "workernode#{i}" do |worker|
+      worker.vm.hostname = "workernode#{i}"
+      worker.vm.network "private_network", ip: "#{IP_BASE}.#{30 + i}"
+
+      worker.vm.provider "virtualbox" do |vb|
+        vb.memory = VM_MEMORY_WORKER
+        vb.cpus = VM_CPUS_NODES
+        vb.name = "workernode#{i}"
+      end
+
+      common_provisioning(worker)
+
+      worker.vm.provision "shell", inline: <<-SHELL
+        swapoff -a
+        sed -i '/ swap / s/^/#/' /etc/fstab
+
+        until [ -f /vagrant/join-worker.sh ]; do
+          echo "Waiting for join-worker.sh to be available..."
+          sleep 10
+        done
+
+        until curl -k https://#{IP_BASE}.10:6443/healthz &>/dev/null; do
+          sleep 5
+        done
+
+        bash /vagrant/join-worker.sh
+      SHELL
+    end
+  end
+end

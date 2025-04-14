@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: amer4-service
+  namespace: amer-project
+spec:
+  type: NodePort
+  selector:
+    run: amer4
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30000

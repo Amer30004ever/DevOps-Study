@@ -1,0 +1,5 @@
+Missing xdg-open:
+The script is trying to open the Linkerd dashboard in the browser but encounters an error because xdg-open is not installed. To resolve this, install xdg-utils:
+
+sudo apt install xdg-utils
+

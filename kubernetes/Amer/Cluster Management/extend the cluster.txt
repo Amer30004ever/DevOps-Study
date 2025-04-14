@@ -1,0 +1,69 @@
+# Adding and Extending a Hard Drive in VMware Workstation
+
+Based on your disk usage (worker02 is at 85% full), here's how to add a new hard drive and extend your storage:
+
+## Step 1: Add a New Virtual Disk in VMware Workstation
+
+1. Shut down your Ubuntu VM
+2. Right-click the VM > Settings > Add > Hard Disk
+3. Select SCSI (recommended) and create a new virtual disk
+4. Set the disk size (e.g., 20GB or more depending on your needs)
+5. Choose "Store virtual disk as a single file"
+6. Finish the wizard
+
+## Step 2: Initialize the New Disk in Ubuntu
+
+1. Start your VM
+2. Check the new disk is recognized:
+   ```bash
+   lsblk
+   ```
+   You should see a new disk (likely `/dev/sdb`)
+
+3. Create a partition:
+   ```bash
+   sudo fdisk /dev/sdb
+   ```
+   - Press `n` to create new partition
+   - Press `p` for primary partition
+   - Press `1` for first partition
+   - Press enter twice for default start/end sectors
+   - Press `w` to write changes
+
+4. Verify the partition:
+   ```bash
+   lsblk
+   ```
+
+## Step 3: Create Physical Volume and Extend LVM
+
+1. Install LVM tools if not already installed:
+   ```bash
+   sudo apt install lvm2
+   ```
+
+2. Create physical volume:
+   ```bash
+   sudo pvcreate /dev/sdb1
+   ```
+
+3. Extend your volume group:
+   ```bash
+   sudo vgextend ubuntu-vg /dev/sdb1
+   ```
+
+4. Extend the logical volume:
+   ```bash
+   sudo lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
+   ```
+
+5. Resize the filesystem:
+   ```bash
+   sudo resize2fs /dev/ubuntu-vg/ubuntu-lv
+   ```
+
+## Step 4: Verify the Extended Storage
+
+```bash
+df -h
+```

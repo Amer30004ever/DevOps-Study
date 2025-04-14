@@ -1,0 +1,8 @@
+#Failed
+# Delete all failed pods across all namespaces
+kubectl delete pods --all-namespaces --field-selector=status.phase=Failed
+
+#Completed
+#To clean up completed jobs (which show as "Completed" status):
+
+kubectl delete pods -A --field-selector=status.phase=Succeeded

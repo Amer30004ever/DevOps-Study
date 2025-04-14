@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: amer4
+  name: amer4
+  namespace: amer-project
+spec:
+  containers:
+  - image: amer30004ever/proj
+    name: amer4
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always

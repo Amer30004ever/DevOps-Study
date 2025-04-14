@@ -1,0 +1,255 @@
+It looks like the cluster reset process is failing to properly clean up the Weave networking components, which is preventing a clean reinitialization. Let's perform a more thorough cleanup and then reinitialize the cluster.
+
+### Complete Cleanup Procedure:
+
+#### 1. Force Remove All Containers
+```bash
+# Stop all running containers
+sudo crictl --runtime-endpoint unix:///var/run/containerd/containerd.sock ps -aq | xargs sudo crictl --runtime-endpoint unix:///var/run/containerd/containerd.sock stop
+
+# Remove all containers
+sudo crictl --runtime-endpoint unix:///var/run/containerd/containerd.sock ps -aq | xargs sudo crictl --runtime-endpoint unix:///var/run/containerd/containerd.sock rm
+```
+
+#### 2. Clean Up Network Configuration
+```bash
+# Remove CNI config
+sudo rm -rf /etc/cni/net.d/*
+
+# Flush iptables
+sudo iptables -F
+sudo iptables -t nat -F
+sudo iptables -t mangle -F
+sudo iptables -X
+
+# If using IPVS
+sudo ipvsadm --clear
+```
+
+#### 3. Remove Kubernetes Files
+```bash
+sudo rm -rf /etc/kubernetes/
+sudo rm -rf /var/lib/etcd/
+sudo rm -rf /var/lib/kubelet/
+sudo rm -rf ~/.kube/
+```
+
+#### 4. Restart Services
+```bash
+sudo systemctl restart containerd
+sudo systemctl stop kubelet
+```
+
+### Reinitialize Cluster:
+
+#### 1. Create kubeadm Config
+```bash
+cat <<EOF > kubeadm-config.yaml
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+nodeRegistration:
+  criSocket: "unix:///var/run/containerd/containerd.sock"
+  kubeletExtraArgs:
+    cgroup-driver: "systemd"
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+kubernetesVersion: "1.30.0"
+controlPlaneEndpoint: "192.168.2.166:6443"
+networking:
+  podSubnet: "10.244.0.0/16"  # For Weave or Flannel
+EOF
+```
+
+#### 2. Initialize Cluster
+```bash
+sudo kubeadm init --config=kubeadm-config.yaml --ignore-preflight-errors=all --v=5
+```
+
+#### 3. Set Up kubectl
+```bash
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+#### 4. CNI Installation Methods:
+
+**Option A: Download Weave Net Manifest Locally**
+```bash
+curl -LO https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')
+kubectl apply -f net
+```
+
+**Option B: Use Flannel Instead**
+```bash
+kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+```
+
+**Option C: Local Weave Net Manifest**
+```bash
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: v1
+    kind: Namespace
+    metadata:
+      name: weave
+      labels:
+        name: weave
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: weave-net
+    rules:
+      - apiGroups:
+          - ''
+        resources:
+          - pods
+          - namespaces
+          - nodes
+        verbs:
+          - get
+          - list
+          - watch
+      - apiGroups:
+          - networking.k8s.io
+        resources:
+          - networkpolicies
+        verbs:
+          - get
+          - list
+          - watch
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: weave-net
+    roleRef:
+      kind: ClusterRole
+      name: weave-net
+      apiGroup: rbac.authorization.k8s.io
+    subjects:
+      - kind: ServiceAccount
+        name: weave-net
+        namespace: weave
+  - apiVersion: apps/v1
+    kind: DaemonSet
+    metadata:
+      name: weave-net
+      namespace: weave
+      labels:
+        name: weave-net
+    spec:
+      selector:
+        matchLabels:
+          name: weave-net
+      template:
+        metadata:
+          labels:
+            name: weave-net
+        spec:
+          containers:
+            - name: weave
+              image: weaveworks/weave-kube:2.8.1
+              env:
+                - name: HOSTNAME
+                  valueFrom:
+                    fieldRef:
+                      apiVersion: v1
+                      fieldPath: spec.nodeName
+              resources:
+                requests:
+                  cpu: 10m
+              securityContext:
+                privileged: true
+              volumeMounts:
+                - name: weavedb
+                  mountPath: /weavedb
+                - name: cni-bin
+                  mountPath: /host/opt
+                - name: cni-bin2
+                  mountPath: /host/home
+                - name: cni-conf
+                  mountPath: /host/etc
+                - name: dbus
+                  mountPath: /host/var/lib/dbus
+                - name: lib-modules
+                  mountPath: /lib/modules
+                - name: xtables-lock
+                  mountPath: /run/xtables.lock
+              livenessProbe:
+                httpGet:
+                  host: 127.0.0.1
+                  path: /status
+                  port: 6784
+                initialDelaySeconds: 30
+              readinessProbe:
+                httpGet:
+                  host: 127.0.0.1
+                  path: /status
+                  port: 6784
+                initialDelaySeconds: 30
+          volumes:
+            - name: weavedb
+              hostPath:
+                path: /var/lib/weave
+            - name: cni-bin
+              hostPath:
+                path: /opt
+            - name: cni-bin2
+              hostPath:
+                path: /home
+            - name: cni-conf
+              hostPath:
+                path: /etc
+            - name: dbus
+              hostPath:
+                path: /var/lib/dbus
+            - name: lib-modules
+              hostPath:
+                path: /lib/modules
+            - name: xtables-lock
+              hostPath:
+                path: /run/xtables.lock
+                type: FileOrCreate
+          hostNetwork: true
+          hostPID: true
+          restartPolicy: Always
+          securityContext:
+            seLinuxOptions: {}
+          serviceAccountName: weave-net
+          tolerations:
+            - effect: NoSchedule
+              operator: Exists
+EOF
+```
+
+#### 3. Verify Network Installation:
+```bash
+kubectl get pods -n kube-system
+```
+(Look for weave-net or flannel pods)
+
+#### 4. Join Other Nodes (When Ready):
+Use the join command provided earlier:
+```bash
+kubeadm join 192.168.2.166:6443 --token msd72x.c20m2i0yvmcu7ory \
+  --discovery-token-ca-cert-hash sha256:2aed1de4383e1577df570f7379789be857bb164955a81716efd7be2fcc403e14
+```
+
+### Additional Checks:
+1. Verify DNS resolution is working:
+   ```bash
+   nslookup google.com
+   ```
+
+2. Check if CoreDNS is running:
+   ```bash
+   kubectl get pods -n kube-system -l k8s-app=kube-dns
+
+### Verification:
+```bash
+kubectl get nodes
+kubectl get pods -A
+```

@@ -1,0 +1,41 @@
+# Vagrantfile with custom IPs                                   
+Vagrant.configure("2") do |config|                              
+  config.vm.box = "ubuntu/jammy64" # Ubuntu 22.04               
+                                                                
+  # Master node                                                 
+  config.vm.define "k3s-master" do |master|                     
+    master.vm.hostname = "k3s-master"                           
+    master.vm.network "private_network", ip: "192.168.56.101"   
+    master.vm.provider "virtualbox" do |vb|                     
+      vb.memory = 2048                                          
+      vb.cpus = 2                                               
+    end                                                         
+  end                                                           
+                                                                
+  # Worker node 1                                               
+  config.vm.define "k3s-worker1" do |worker1|                   
+    worker1.vm.hostname = "k3s-worker1"                         
+    worker1.vm.network "private_network", ip: "192.168.56.102"  
+    worker1.vm.provider "virtualbox" do |vb|                    
+      vb.memory = 1024                                          
+      vb.cpus = 2                                               
+    end                                                         
+  end                                                           
+                                                                
+  
+# Worker node 2
+config.vm.define "k3s-worker2" do |worker2|
+  worker2.vm.hostname = "k3s-worker2"
+  worker2.vm.network "private_network", ip: "192.168.56.103"
+
+  # Add this block to enforce SSH over the private network
+  worker2.ssh.forward_agent = false
+  worker2.ssh.host = "192.168.56.103"
+  worker2.ssh.port = 22
+
+  worker2.vm.provider "virtualbox" do |vb|
+    vb.memory = 1024
+    vb.cpus = 2
+  end
+end
+end                                                             
