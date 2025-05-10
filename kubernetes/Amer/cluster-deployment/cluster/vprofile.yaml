@@ -1,0 +1,1824 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-04-24T16:13:28Z"
+    generateName: vproapp-c6b6d84c8-
+    labels:
+      app: vproapp
+      pod-template-hash: c6b6d84c8
+    name: vproapp-c6b6d84c8-hmbgw
+    namespace: vprofile
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: vproapp-c6b6d84c8
+      uid: adaea87f-1ff6-4b6c-ba09-f2f087945ed7
+    resourceVersion: "725916"
+    uid: 3f99525d-e78f-4b48-9297-686fa800b49c
+  spec:
+    containers:
+    - image: amer30004ever/vprofile:v1
+      imagePullPolicy: IfNotPresent
+      name: vproapp
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 200m
+          memory: 256Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-n57hl
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    initContainers:
+    - command:
+      - sh
+      - -c
+      - until nslookup vprodb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local;
+        do echo "Waiting for vprodb..."; sleep 2; done;
+      image: busybox
+      imagePullPolicy: Always
+      name: init-mydb
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-n57hl
+        readOnly: true
+    - command:
+      - sh
+      - -c
+      - until nslookup vprocache.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local;
+        do echo "Waiting for vprocache..."; sleep 2; done;
+      image: busybox
+      imagePullPolicy: Always
+      name: init-memcache
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-n57hl
+        readOnly: true
+    nodeName: worker01
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-n57hl
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:24:21Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T16:24:02Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:56:10Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:56:10Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T16:13:28Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://83b07de3cb81d894210f873beadd707c1bda026a7c01c651cef56013e9d44301
+      image: docker.io/amer30004ever/vprofile:v1
+      imageID: docker.io/amer30004ever/vprofile@sha256:f4a6add018ffda446efc664efb2144a85a86160ae81a4cae46a0c732da5d23aa
+      lastState:
+        terminated:
+          containerID: containerd://69357cfe7a2e814db3363953edc506e73bf77734738e1664dfd3387d3690fb52
+          exitCode: 255
+          finishedAt: "2025-04-24T22:16:44Z"
+          reason: Unknown
+          startedAt: "2025-04-24T16:24:10Z"
+      name: vproapp
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-24T22:56:08Z"
+    hostIP: 192.168.2.151
+    hostIPs:
+    - ip: 192.168.2.151
+    initContainerStatuses:
+    - containerID: containerd://7c0557eebf472ca09a5f4fb72f081ab03de2d610ed4415c60bf55dd7e1126408
+      image: docker.io/library/busybox:latest
+      imageID: docker.io/library/busybox@sha256:37f7b378a29ceb4c551b1b5582e27747b855bbfaa73fa11914fe0df028dc581f
+      lastState: {}
+      name: init-mydb
+      ready: true
+      restartCount: 2
+      started: false
+      state:
+        terminated:
+          containerID: containerd://7c0557eebf472ca09a5f4fb72f081ab03de2d610ed4415c60bf55dd7e1126408
+          exitCode: 0
+          finishedAt: "2025-04-24T22:55:11Z"
+          reason: Completed
+          startedAt: "2025-04-24T22:55:08Z"
+    - containerID: containerd://5c262d8fe03c496608d6c3f851812ab883be97c7c516787f3e027dcc5c1782e9
+      image: docker.io/library/busybox:latest
+      imageID: docker.io/library/busybox@sha256:37f7b378a29ceb4c551b1b5582e27747b855bbfaa73fa11914fe0df028dc581f
+      lastState: {}
+      name: init-memcache
+      ready: true
+      restartCount: 0
+      started: false
+      state:
+        terminated:
+          containerID: containerd://5c262d8fe03c496608d6c3f851812ab883be97c7c516787f3e027dcc5c1782e9
+          exitCode: 0
+          finishedAt: "2025-04-24T22:55:45Z"
+          reason: Completed
+          startedAt: "2025-04-24T22:55:44Z"
+    phase: Running
+    podIP: 10.44.0.17
+    podIPs:
+    - ip: 10.44.0.17
+    qosClass: Burstable
+    startTime: "2025-04-24T16:13:34Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-04-24T15:49:05Z"
+    generateName: vproapp-c6b6d84c8-
+    labels:
+      app: vproapp
+      pod-template-hash: c6b6d84c8
+    name: vproapp-c6b6d84c8-l7nsj
+    namespace: vprofile
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: vproapp-c6b6d84c8
+      uid: adaea87f-1ff6-4b6c-ba09-f2f087945ed7
+    resourceVersion: "723735"
+    uid: 980f2082-3cea-4a4c-9889-574438353249
+  spec:
+    containers:
+    - image: amer30004ever/vprofile:v1
+      imagePullPolicy: IfNotPresent
+      name: vproapp
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 200m
+          memory: 256Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-bxz6d
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    initContainers:
+    - command:
+      - sh
+      - -c
+      - until nslookup vprodb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local;
+        do echo "Waiting for vprodb..."; sleep 2; done;
+      image: busybox
+      imagePullPolicy: Always
+      name: init-mydb
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-bxz6d
+        readOnly: true
+    - command:
+      - sh
+      - -c
+      - until nslookup vprocache.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local;
+        do echo "Waiting for vprocache..."; sleep 2; done;
+      image: busybox
+      imagePullPolicy: Always
+      name: init-memcache
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-bxz6d
+        readOnly: true
+    nodeName: master-node
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-bxz6d
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:23:01Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T15:50:01Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:35:35Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:35:35Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T15:49:05Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://3783560d52761ba7ef488548796eb909ea1a5a1b5879ea1bebc9bb34b9da935d
+      image: docker.io/amer30004ever/vprofile:v1
+      imageID: docker.io/amer30004ever/vprofile@sha256:f4a6add018ffda446efc664efb2144a85a86160ae81a4cae46a0c732da5d23aa
+      lastState: {}
+      name: vproapp
+      ready: true
+      restartCount: 2
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-24T22:35:34Z"
+    hostIP: 192.168.2.150
+    hostIPs:
+    - ip: 192.168.2.150
+    initContainerStatuses:
+    - containerID: containerd://21d4a679c5476b40dd6f422833337b83dd5985382ede48d750706469d39d4d3f
+      image: docker.io/library/busybox:latest
+      imageID: docker.io/library/busybox@sha256:37f7b378a29ceb4c551b1b5582e27747b855bbfaa73fa11914fe0df028dc581f
+      lastState: {}
+      name: init-mydb
+      ready: true
+      restartCount: 1
+      started: false
+      state:
+        terminated:
+          containerID: containerd://21d4a679c5476b40dd6f422833337b83dd5985382ede48d750706469d39d4d3f
+          exitCode: 0
+          finishedAt: "2025-04-24T22:35:14Z"
+          reason: Completed
+          startedAt: "2025-04-24T22:23:01Z"
+    - containerID: containerd://0f9a3a84fa10a8394ee76bd30d0fcfb6f9e07f42a7da4f770d5080aab8de8233
+      image: docker.io/library/busybox:latest
+      imageID: docker.io/library/busybox@sha256:37f7b378a29ceb4c551b1b5582e27747b855bbfaa73fa11914fe0df028dc581f
+      lastState: {}
+      name: init-memcache
+      ready: true
+      restartCount: 0
+      started: false
+      state:
+        terminated:
+          containerID: containerd://0f9a3a84fa10a8394ee76bd30d0fcfb6f9e07f42a7da4f770d5080aab8de8233
+          exitCode: 0
+          finishedAt: "2025-04-24T22:35:27Z"
+          reason: Completed
+          startedAt: "2025-04-24T22:35:27Z"
+    phase: Running
+    podIP: 10.32.0.1
+    podIPs:
+    - ip: 10.32.0.1
+    qosClass: Burstable
+    startTime: "2025-04-24T15:49:05Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-04-24T16:03:00Z"
+    generateName: vproapp-c6b6d84c8-
+    labels:
+      app: vproapp
+      pod-template-hash: c6b6d84c8
+    name: vproapp-c6b6d84c8-xs9lv
+    namespace: vprofile
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: vproapp-c6b6d84c8
+      uid: adaea87f-1ff6-4b6c-ba09-f2f087945ed7
+    resourceVersion: "723721"
+    uid: e858477d-90e6-47fc-b476-1091ba2970df
+  spec:
+    containers:
+    - image: amer30004ever/vprofile:v1
+      imagePullPolicy: IfNotPresent
+      name: vproapp
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 200m
+          memory: 256Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-6lq9f
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    initContainers:
+    - command:
+      - sh
+      - -c
+      - until nslookup vprodb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local;
+        do echo "Waiting for vprodb..."; sleep 2; done;
+      image: busybox
+      imagePullPolicy: Always
+      name: init-mydb
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-6lq9f
+        readOnly: true
+    - command:
+      - sh
+      - -c
+      - until nslookup vprocache.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local;
+        do echo "Waiting for vprocache..."; sleep 2; done;
+      image: busybox
+      imagePullPolicy: Always
+      name: init-memcache
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-6lq9f
+        readOnly: true
+    nodeName: worker02
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-6lq9f
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:22:20Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T16:13:21Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:35:27Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:35:27Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T16:03:04Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://929c2ec66f772af3f14158fc5b038bf2be5ad62d05988cc07ede02d47624a5d8
+      image: docker.io/amer30004ever/vprofile:v1
+      imageID: docker.io/amer30004ever/vprofile@sha256:f4a6add018ffda446efc664efb2144a85a86160ae81a4cae46a0c732da5d23aa
+      lastState:
+        terminated:
+          containerID: containerd://b550c49cd78504e790fc53126a84eb46347878cb9e96c99019b7a9ee3b07571f
+          exitCode: 255
+          finishedAt: "2025-04-24T22:08:12Z"
+          reason: Unknown
+          startedAt: "2025-04-24T21:54:56Z"
+      name: vproapp
+      ready: true
+      restartCount: 2
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-24T22:35:26Z"
+    hostIP: 192.168.2.152
+    hostIPs:
+    - ip: 192.168.2.152
+    initContainerStatuses:
+    - containerID: containerd://778b7ca0f30d423d1754d2591f032805528b114e5c05d2dab9fa6973555e823f
+      image: docker.io/library/busybox:latest
+      imageID: docker.io/library/busybox@sha256:37f7b378a29ceb4c551b1b5582e27747b855bbfaa73fa11914fe0df028dc581f
+      lastState: {}
+      name: init-mydb
+      ready: true
+      restartCount: 2
+      started: false
+      state:
+        terminated:
+          containerID: containerd://778b7ca0f30d423d1754d2591f032805528b114e5c05d2dab9fa6973555e823f
+          exitCode: 0
+          finishedAt: "2025-04-24T22:35:11Z"
+          reason: Completed
+          startedAt: "2025-04-24T22:22:17Z"
+    - containerID: containerd://d3e5b04e2cfe6a1b64556755a10ef9caf619307492f4a38810ccbb521e51cd4c
+      image: docker.io/library/busybox:latest
+      imageID: docker.io/library/busybox@sha256:37f7b378a29ceb4c551b1b5582e27747b855bbfaa73fa11914fe0df028dc581f
+      lastState: {}
+      name: init-memcache
+      ready: true
+      restartCount: 0
+      started: false
+      state:
+        terminated:
+          containerID: containerd://d3e5b04e2cfe6a1b64556755a10ef9caf619307492f4a38810ccbb521e51cd4c
+          exitCode: 0
+          finishedAt: "2025-04-24T22:35:21Z"
+          reason: Completed
+          startedAt: "2025-04-24T22:35:20Z"
+    phase: Running
+    podIP: 10.36.0.14
+    podIPs:
+    - ip: 10.36.0.14
+    qosClass: Burstable
+    startTime: "2025-04-24T16:03:09Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-04-24T15:24:49Z"
+    generateName: vprodb-c7dd8d7c4-
+    labels:
+      app: vprodb
+      pod-template-hash: c7dd8d7c4
+    name: vprodb-c7dd8d7c4-dsr47
+    namespace: vprofile
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: vprodb-c7dd8d7c4
+      uid: 0955cbe4-1767-41d8-bf09-d65dbbfccc68
+    resourceVersion: "722646"
+    uid: 82b31bbe-237d-48ec-9e98-d3f0b8c04038
+  spec:
+    containers:
+    - env:
+      - name: MYSQL_ROOT_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: db-pass
+            name: app-secret
+      image: amer30004ever/vprofile-db:v1
+      imagePullPolicy: IfNotPresent
+      name: vprodb
+      ports:
+      - containerPort: 3306
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-lcddz
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    initContainers:
+    - args:
+      - rm
+      - -rf
+      - /var/lib/mysql/lost+found
+      image: busybox:latest
+      imagePullPolicy: Always
+      name: busybox
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-lcddz
+        readOnly: true
+    nodeName: master-node
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-lcddz
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:23:03Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T15:25:00Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:25:21Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:25:21Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T15:24:49Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://449ded3d90b81e5c4437b9f948a49a7cfa4c1a4ce33e1cda6d2a1d4a7e6d49b2
+      image: docker.io/amer30004ever/vprofile-db:v1
+      imageID: docker.io/amer30004ever/vprofile-db@sha256:68b23669eafce82b2db607a088456cdb0fecc6c6c176b656402ed469860b4de4
+      lastState: {}
+      name: vprodb
+      ready: true
+      restartCount: 3
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-24T22:25:20Z"
+    hostIP: 192.168.2.150
+    hostIPs:
+    - ip: 192.168.2.150
+    initContainerStatuses:
+    - containerID: containerd://5aa99e056ec851df2080274b7420e3a621561e81ed32994d5e98ffa9436d29e2
+      image: docker.io/library/busybox:latest
+      imageID: docker.io/library/busybox@sha256:37f7b378a29ceb4c551b1b5582e27747b855bbfaa73fa11914fe0df028dc581f
+      lastState: {}
+      name: busybox
+      ready: true
+      restartCount: 1
+      started: false
+      state:
+        terminated:
+          containerID: containerd://5aa99e056ec851df2080274b7420e3a621561e81ed32994d5e98ffa9436d29e2
+          exitCode: 0
+          finishedAt: "2025-04-24T22:23:11Z"
+          reason: Completed
+          startedAt: "2025-04-24T22:23:02Z"
+    phase: Running
+    podIP: 10.32.0.6
+    podIPs:
+    - ip: 10.32.0.6
+    qosClass: BestEffort
+    startTime: "2025-04-24T15:24:49Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-04-24T15:24:56Z"
+    generateName: vpromc-856f67bfb8-
+    labels:
+      app: vpromc
+      pod-template-hash: 856f67bfb8
+    name: vpromc-856f67bfb8-x5wds
+    namespace: vprofile
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: vpromc-856f67bfb8
+      uid: 5c9e8acf-0ad7-4e08-8b4c-5a951b0f4cba
+    resourceVersion: "722513"
+    uid: 39da0dc6-ebf0-496b-93f2-bd59e41d0003
+  spec:
+    containers:
+    - image: memcached
+      imagePullPolicy: Always
+      name: vpromc
+      ports:
+      - containerPort: 11211
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-t5rbp
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: worker02
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-t5rbp
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:22:24Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T15:24:56Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:22:24Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:22:24Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T15:24:56Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://10347f2c8407ce97cd84f4d0e94bd644332fb104ea00909dec81315c6e090b2c
+      image: docker.io/library/memcached:latest
+      imageID: docker.io/library/memcached@sha256:d507e44415954bce3186ddf56353d4a68f1b77ef5a11626870b838731e0abaf0
+      lastState:
+        terminated:
+          containerID: containerd://06f489534a227f5a78abc09f92a7e3533600a27af834f6378b9cb9f2d72c0aa0
+          exitCode: 255
+          finishedAt: "2025-04-24T22:08:12Z"
+          reason: Unknown
+          startedAt: "2025-04-24T21:37:50Z"
+      name: vpromc
+      ready: true
+      restartCount: 2
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-24T22:22:22Z"
+    hostIP: 192.168.2.152
+    hostIPs:
+    - ip: 192.168.2.152
+    phase: Running
+    podIP: 10.36.0.15
+    podIPs:
+    - ip: 10.36.0.15
+    qosClass: BestEffort
+    startTime: "2025-04-24T15:24:56Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-04-24T15:25:04Z"
+    generateName: vpromq01-bd998549-
+    labels:
+      app: vpromq01
+      pod-template-hash: bd998549
+    name: vpromq01-bd998549-j9wjn
+    namespace: vprofile
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: vpromq01-bd998549
+      uid: 21efe241-f253-4bc2-8bcc-db51241a71d7
+    resourceVersion: "721952"
+    uid: 9328f134-3626-4e5c-86c5-6d02034c572e
+  spec:
+    containers:
+    - env:
+      - name: RABBITMQ_DEFAULT_PASS
+        valueFrom:
+          secretKeyRef:
+            key: rmq-pass
+            name: app-secret
+      - name: RABBITMQ_DEFAULT_USER
+        value: guest
+      image: rabbitmq:management
+      imagePullPolicy: IfNotPresent
+      name: vpromq01
+      ports:
+      - containerPort: 15672
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-zdls5
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: worker02
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-zdls5
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:21:11Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T15:25:04Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:21:11Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:21:11Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T15:25:04Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://c0c3159a2b3e1eaa6cce56a714758eb718ca479c4862d83fd6e7a75e84e3d413
+      image: docker.io/library/rabbitmq:management
+      imageID: docker.io/library/rabbitmq@sha256:6ca8f8fbb7e3e3bd7436f12be51f7cedad49832f95e5989db327521c027e72bb
+      lastState:
+        terminated:
+          containerID: containerd://59a7e3e9b3bf892969d412f2466ecc811ef54aa0b2f1dc8a4bb513d6abe4d163
+          exitCode: 255
+          finishedAt: "2025-04-24T22:08:13Z"
+          reason: Unknown
+          startedAt: "2025-04-24T21:31:09Z"
+      name: vpromq01
+      ready: true
+      restartCount: 2
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-24T22:21:10Z"
+    hostIP: 192.168.2.152
+    hostIPs:
+    - ip: 192.168.2.152
+    phase: Running
+    podIP: 10.36.0.1
+    podIPs:
+    - ip: 10.36.0.1
+    qosClass: BestEffort
+    startTime: "2025-04-24T15:25:04Z"
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"vproapp-service","namespace":"vprofile"},"spec":{"ports":[{"nodePort":30001,"port":80,"protocol":"TCP","targetPort":8080}],"selector":{"app":"vproapp"},"type":"NodePort"}}
+    creationTimestamp: "2025-04-24T15:24:34Z"
+    name: vproapp-service
+    namespace: vprofile
+    resourceVersion: "704461"
+    uid: b97d477a-9a7d-49dd-b7ae-65bfc2912118
+  spec:
+    clusterIP: 10.99.203.112
+    clusterIPs:
+    - 10.99.203.112
+    externalTrafficPolicy: Cluster
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - nodePort: 30001
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: vproapp
+    sessionAffinity: None
+    type: NodePort
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"vprocache","namespace":"vprofile"},"spec":{"ports":[{"port":11211,"protocol":"TCP","targetPort":11211}],"selector":{"app":"vprocache"},"type":"ClusterIP"}}
+    creationTimestamp: "2025-04-24T15:24:02Z"
+    name: vprocache
+    namespace: vprofile
+    resourceVersion: "704391"
+    uid: d30139ec-d063-458f-9cde-c4b9cb9510f3
+  spec:
+    clusterIP: 10.101.9.221
+    clusterIPs:
+    - 10.101.9.221
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 11211
+      protocol: TCP
+      targetPort: 11211
+    selector:
+      app: vprocache
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"vprodb","namespace":"vprofile"},"spec":{"ports":[{"port":3306,"protocol":"TCP","targetPort":3306}],"selector":{"app":"vprodb"},"type":"ClusterIP"}}
+    creationTimestamp: "2025-04-24T15:23:57Z"
+    name: vprodb
+    namespace: vprofile
+    resourceVersion: "704379"
+    uid: 0f0e087b-8d76-455a-a043-714d05c8db29
+  spec:
+    clusterIP: 10.104.96.254
+    clusterIPs:
+    - 10.104.96.254
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 3306
+      protocol: TCP
+      targetPort: 3306
+    selector:
+      app: vprodb
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"vpromq","namespace":"vprofile"},"spec":{"ports":[{"port":15672,"protocol":"TCP","targetPort":15672}],"selector":{"app":"vpromq"},"type":"ClusterIP"}}
+    creationTimestamp: "2025-04-24T15:24:08Z"
+    name: vpromq
+    namespace: vprofile
+    resourceVersion: "704404"
+    uid: f6d45338-1e0e-40ca-9f3b-814cf8f79d1c
+  spec:
+    clusterIP: 10.100.16.6
+    clusterIPs:
+    - 10.100.16.6
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 15672
+      protocol: TCP
+      targetPort: 15672
+    selector:
+      app: vpromq
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "2"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"vproapp"},"name":"vproapp","namespace":"vprofile"},"spec":{"replicas":3,"selector":{"matchLabels":{"app":"vproapp"}},"template":{"metadata":{"labels":{"app":"vproapp"}},"spec":{"containers":[{"image":"amer30004ever/vprofile:v1","name":"vproapp","ports":[{"containerPort":8080}],"resources":{"limits":{"cpu":"500m","memory":"512Mi"},"requests":{"cpu":"200m","memory":"256Mi"}}}],"initContainers":[{"command":["sh","-c","until nslookup vprodb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo \"Waiting for vprodb...\"; sleep 2; done;"],"image":"busybox","name":"init-mydb"},{"command":["sh","-c","until nslookup vprocache.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo \"Waiting for vprocache...\"; sleep 2; done;"],"image":"busybox","name":"init-memcache"}]}}}}
+    creationTimestamp: "2025-04-24T15:25:20Z"
+    generation: 2
+    labels:
+      app: vproapp
+    name: vproapp
+    namespace: vprofile
+    resourceVersion: "725922"
+    uid: 1977b137-ed2a-4c36-a81b-0ad606712e44
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 3
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: vproapp
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: vproapp
+      spec:
+        containers:
+        - image: amer30004ever/vprofile:v1
+          imagePullPolicy: IfNotPresent
+          name: vproapp
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        initContainers:
+        - command:
+          - sh
+          - -c
+          - until nslookup vprodb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local;
+            do echo "Waiting for vprodb..."; sleep 2; done;
+          image: busybox
+          imagePullPolicy: Always
+          name: init-mydb
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - command:
+          - sh
+          - -c
+          - until nslookup vprocache.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local;
+            do echo "Waiting for vprocache..."; sleep 2; done;
+          image: busybox
+          imagePullPolicy: Always
+          name: init-memcache
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 3
+    conditions:
+    - lastTransitionTime: "2025-04-24T16:24:12Z"
+      lastUpdateTime: "2025-04-24T16:24:12Z"
+      message: ReplicaSet "vproapp-c6b6d84c8" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2025-04-24T22:56:10Z"
+      lastUpdateTime: "2025-04-24T22:56:10Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 2
+    readyReplicas: 3
+    replicas: 3
+    updatedReplicas: 3
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"vprodb"},"name":"vprodb","namespace":"vprofile"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"vprodb"}},"template":{"metadata":{"labels":{"app":"vprodb"}},"spec":{"containers":[{"env":[{"name":"MYSQL_ROOT_PASSWORD","valueFrom":{"secretKeyRef":{"key":"db-pass","name":"app-secret"}}}],"image":"amer30004ever/vprofile-db:v1","name":"vprodb","ports":[{"containerPort":3306}]}],"initContainers":[{"args":["rm","-rf","/var/lib/mysql/lost+found"],"image":"busybox:latest","name":"busybox"}]}}}}
+    creationTimestamp: "2025-04-24T15:24:49Z"
+    generation: 1
+    labels:
+      app: vprodb
+    name: vprodb
+    namespace: vprofile
+    resourceVersion: "723692"
+    uid: 969da223-a698-4dce-98db-f13918a299aa
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: vprodb
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: vprodb
+      spec:
+        containers:
+        - env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: db-pass
+                name: app-secret
+          image: amer30004ever/vprofile-db:v1
+          imagePullPolicy: IfNotPresent
+          name: vprodb
+          ports:
+          - containerPort: 3306
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        initContainers:
+        - args:
+          - rm
+          - -rf
+          - /var/lib/mysql/lost+found
+          image: busybox:latest
+          imagePullPolicy: Always
+          name: busybox
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2025-04-24T15:24:49Z"
+      lastUpdateTime: "2025-04-24T15:30:12Z"
+      message: ReplicaSet "vprodb-c7dd8d7c4" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2025-04-24T22:35:23Z"
+      lastUpdateTime: "2025-04-24T22:35:23Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"vpromc"},"name":"vpromc","namespace":"vprofile"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"vpromc"}},"template":{"metadata":{"labels":{"app":"vpromc"}},"spec":{"containers":[{"image":"memcached","name":"vpromc","ports":[{"containerPort":11211}]}]}}}}
+    creationTimestamp: "2025-04-24T15:24:56Z"
+    generation: 1
+    labels:
+      app: vpromc
+    name: vpromc
+    namespace: vprofile
+    resourceVersion: "723702"
+    uid: c6d776aa-8386-47c9-ae3c-069146345be5
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: vpromc
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: vpromc
+      spec:
+        containers:
+        - image: memcached
+          imagePullPolicy: Always
+          name: vpromc
+          ports:
+          - containerPort: 11211
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2025-04-24T15:24:56Z"
+      lastUpdateTime: "2025-04-24T15:27:07Z"
+      message: ReplicaSet "vpromc-856f67bfb8" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2025-04-24T22:35:25Z"
+      lastUpdateTime: "2025-04-24T22:35:25Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"vpromq01"},"name":"vpromq01","namespace":"vprofile"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"vpromq01"}},"template":{"metadata":{"labels":{"app":"vpromq01"}},"spec":{"containers":[{"env":[{"name":"RABBITMQ_DEFAULT_PASS","valueFrom":{"secretKeyRef":{"key":"rmq-pass","name":"app-secret"}}},{"name":"RABBITMQ_DEFAULT_USER","value":"guest"}],"image":"rabbitmq:management","name":"vpromq01","ports":[{"containerPort":15672}]}]}}}}
+    creationTimestamp: "2025-04-24T15:25:04Z"
+    generation: 1
+    labels:
+      app: vpromq01
+    name: vpromq01
+    namespace: vprofile
+    resourceVersion: "721984"
+    uid: 5ae14adc-ecfc-4048-99b5-47c6b817670a
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: vpromq01
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: vpromq01
+      spec:
+        containers:
+        - env:
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                key: rmq-pass
+                name: app-secret
+          - name: RABBITMQ_DEFAULT_USER
+            value: guest
+          image: rabbitmq:management
+          imagePullPolicy: IfNotPresent
+          name: vpromq01
+          ports:
+          - containerPort: 15672
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2025-04-24T15:37:51Z"
+      lastUpdateTime: "2025-04-24T15:37:51Z"
+      message: ReplicaSet "vpromq01-bd998549" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2025-04-24T22:21:19Z"
+      lastUpdateTime: "2025-04-24T22:21:19Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "3"
+      deployment.kubernetes.io/max-replicas: "4"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2025-04-24T15:25:21Z"
+    generation: 4
+    labels:
+      app: vproapp
+      pod-template-hash: 84685b798d
+    name: vproapp-84685b798d
+    namespace: vprofile
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: vproapp
+      uid: 1977b137-ed2a-4c36-a81b-0ad606712e44
+    resourceVersion: "711628"
+    uid: 14e5ff3d-5ba2-43c3-b4f8-5008f4109aa6
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: vproapp
+        pod-template-hash: 84685b798d
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: vproapp
+          pod-template-hash: 84685b798d
+      spec:
+        containers:
+        - image: amer30004ever/vprofile:v1
+          imagePullPolicy: IfNotPresent
+          name: vproapp
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        initContainers:
+        - command:
+          - sh
+          - -c
+          - until nslookup vprodb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local;
+            do echo "Waiting for vprodb..."; sleep 2; done;
+          image: busybox
+          imagePullPolicy: Always
+          name: init-mydb
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - command:
+          - sh
+          - -c
+          - until nslookup vprocache.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local;
+            do echo "Waiting for vprocache..."; sleep 2; done;
+          image: busybox
+          imagePullPolicy: Always
+          name: init-memcache
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 4
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "3"
+      deployment.kubernetes.io/max-replicas: "4"
+      deployment.kubernetes.io/revision: "2"
+    creationTimestamp: "2025-04-24T15:49:04Z"
+    generation: 3
+    labels:
+      app: vproapp
+      pod-template-hash: c6b6d84c8
+    name: vproapp-c6b6d84c8
+    namespace: vprofile
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: vproapp
+      uid: 1977b137-ed2a-4c36-a81b-0ad606712e44
+    resourceVersion: "725918"
+    uid: adaea87f-1ff6-4b6c-ba09-f2f087945ed7
+  spec:
+    replicas: 3
+    selector:
+      matchLabels:
+        app: vproapp
+        pod-template-hash: c6b6d84c8
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: vproapp
+          pod-template-hash: c6b6d84c8
+      spec:
+        containers:
+        - image: amer30004ever/vprofile:v1
+          imagePullPolicy: IfNotPresent
+          name: vproapp
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        initContainers:
+        - command:
+          - sh
+          - -c
+          - until nslookup vprodb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local;
+            do echo "Waiting for vprodb..."; sleep 2; done;
+          image: busybox
+          imagePullPolicy: Always
+          name: init-mydb
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - command:
+          - sh
+          - -c
+          - until nslookup vprocache.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local;
+            do echo "Waiting for vprocache..."; sleep 2; done;
+          image: busybox
+          imagePullPolicy: Always
+          name: init-memcache
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 3
+    fullyLabeledReplicas: 3
+    observedGeneration: 3
+    readyReplicas: 3
+    replicas: 3
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2025-04-24T15:24:49Z"
+    generation: 1
+    labels:
+      app: vprodb
+      pod-template-hash: c7dd8d7c4
+    name: vprodb-c7dd8d7c4
+    namespace: vprofile
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: vprodb
+      uid: 969da223-a698-4dce-98db-f13918a299aa
+    resourceVersion: "723673"
+    uid: 0955cbe4-1767-41d8-bf09-d65dbbfccc68
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: vprodb
+        pod-template-hash: c7dd8d7c4
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: vprodb
+          pod-template-hash: c7dd8d7c4
+      spec:
+        containers:
+        - env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: db-pass
+                name: app-secret
+          image: amer30004ever/vprofile-db:v1
+          imagePullPolicy: IfNotPresent
+          name: vprodb
+          ports:
+          - containerPort: 3306
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        initContainers:
+        - args:
+          - rm
+          - -rf
+          - /var/lib/mysql/lost+found
+          image: busybox:latest
+          imagePullPolicy: Always
+          name: busybox
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2025-04-24T15:24:56Z"
+    generation: 1
+    labels:
+      app: vpromc
+      pod-template-hash: 856f67bfb8
+    name: vpromc-856f67bfb8
+    namespace: vprofile
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: vpromc
+      uid: c6d776aa-8386-47c9-ae3c-069146345be5
+    resourceVersion: "723682"
+    uid: 5c9e8acf-0ad7-4e08-8b4c-5a951b0f4cba
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: vpromc
+        pod-template-hash: 856f67bfb8
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: vpromc
+          pod-template-hash: 856f67bfb8
+      spec:
+        containers:
+        - image: memcached
+          imagePullPolicy: Always
+          name: vpromc
+          ports:
+          - containerPort: 11211
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2025-04-24T15:25:04Z"
+    generation: 1
+    labels:
+      app: vpromq01
+      pod-template-hash: bd998549
+    name: vpromq01-bd998549
+    namespace: vprofile
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: vpromq01
+      uid: 5ae14adc-ecfc-4048-99b5-47c6b817670a
+    resourceVersion: "721965"
+    uid: 21efe241-f253-4bc2-8bcc-db51241a71d7
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: vpromq01
+        pod-template-hash: bd998549
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: vpromq01
+          pod-template-hash: bd998549
+      spec:
+        containers:
+        - env:
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                key: rmq-pass
+                name: app-secret
+          - name: RABBITMQ_DEFAULT_USER
+            value: guest
+          image: rabbitmq:management
+          imagePullPolicy: IfNotPresent
+          name: vpromq01
+          ports:
+          - containerPort: 15672
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: autoscaling/v2
+  kind: HorizontalPodAutoscaler
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"autoscaling/v2","kind":"HorizontalPodAutoscaler","metadata":{"annotations":{},"name":"vproapp-hpa","namespace":"vprofile"},"spec":{"maxReplicas":5,"metrics":[{"resource":{"name":"cpu","target":{"averageUtilization":70,"type":"Utilization"}},"type":"Resource"},{"resource":{"name":"memory","target":{"averageUtilization":80,"type":"Utilization"}},"type":"Resource"}],"minReplicas":1,"scaleTargetRef":{"apiVersion":"apps/v1","kind":"Deployment","name":"vproapp"}}}
+    creationTimestamp: "2025-04-24T15:46:24Z"
+    name: vproapp-hpa
+    namespace: vprofile
+    resourceVersion: "708597"
+    uid: c6044989-26e2-4cc6-a16e-b22f6f42743a
+  spec:
+    maxReplicas: 5
+    metrics:
+    - resource:
+        name: cpu
+        target:
+          averageUtilization: 70
+          type: Utilization
+      type: Resource
+    - resource:
+        name: memory
+        target:
+          averageUtilization: 80
+          type: Utilization
+      type: Resource
+    minReplicas: 1
+    scaleTargetRef:
+      apiVersion: apps/v1
+      kind: Deployment
+      name: vproapp
+  status:
+    conditions:
+    - lastTransitionTime: "2025-04-24T16:03:10Z"
+      message: the HPA controller was able to get the target's current scale
+      reason: SucceededGetScale
+      status: "True"
+      type: AbleToScale
+    - lastTransitionTime: "2025-04-24T16:03:10Z"
+      message: 'the HPA was unable to compute the replica count: failed to get cpu
+        utilization: unable to get metrics for resource cpu: unable to fetch metrics
+        from resource metrics API: the server could not find the requested resource
+        (get pods.metrics.k8s.io)'
+      reason: FailedGetResourceMetric
+      status: "False"
+      type: ScalingActive
+    currentMetrics:
+    - type: ""
+    - type: ""
+    currentReplicas: 3
+    desiredReplicas: 0
+kind: List
+metadata:
+  resourceVersion: ""

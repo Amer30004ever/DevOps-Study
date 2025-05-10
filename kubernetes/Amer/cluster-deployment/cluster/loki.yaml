@@ -1,0 +1,4255 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      checksum/config: 52be1afe3f11dbaf7413f4e8a78e536a8c83f4f560c71b42f77543c82dd8363a
+      prometheus.io/port: http-metrics
+      prometheus.io/scrape: "true"
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generateName: my-loki-stack-
+    labels:
+      app: loki
+      apps.kubernetes.io/pod-index: "0"
+      controller-revision-hash: my-loki-stack-79f6dcb8
+      name: my-loki-stack
+      release: my-loki-stack
+      statefulset.kubernetes.io/pod-name: my-loki-stack-0
+    name: my-loki-stack-0
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: StatefulSet
+      name: my-loki-stack
+      uid: f6489d08-6948-4ad6-9dba-095c208d34a5
+    resourceVersion: "745896"
+    uid: 74158613-488f-4e47-b37a-7ea65837c99a
+  spec:
+    affinity: {}
+    containers:
+    - args:
+      - -config.file=/etc/loki/loki.yaml
+      image: grafana/loki:2.6.1
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /ready
+          port: http-metrics
+          scheme: HTTP
+        initialDelaySeconds: 45
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: loki
+      ports:
+      - containerPort: 3100
+        name: http-metrics
+        protocol: TCP
+      - containerPort: 9095
+        name: grpc
+        protocol: TCP
+      - containerPort: 7946
+        name: memberlist-port
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /ready
+          port: http-metrics
+          scheme: HTTP
+        initialDelaySeconds: 45
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources: {}
+      securityContext:
+        readOnlyRootFilesystem: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /tmp
+        name: tmp
+      - mountPath: /etc/loki
+        name: config
+      - mountPath: /data
+        name: storage
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-n7j55
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostname: my-loki-stack-0
+    nodeName: worker02
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 10001
+      runAsGroup: 10001
+      runAsNonRoot: true
+      runAsUser: 10001
+    serviceAccount: my-loki-stack
+    serviceAccountName: my-loki-stack
+    subdomain: my-loki-stack-headless
+    terminationGracePeriodSeconds: 4800
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - emptyDir: {}
+      name: tmp
+    - name: config
+      secret:
+        defaultMode: 420
+        secretName: my-loki-stack
+    - emptyDir: {}
+      name: storage
+    - name: kube-api-access-n7j55
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:22:20Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:10Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T16:17:15Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T16:17:15Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:09Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://14b11593c39a2a2809ce27b179efd5735fc0cec4830ddcd0e4803775a4cee4c6
+      image: docker.io/grafana/loki:2.6.1
+      imageID: docker.io/grafana/loki@sha256:1ee60f980950b00e505bd564b40f720132a0653b110e993043bb5940673d060a
+      lastState: {}
+      name: loki
+      ready: true
+      restartCount: 56
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-25T16:16:08Z"
+    hostIP: 192.168.2.152
+    hostIPs:
+    - ip: 192.168.2.152
+    phase: Running
+    podIP: 10.36.0.18
+    podIPs:
+    - ip: 10.36.0.18
+    qosClass: BestEffort
+    startTime: "2025-04-23T00:20:10Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      checksum/config: 8d592ec7778653aad1bce3868e8b0d6d03dbdbb3cb668d603faf6d9f87739fd1
+    creationTimestamp: "2025-04-24T22:34:55Z"
+    generateName: my-loki-stack-alertmanager-
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/name: alertmanager
+      apps.kubernetes.io/pod-index: "0"
+      controller-revision-hash: my-loki-stack-alertmanager-5cb4d46b7b
+      statefulset.kubernetes.io/pod-name: my-loki-stack-alertmanager-0
+    name: my-loki-stack-alertmanager-0
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: StatefulSet
+      name: my-loki-stack-alertmanager
+      uid: bf734a38-4824-460e-9448-7d59aa7f0539
+    resourceVersion: "723551"
+    uid: 653d402b-a1ae-4d49-a2f5-891459364892
+  spec:
+    containers:
+    - args:
+      - --storage.path=/alertmanager
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      env:
+      - name: POD_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIP
+      image: quay.io/prometheus/alertmanager:v0.25.0
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: http
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: alertmanager
+      ports:
+      - containerPort: 9093
+        name: http
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: http
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources: {}
+      securityContext:
+        runAsGroup: 65534
+        runAsNonRoot: true
+        runAsUser: 65534
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /etc/alertmanager
+        name: config
+      - mountPath: /alertmanager
+        name: storage
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-mlql5
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostname: my-loki-stack-alertmanager-0
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 65534
+      runAsGroup: 65534
+      runAsNonRoot: true
+      runAsUser: 65534
+    serviceAccount: my-loki-stack-alertmanager
+    serviceAccountName: my-loki-stack-alertmanager
+    subdomain: my-loki-stack-alertmanager-headless
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: storage
+      persistentVolumeClaim:
+        claimName: storage-my-loki-stack-alertmanager-0
+    - configMap:
+        defaultMode: 420
+        name: my-loki-stack-alertmanager
+      name: config
+    - name: kube-api-access-mlql5
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:35:00Z"
+      message: '0/3 nodes are available: pod has unbound immediate PersistentVolumeClaims.
+        preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.'
+      reason: Unschedulable
+      status: "False"
+      type: PodScheduled
+    phase: Pending
+    qosClass: BestEffort
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      checksum/config: 6367eca09763501a33c54438cb529bf0db1bbcecaffbf9cd1318bb41ea751676
+      checksum/dashboards-json-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+      checksum/sc-dashboard-provider-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+      checksum/secret: 72ddc4d478f5b91963ff376dc64de1e40d8a138a09e2de8731921ded303c9a69
+    creationTimestamp: "2025-04-23T00:25:01Z"
+    generateName: my-loki-stack-grafana-58ccf497c5-
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/name: grafana
+      pod-template-hash: 58ccf497c5
+    name: my-loki-stack-grafana-58ccf497c5-ftcgr
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: my-loki-stack-grafana-58ccf497c5
+      uid: 4b23805c-edc5-4073-8000-2b68cb9290a6
+    resourceVersion: "745360"
+    uid: be151f3d-6049-4992-b519-095dd95aab53
+  spec:
+    automountServiceAccountToken: true
+    containers:
+    - env:
+      - name: METHOD
+        value: WATCH
+      - name: LABEL
+      - name: FOLDER
+        value: /etc/grafana/provisioning/datasources
+      - name: RESOURCE
+        value: both
+      - name: REQ_USERNAME
+        valueFrom:
+          secretKeyRef:
+            key: admin-user
+            name: my-loki-stack-grafana
+      - name: REQ_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: admin-password
+            name: my-loki-stack-grafana
+      - name: REQ_URL
+        value: http://localhost:3000/api/admin/provisioning/datasources/reload
+      - name: REQ_METHOD
+        value: POST
+      image: quay.io/kiwigrid/k8s-sidecar:1.19.2
+      imagePullPolicy: IfNotPresent
+      name: grafana-sc-datasources
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /etc/grafana/provisioning/datasources
+        name: sc-datasources-volume
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-26nwx
+        readOnly: true
+    - env:
+      - name: GF_SECURITY_ADMIN_USER
+        valueFrom:
+          secretKeyRef:
+            key: admin-user
+            name: my-loki-stack-grafana
+      - name: GF_SECURITY_ADMIN_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: admin-password
+            name: my-loki-stack-grafana
+      - name: GF_PATHS_DATA
+        value: /var/lib/grafana/
+      - name: GF_PATHS_LOGS
+        value: /var/log/grafana
+      - name: GF_PATHS_PLUGINS
+        value: /var/lib/grafana/plugins
+      - name: GF_PATHS_PROVISIONING
+        value: /etc/grafana/provisioning
+      image: grafana/grafana:10.3.3
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 10
+        httpGet:
+          path: /api/health
+          port: 3000
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 30
+      name: grafana
+      ports:
+      - containerPort: 3000
+        name: grafana
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /api/health
+          port: 3000
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /etc/grafana/grafana.ini
+        name: config
+        subPath: grafana.ini
+      - mountPath: /var/lib/grafana
+        name: storage
+      - mountPath: /etc/grafana/provisioning/datasources
+        name: sc-datasources-volume
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-26nwx
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: worker02
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 472
+      runAsGroup: 472
+      runAsUser: 472
+    serviceAccount: my-loki-stack-grafana
+    serviceAccountName: my-loki-stack-grafana
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: my-loki-stack-grafana
+      name: config
+    - emptyDir: {}
+      name: storage
+    - emptyDir: {}
+      name: sc-datasources-volume
+    - name: kube-api-access-26nwx
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:22:30Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:25:01Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T16:14:10Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T16:14:10Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:25:01Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://4ee1436b1e41f5db3354cd2cfbccef0ece8de1d47c54825a6729e64b5874e99c
+      image: docker.io/grafana/grafana:10.3.3
+      imageID: docker.io/grafana/grafana@sha256:8640e5038e83ca4554ed56b9d76375158bcd51580238c6f5d8adaf3f20dd5379
+      lastState:
+        terminated:
+          containerID: containerd://a388ef0f795e43d635a64070db158900f81aa07f8dea6d8b105b66b0778679a9
+          exitCode: 2
+          finishedAt: "2025-04-24T22:27:55Z"
+          reason: Error
+          startedAt: "2025-04-24T22:25:16Z"
+      name: grafana
+      ready: true
+      restartCount: 19
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-24T22:28:02Z"
+    - containerID: containerd://ab75feefb77942a5fb0e9b3966996a4b6e9747068c98869b83f1892d0583d238
+      image: quay.io/kiwigrid/k8s-sidecar:1.19.2
+      imageID: quay.io/kiwigrid/k8s-sidecar@sha256:6a8671702d6f8651c11bee1cd9a24d3dde6a5a05e0972d91c35009c38b527616
+      lastState:
+        terminated:
+          containerID: containerd://2f3b5c22f9cd038875d81035df5e662964349f1646701c5143fc1742c54d75af
+          exitCode: 255
+          finishedAt: "2025-04-24T22:08:13Z"
+          reason: Unknown
+          startedAt: "2025-04-24T21:30:56Z"
+      name: grafana-sc-datasources
+      ready: true
+      restartCount: 2
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-24T22:22:18Z"
+    hostIP: 192.168.2.152
+    hostIPs:
+    - ip: 192.168.2.152
+    phase: Running
+    podIP: 10.36.0.6
+    podIPs:
+    - ip: 10.36.0.6
+    qosClass: BestEffort
+    startTime: "2025-04-23T00:25:01Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generateName: my-loki-stack-kube-state-metrics-7987c66974-
+    labels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: kube-state-metrics
+      app.kubernetes.io/part-of: kube-state-metrics
+      app.kubernetes.io/version: 2.8.0
+      helm.sh/chart: kube-state-metrics-4.30.0
+      pod-template-hash: 7987c66974
+    name: my-loki-stack-kube-state-metrics-7987c66974-f8tcb
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: my-loki-stack-kube-state-metrics-7987c66974
+      uid: b0018a72-d024-4b2b-b9ae-76b49f05c004
+    resourceVersion: "728581"
+    uid: 8d1a9416-f28b-4456-8df5-34dd8b91abf1
+  spec:
+    containers:
+    - args:
+      - --port=8080
+      - --resources=certificatesigningrequests,configmaps,cronjobs,daemonsets,deployments,endpoints,horizontalpodautoscalers,ingresses,jobs,leases,limitranges,mutatingwebhookconfigurations,namespaces,networkpolicies,nodes,persistentvolumeclaims,persistentvolumes,poddisruptionbudgets,pods,replicasets,replicationcontrollers,resourcequotas,secrets,services,statefulsets,storageclasses,validatingwebhookconfigurations,volumeattachments
+      image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.8.0
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /healthz
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      name: kube-state-metrics
+      ports:
+      - containerPort: 8080
+        name: http
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-6wrnr
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: worker02
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 65534
+      runAsGroup: 65534
+      runAsUser: 65534
+    serviceAccount: my-loki-stack-kube-state-metrics
+    serviceAccountName: my-loki-stack-kube-state-metrics
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-6wrnr
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:22:17Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:10Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T23:24:26Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T23:24:26Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:09Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://a5e01b0983b2a3dabd3d9fdf8c0cdc95c99954a2beb26a517ec02d70956fc262
+      image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.8.0
+      imageID: registry.k8s.io/kube-state-metrics/kube-state-metrics@sha256:5658d0011a41779ef114f3508143a0e67e4169f64333d0337e731d191ab7edb8
+      lastState:
+        terminated:
+          containerID: containerd://44fc499bfa623c93e86b75ec7a2284f77bae07213015dc50c47b9f4ba60beae7
+          exitCode: 1
+          finishedAt: "2025-04-24T23:24:14Z"
+          reason: Error
+          startedAt: "2025-04-24T23:23:43Z"
+      name: kube-state-metrics
+      ready: true
+      restartCount: 42
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-24T23:24:21Z"
+    hostIP: 192.168.2.152
+    hostIPs:
+    - ip: 192.168.2.152
+    phase: Running
+    podIP: 10.36.0.7
+    podIPs:
+    - ip: 10.36.0.7
+    qosClass: BestEffort
+    startTime: "2025-04-23T00:20:10Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generateName: my-loki-stack-prometheus-node-exporter-
+    labels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: prometheus-node-exporter
+      app.kubernetes.io/part-of: prometheus-node-exporter
+      app.kubernetes.io/version: 1.5.0
+      controller-revision-hash: 989564c9b
+      helm.sh/chart: prometheus-node-exporter-4.8.1
+      pod-template-generation: "1"
+    name: my-loki-stack-prometheus-node-exporter-42hvc
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: my-loki-stack-prometheus-node-exporter
+      uid: 6080e0a2-9bbb-43b0-8a97-3dcec0cd2bff
+    resourceVersion: "745389"
+    uid: 1b4c82e6-e257-4616-b2dd-ec45da99eb0a
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - worker02
+    automountServiceAccountToken: false
+    containers:
+    - args:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/host/root
+      - --web.listen-address=[$(HOST_IP)]:9100
+      env:
+      - name: HOST_IP
+        value: 0.0.0.0
+      image: quay.io/prometheus/node-exporter:v1.5.0
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 9100
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: node-exporter
+      ports:
+      - containerPort: 9100
+        hostPort: 9100
+        name: metrics
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 9100
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /host/proc
+        name: proc
+        readOnly: true
+      - mountPath: /host/sys
+        name: sys
+        readOnly: true
+      - mountPath: /host/root
+        mountPropagation: HostToContainer
+        name: root
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    hostPID: true
+    nodeName: worker02
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 65534
+      runAsGroup: 65534
+      runAsNonRoot: true
+      runAsUser: 65534
+    serviceAccount: my-loki-stack-prometheus-node-exporter
+    serviceAccountName: my-loki-stack-prometheus-node-exporter
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/network-unavailable
+      operator: Exists
+    volumes:
+    - hostPath:
+        path: /proc
+        type: ""
+      name: proc
+    - hostPath:
+        path: /sys
+        type: ""
+      name: sys
+    - hostPath:
+        path: /
+        type: ""
+      name: root
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:19:27Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:09Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T16:14:42Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T16:14:42Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:09Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://8b0fd7e4e0ea6a6d1ad7e60c971f2832472aaa0bef99f5af62effecf41eea216
+      image: quay.io/prometheus/node-exporter:v1.5.0
+      imageID: quay.io/prometheus/node-exporter@sha256:39c642b2b337e38c18e80266fb14383754178202f40103646337722a594d984c
+      lastState:
+        terminated:
+          containerID: containerd://d14b12b739b657773d77211cd13e21bac9c86659b00313256aefb88b672e9c2b
+          exitCode: 143
+          finishedAt: "2025-04-25T16:14:04Z"
+          reason: Error
+          startedAt: "2025-04-24T23:23:42Z"
+      name: node-exporter
+      ready: true
+      restartCount: 51
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-25T16:14:37Z"
+    hostIP: 192.168.2.152
+    hostIPs:
+    - ip: 192.168.2.152
+    phase: Running
+    podIP: 192.168.2.152
+    podIPs:
+    - ip: 192.168.2.152
+    qosClass: BestEffort
+    startTime: "2025-04-23T00:20:09Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generateName: my-loki-stack-prometheus-node-exporter-
+    labels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: prometheus-node-exporter
+      app.kubernetes.io/part-of: prometheus-node-exporter
+      app.kubernetes.io/version: 1.5.0
+      controller-revision-hash: 989564c9b
+      helm.sh/chart: prometheus-node-exporter-4.8.1
+      pod-template-generation: "1"
+    name: my-loki-stack-prometheus-node-exporter-j5z9s
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: my-loki-stack-prometheus-node-exporter
+      uid: 6080e0a2-9bbb-43b0-8a97-3dcec0cd2bff
+    resourceVersion: "745355"
+    uid: 972a4376-ed2e-4a12-94ca-99777b39c367
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - master-node
+    automountServiceAccountToken: false
+    containers:
+    - args:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/host/root
+      - --web.listen-address=[$(HOST_IP)]:9100
+      env:
+      - name: HOST_IP
+        value: 0.0.0.0
+      image: quay.io/prometheus/node-exporter:v1.5.0
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 9100
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: node-exporter
+      ports:
+      - containerPort: 9100
+        hostPort: 9100
+        name: metrics
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 9100
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /host/proc
+        name: proc
+        readOnly: true
+      - mountPath: /host/sys
+        name: sys
+        readOnly: true
+      - mountPath: /host/root
+        mountPropagation: HostToContainer
+        name: root
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    hostPID: true
+    nodeName: master-node
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 65534
+      runAsGroup: 65534
+      runAsNonRoot: true
+      runAsUser: 65534
+    serviceAccount: my-loki-stack-prometheus-node-exporter
+    serviceAccountName: my-loki-stack-prometheus-node-exporter
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/network-unavailable
+      operator: Exists
+    volumes:
+    - hostPath:
+        path: /proc
+        type: ""
+      name: proc
+    - hostPath:
+        path: /sys
+        type: ""
+      name: sys
+    - hostPath:
+        path: /
+        type: ""
+      name: root
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:18:46Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:09Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T16:14:36Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T16:14:36Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:09Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://2b96e6f131a647e819c6e1564d8f5f74fc16fc3b4f10e1b0dabf82fa7852f09c
+      image: quay.io/prometheus/node-exporter:v1.5.0
+      imageID: quay.io/prometheus/node-exporter@sha256:39c642b2b337e38c18e80266fb14383754178202f40103646337722a594d984c
+      lastState: {}
+      name: node-exporter
+      ready: true
+      restartCount: 18
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-25T16:14:14Z"
+    hostIP: 192.168.2.150
+    hostIPs:
+    - ip: 192.168.2.150
+    phase: Running
+    podIP: 192.168.2.150
+    podIPs:
+    - ip: 192.168.2.150
+    qosClass: BestEffort
+    startTime: "2025-04-23T00:20:09Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generateName: my-loki-stack-prometheus-node-exporter-
+    labels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: prometheus-node-exporter
+      app.kubernetes.io/part-of: prometheus-node-exporter
+      app.kubernetes.io/version: 1.5.0
+      controller-revision-hash: 989564c9b
+      helm.sh/chart: prometheus-node-exporter-4.8.1
+      pod-template-generation: "1"
+    name: my-loki-stack-prometheus-node-exporter-w2bw2
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: my-loki-stack-prometheus-node-exporter
+      uid: 6080e0a2-9bbb-43b0-8a97-3dcec0cd2bff
+    resourceVersion: "728515"
+    uid: 1a8cf88b-1a14-4a9b-825a-7e5b8e048836
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - worker01
+    automountServiceAccountToken: false
+    containers:
+    - args:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/host/root
+      - --web.listen-address=[$(HOST_IP)]:9100
+      env:
+      - name: HOST_IP
+        value: 0.0.0.0
+      image: quay.io/prometheus/node-exporter:v1.5.0
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 9100
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: node-exporter
+      ports:
+      - containerPort: 9100
+        hostPort: 9100
+        name: metrics
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 9100
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /host/proc
+        name: proc
+        readOnly: true
+      - mountPath: /host/sys
+        name: sys
+        readOnly: true
+      - mountPath: /host/root
+        mountPropagation: HostToContainer
+        name: root
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    hostPID: true
+    nodeName: worker01
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 65534
+      runAsGroup: 65534
+      runAsNonRoot: true
+      runAsUser: 65534
+    serviceAccount: my-loki-stack-prometheus-node-exporter
+    serviceAccountName: my-loki-stack-prometheus-node-exporter
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/network-unavailable
+      operator: Exists
+    volumes:
+    - hostPath:
+        path: /proc
+        type: ""
+      name: proc
+    - hostPath:
+        path: /sys
+        type: ""
+      name: sys
+    - hostPath:
+        path: /
+        type: ""
+      name: root
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:19:01Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:09Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T09:47:29Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T09:47:29Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:09Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://675dbcbe004a7aa644a64498fbfad0a304fb28637eb2bbef917cb4cc772fef8a
+      image: quay.io/prometheus/node-exporter:v1.5.0
+      imageID: quay.io/prometheus/node-exporter@sha256:39c642b2b337e38c18e80266fb14383754178202f40103646337722a594d984c
+      lastState:
+        terminated:
+          containerID: containerd://68b971388e2c90e673d3b8da3c71f209171c37f2ac3323106efbfd41282ec539
+          exitCode: 143
+          finishedAt: "2025-04-25T09:46:36Z"
+          reason: Error
+          startedAt: "2025-04-24T23:00:21Z"
+      name: node-exporter
+      ready: true
+      restartCount: 58
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-25T09:47:20Z"
+    hostIP: 192.168.2.151
+    hostIPs:
+    - ip: 192.168.2.151
+    phase: Running
+    podIP: 192.168.2.151
+    podIPs:
+    - ip: 192.168.2.151
+    qosClass: BestEffort
+    startTime: "2025-04-23T00:20:09Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generateName: my-loki-stack-prometheus-pushgateway-5bcd9676b6-
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: prometheus-pushgateway
+      app.kubernetes.io/version: v1.5.1
+      helm.sh/chart: prometheus-pushgateway-2.0.4
+      pod-template-hash: 5bcd9676b6
+    name: my-loki-stack-prometheus-pushgateway-5bcd9676b6-lf7fm
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: my-loki-stack-prometheus-pushgateway-5bcd9676b6
+      uid: 7dc225a2-a55e-457d-ab4a-46ca52fef52c
+    resourceVersion: "722501"
+    uid: 27110bae-52d9-4107-83b6-97d1f2cf18c8
+  spec:
+    containers:
+    - image: prom/pushgateway:v1.5.1
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /-/ready
+          port: 9091
+          scheme: HTTP
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 10
+      name: pushgateway
+      ports:
+      - containerPort: 9091
+        name: metrics
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /-/ready
+          port: 9091
+          scheme: HTTP
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 10
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /data
+        name: storage-volume
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-nt7cn
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: worker02
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 65534
+      runAsNonRoot: true
+      runAsUser: 65534
+    serviceAccount: my-loki-stack-prometheus-pushgateway
+    serviceAccountName: my-loki-stack-prometheus-pushgateway
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - emptyDir: {}
+      name: storage-volume
+    - name: kube-api-access-nt7cn
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:22:21Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:10Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:22:37Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:22:37Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:10Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://b9a2d68a7f97b33c2f0a688845369033aa6b386b2378fa37887ebf02cf81e498
+      image: docker.io/prom/pushgateway:v1.5.1
+      imageID: docker.io/prom/pushgateway@sha256:28fe26c8b8b183ad6f6208936d678d875097b0635ffdffc41dfa734afd71ed17
+      lastState:
+        terminated:
+          containerID: containerd://a14fb2436d9cc2a59c6fecf2c8110eac89aeab8969f6951dac9ea620ce4fb55c
+          exitCode: 255
+          finishedAt: "2025-04-24T22:08:12Z"
+          reason: Unknown
+          startedAt: "2025-04-24T21:30:09Z"
+      name: pushgateway
+      ready: true
+      restartCount: 14
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-24T22:22:19Z"
+    hostIP: 192.168.2.152
+    hostIPs:
+    - ip: 192.168.2.152
+    phase: Running
+    podIP: 10.36.0.24
+    podIPs:
+    - ip: 10.36.0.24
+    qosClass: BestEffort
+    startTime: "2025-04-23T00:20:10Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-04-24T22:35:11Z"
+    generateName: my-loki-stack-prometheus-server-56d6c8fcf8-
+    labels:
+      app: prometheus
+      chart: prometheus-19.7.2
+      component: server
+      heritage: Helm
+      pod-template-hash: 56d6c8fcf8
+      release: my-loki-stack
+    name: my-loki-stack-prometheus-server-56d6c8fcf8-g74wb
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: my-loki-stack-prometheus-server-56d6c8fcf8
+      uid: 65d7ff27-027f-4ed8-aecf-f7ea0be6635d
+    resourceVersion: "723802"
+    uid: 5ba1d9c3-3af4-4134-9011-0f5d81447971
+  spec:
+    containers:
+    - args:
+      - --volume-dir=/etc/config
+      - --webhook-url=http://127.0.0.1:9090/-/reload
+      image: jimmidyson/configmap-reload:v0.8.0
+      imagePullPolicy: IfNotPresent
+      name: prometheus-server-configmap-reload
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /etc/config
+        name: config-volume
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fcclh
+        readOnly: true
+    - args:
+      - --storage.tsdb.retention.time=15d
+      - --config.file=/etc/config/prometheus.yml
+      - --storage.tsdb.path=/data
+      - --web.console.libraries=/etc/prometheus/console_libraries
+      - --web.console.templates=/etc/prometheus/consoles
+      - --web.enable-lifecycle
+      image: quay.io/prometheus/prometheus:v2.41.0
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /-/healthy
+          port: 9090
+          scheme: HTTP
+        initialDelaySeconds: 30
+        periodSeconds: 15
+        successThreshold: 1
+        timeoutSeconds: 10
+      name: prometheus-server
+      ports:
+      - containerPort: 9090
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /-/ready
+          port: 9090
+          scheme: HTTP
+        initialDelaySeconds: 30
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 4
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /etc/config
+        name: config-volume
+      - mountPath: /data
+        name: storage-volume
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fcclh
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 65534
+      runAsGroup: 65534
+      runAsNonRoot: true
+      runAsUser: 65534
+    serviceAccount: my-loki-stack-prometheus-server
+    serviceAccountName: my-loki-stack-prometheus-server
+    terminationGracePeriodSeconds: 300
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: my-loki-stack-prometheus-server
+      name: config-volume
+    - name: storage-volume
+      persistentVolumeClaim:
+        claimName: my-loki-stack-prometheus-server
+    - name: kube-api-access-fcclh
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:37:14Z"
+      message: '0/3 nodes are available: pod has unbound immediate PersistentVolumeClaims.
+        preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.'
+      reason: Unschedulable
+      status: "False"
+      type: PodScheduled
+    phase: Pending
+    qosClass: BestEffort
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      checksum/config: 75b7cd339dcd509609f400a06038ef3697f4b2d3fabfd15ad0ae2e31217513ad
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generateName: my-loki-stack-promtail-
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/name: promtail
+      controller-revision-hash: 65d8768c69
+      pod-template-generation: "1"
+    name: my-loki-stack-promtail-s4s95
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: my-loki-stack-promtail
+      uid: 114cf64e-9360-408a-9250-8a0d7196ba31
+    resourceVersion: "728486"
+    uid: a1437cdd-5afb-40bf-b034-533208837896
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - worker02
+    containers:
+    - args:
+      - -config.file=/etc/promtail/promtail.yaml
+      env:
+      - name: HOSTNAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      image: docker.io/grafana/promtail:2.9.3
+      imagePullPolicy: IfNotPresent
+      name: promtail
+      ports:
+      - containerPort: 3101
+        name: http-metrics
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /ready
+          port: http-metrics
+          scheme: HTTP
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /etc/promtail
+        name: config
+      - mountPath: /run/promtail
+        name: run
+      - mountPath: /var/lib/docker/containers
+        name: containers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: pods
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-2npr5
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: worker02
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      runAsGroup: 0
+      runAsUser: 0
+    serviceAccount: my-loki-stack-promtail
+    serviceAccountName: my-loki-stack-promtail
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/control-plane
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - name: config
+      secret:
+        defaultMode: 420
+        secretName: my-loki-stack-promtail
+    - hostPath:
+        path: /run/promtail
+        type: ""
+      name: run
+    - hostPath:
+        path: /var/lib/docker/containers
+        type: ""
+      name: containers
+    - hostPath:
+        path: /var/log/pods
+        type: ""
+      name: pods
+    - name: kube-api-access-2npr5
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:22:20Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:09Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T23:23:41Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T23:23:41Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:09Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://cb8d78f40c5f825aadc79705ea82ef0b706f4c1e400c2808dc7dcdd72b1871b2
+      image: docker.io/grafana/promtail:2.9.3
+      imageID: docker.io/grafana/promtail@sha256:b338a29de45ef8ffa96f882f3a36306b1e61262b2a560ff523e0e2633cccbbc4
+      lastState:
+        terminated:
+          containerID: containerd://0cad7613398d74ec3a613157537ea855d82cc93b67842d9b7722cabd247b8ad3
+          exitCode: 255
+          finishedAt: "2025-04-24T22:08:12Z"
+          reason: Unknown
+          startedAt: "2025-04-24T21:30:52Z"
+      name: promtail
+      ready: true
+      restartCount: 2
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-24T22:22:15Z"
+    hostIP: 192.168.2.152
+    hostIPs:
+    - ip: 192.168.2.152
+    phase: Running
+    podIP: 10.36.0.12
+    podIPs:
+    - ip: 10.36.0.12
+    qosClass: BestEffort
+    startTime: "2025-04-23T00:20:09Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      checksum/config: 75b7cd339dcd509609f400a06038ef3697f4b2d3fabfd15ad0ae2e31217513ad
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generateName: my-loki-stack-promtail-
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/name: promtail
+      controller-revision-hash: 65d8768c69
+      pod-template-generation: "1"
+    name: my-loki-stack-promtail-sf5hl
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: my-loki-stack-promtail
+      uid: 114cf64e-9360-408a-9250-8a0d7196ba31
+    resourceVersion: "729919"
+    uid: ea527886-e878-4816-ad7c-2e65a1d8e655
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - master-node
+    containers:
+    - args:
+      - -config.file=/etc/promtail/promtail.yaml
+      env:
+      - name: HOSTNAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      image: docker.io/grafana/promtail:2.9.3
+      imagePullPolicy: IfNotPresent
+      name: promtail
+      ports:
+      - containerPort: 3101
+        name: http-metrics
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /ready
+          port: http-metrics
+          scheme: HTTP
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /etc/promtail
+        name: config
+      - mountPath: /run/promtail
+        name: run
+      - mountPath: /var/lib/docker/containers
+        name: containers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: pods
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-vbhkf
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: master-node
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      runAsGroup: 0
+      runAsUser: 0
+    serviceAccount: my-loki-stack-promtail
+    serviceAccountName: my-loki-stack-promtail
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/control-plane
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - name: config
+      secret:
+        defaultMode: 420
+        secretName: my-loki-stack-promtail
+    - hostPath:
+        path: /run/promtail
+        type: ""
+      name: run
+    - hostPath:
+        path: /var/lib/docker/containers
+        type: ""
+      name: containers
+    - hostPath:
+        path: /var/log/pods
+        type: ""
+      name: pods
+    - name: kube-api-access-vbhkf
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:23:23Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:09Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T09:58:03Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T09:58:03Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:09Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://d760c471081721ae7eda7817cf667e8fc1b0a5d28fedd33055de5051b93efdd9
+      image: docker.io/grafana/promtail:2.9.3
+      imageID: docker.io/grafana/promtail@sha256:b338a29de45ef8ffa96f882f3a36306b1e61262b2a560ff523e0e2633cccbbc4
+      lastState:
+        terminated:
+          containerID: containerd://d59c76637ca39e55fed7baf1c769b98e66c40033e726b2193f3fda058e62a307
+          exitCode: 255
+          finishedAt: "2025-04-24T22:16:17Z"
+          reason: Unknown
+          startedAt: "2025-04-23T00:20:23Z"
+      name: promtail
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-24T22:23:23Z"
+    hostIP: 192.168.2.150
+    hostIPs:
+    - ip: 192.168.2.150
+    phase: Running
+    podIP: 10.32.0.4
+    podIPs:
+    - ip: 10.32.0.4
+    qosClass: BestEffort
+    startTime: "2025-04-23T00:20:09Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      checksum/config: 75b7cd339dcd509609f400a06038ef3697f4b2d3fabfd15ad0ae2e31217513ad
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generateName: my-loki-stack-promtail-
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/name: promtail
+      controller-revision-hash: 65d8768c69
+      pod-template-generation: "1"
+    name: my-loki-stack-promtail-v5mc8
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: my-loki-stack-promtail
+      uid: 114cf64e-9360-408a-9250-8a0d7196ba31
+    resourceVersion: "729984"
+    uid: 29da8fa1-fac6-48a5-83df-cc58fb09676d
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - worker01
+    containers:
+    - args:
+      - -config.file=/etc/promtail/promtail.yaml
+      env:
+      - name: HOSTNAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      image: docker.io/grafana/promtail:2.9.3
+      imagePullPolicy: IfNotPresent
+      name: promtail
+      ports:
+      - containerPort: 3101
+        name: http-metrics
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /ready
+          port: http-metrics
+          scheme: HTTP
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /etc/promtail
+        name: config
+      - mountPath: /run/promtail
+        name: run
+      - mountPath: /var/lib/docker/containers
+        name: containers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: pods
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-vrrt7
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: worker01
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      runAsGroup: 0
+      runAsUser: 0
+    serviceAccount: my-loki-stack-promtail
+    serviceAccountName: my-loki-stack-promtail
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/control-plane
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - name: config
+      secret:
+        defaultMode: 420
+        secretName: my-loki-stack-promtail
+    - hostPath:
+        path: /run/promtail
+        type: ""
+      name: run
+    - hostPath:
+        path: /var/lib/docker/containers
+        type: ""
+      name: containers
+    - hostPath:
+        path: /var/log/pods
+        type: ""
+      name: pods
+    - name: kube-api-access-vrrt7
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-24T22:23:23Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:09Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T09:58:39Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T09:58:39Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-23T00:20:09Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://199e474786d2a9ab9eedbae850b9fa4e3c6e16fea044b79e4d7940f321f0a6fb
+      image: docker.io/grafana/promtail:2.9.3
+      imageID: docker.io/grafana/promtail@sha256:b338a29de45ef8ffa96f882f3a36306b1e61262b2a560ff523e0e2633cccbbc4
+      lastState: {}
+      name: promtail
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-24T22:23:16Z"
+    hostIP: 192.168.2.151
+    hostIPs:
+    - ip: 192.168.2.151
+    phase: Running
+    podIP: 10.44.0.7
+    podIPs:
+    - ip: 10.44.0.7
+    qosClass: BestEffort
+    startTime: "2025-04-23T00:20:09Z"
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:08Z"
+    labels:
+      app: loki
+      app.kubernetes.io/managed-by: Helm
+      chart: loki-2.16.0
+      heritage: Helm
+      release: my-loki-stack
+    name: my-loki-stack
+    namespace: loki
+    resourceVersion: "615860"
+    uid: 8fd72c43-03d9-4dbd-a197-e7d117bae972
+  spec:
+    clusterIP: 10.108.248.1
+    clusterIPs:
+    - 10.108.248.1
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http-metrics
+      port: 3100
+      protocol: TCP
+      targetPort: http-metrics
+    selector:
+      app: loki
+      release: my-loki-stack
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:08Z"
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/version: v0.25.0
+      helm.sh/chart: alertmanager-0.24.1
+    name: my-loki-stack-alertmanager
+    namespace: loki
+    resourceVersion: "615870"
+    uid: 66ada45b-2fb6-43d2-9447-3559e3436a5a
+  spec:
+    clusterIP: 10.105.226.118
+    clusterIPs:
+    - 10.105.226.118
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 9093
+      protocol: TCP
+      targetPort: http
+    selector:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/name: alertmanager
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:08Z"
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/version: v0.25.0
+      helm.sh/chart: alertmanager-0.24.1
+    name: my-loki-stack-alertmanager-headless
+    namespace: loki
+    resourceVersion: "615856"
+    uid: 48423ce4-5867-48e4-8897-6f83928d0820
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 9093
+      protocol: TCP
+      targetPort: http
+    selector:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/name: alertmanager
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:25:00Z"
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: grafana
+      app.kubernetes.io/version: 10.3.3
+      helm.sh/chart: grafana-6.43.5
+    name: my-loki-stack-grafana
+    namespace: loki
+    resourceVersion: "616628"
+    uid: cd15c7ce-544c-49b8-baf1-3b9104e7635e
+  spec:
+    clusterIP: 10.111.158.69
+    clusterIPs:
+    - 10.111.158.69
+    externalTrafficPolicy: Cluster
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: service
+      nodePort: 30430
+      port: 80
+      protocol: TCP
+      targetPort: 3000
+    selector:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/name: grafana
+    sessionAffinity: None
+    type: NodePort
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:08Z"
+    labels:
+      app: loki
+      app.kubernetes.io/managed-by: Helm
+      chart: loki-2.16.0
+      heritage: Helm
+      release: my-loki-stack
+      variant: headless
+    name: my-loki-stack-headless
+    namespace: loki
+    resourceVersion: "615859"
+    uid: ca18e3ed-9d12-4fc8-97ae-3ac31473995d
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http-metrics
+      port: 3100
+      protocol: TCP
+      targetPort: http-metrics
+    selector:
+      app: loki
+      release: my-loki-stack
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+      prometheus.io/scrape: "true"
+    creationTimestamp: "2025-04-23T00:20:08Z"
+    labels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: kube-state-metrics
+      app.kubernetes.io/part-of: kube-state-metrics
+      app.kubernetes.io/version: 2.8.0
+      helm.sh/chart: kube-state-metrics-4.30.0
+    name: my-loki-stack-kube-state-metrics
+    namespace: loki
+    resourceVersion: "615887"
+    uid: 7e936198-d71a-44b2-897b-6bcb38c6b530
+  spec:
+    clusterIP: 10.107.37.231
+    clusterIPs:
+    - 10.107.37.231
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/name: kube-state-metrics
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:08Z"
+    labels:
+      app: loki
+      app.kubernetes.io/managed-by: Helm
+      chart: loki-2.16.0
+      heritage: Helm
+      release: my-loki-stack
+    name: my-loki-stack-memberlist
+    namespace: loki
+    resourceVersion: "615858"
+    uid: bd9d05a8-a704-4303-b8de-3e06c9184fdf
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 7946
+      protocol: TCP
+      targetPort: memberlist-port
+    publishNotReadyAddresses: true
+    selector:
+      app: loki
+      release: my-loki-stack
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+      prometheus.io/scrape: "true"
+    creationTimestamp: "2025-04-23T00:20:08Z"
+    labels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: prometheus-node-exporter
+      app.kubernetes.io/part-of: prometheus-node-exporter
+      app.kubernetes.io/version: 1.5.0
+      helm.sh/chart: prometheus-node-exporter-4.8.1
+    name: my-loki-stack-prometheus-node-exporter
+    namespace: loki
+    resourceVersion: "615877"
+    uid: 678542e1-805b-4e5c-8e06-3564febc542e
+  spec:
+    clusterIP: 10.110.29.3
+    clusterIPs:
+    - 10.110.29.3
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: metrics
+      port: 9100
+      protocol: TCP
+      targetPort: 9100
+    selector:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/name: prometheus-node-exporter
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+      prometheus.io/probe: pushgateway
+    creationTimestamp: "2025-04-23T00:20:08Z"
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: prometheus-pushgateway
+      app.kubernetes.io/version: v1.5.1
+      helm.sh/chart: prometheus-pushgateway-2.0.4
+    name: my-loki-stack-prometheus-pushgateway
+    namespace: loki
+    resourceVersion: "615883"
+    uid: dcf46af0-a1e1-4a59-bb49-b25aeec19dfd
+  spec:
+    clusterIP: 10.106.234.48
+    clusterIPs:
+    - 10.106.234.48
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 9091
+      protocol: TCP
+      targetPort: 9091
+    selector:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/name: prometheus-pushgateway
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:08Z"
+    labels:
+      app: prometheus
+      app.kubernetes.io/managed-by: Helm
+      chart: prometheus-19.7.2
+      component: server
+      heritage: Helm
+      release: my-loki-stack
+    name: my-loki-stack-prometheus-server
+    namespace: loki
+    resourceVersion: "616632"
+    uid: ba1b1251-4c57-439b-8571-3426630415ae
+  spec:
+    clusterIP: 10.96.127.222
+    clusterIPs:
+    - 10.96.127.222
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 9090
+    selector:
+      app: prometheus
+      component: server
+      release: my-loki-stack
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: DaemonSet
+  metadata:
+    annotations:
+      deprecated.daemonset.template.generation: "1"
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: prometheus-node-exporter
+      app.kubernetes.io/part-of: prometheus-node-exporter
+      app.kubernetes.io/version: 1.5.0
+      helm.sh/chart: prometheus-node-exporter-4.8.1
+    name: my-loki-stack-prometheus-node-exporter
+    namespace: loki
+    resourceVersion: "726462"
+    uid: 6080e0a2-9bbb-43b0-8a97-3dcec0cd2bff
+  spec:
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: my-loki-stack
+        app.kubernetes.io/name: prometheus-node-exporter
+    template:
+      metadata:
+        annotations:
+          cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: metrics
+          app.kubernetes.io/instance: my-loki-stack
+          app.kubernetes.io/managed-by: Helm
+          app.kubernetes.io/name: prometheus-node-exporter
+          app.kubernetes.io/part-of: prometheus-node-exporter
+          app.kubernetes.io/version: 1.5.0
+          helm.sh/chart: prometheus-node-exporter-4.8.1
+      spec:
+        automountServiceAccountToken: false
+        containers:
+        - args:
+          - --path.procfs=/host/proc
+          - --path.sysfs=/host/sys
+          - --path.rootfs=/host/root
+          - --web.listen-address=[$(HOST_IP)]:9100
+          env:
+          - name: HOST_IP
+            value: 0.0.0.0
+          image: quay.io/prometheus/node-exporter:v1.5.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 9100
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: node-exporter
+          ports:
+          - containerPort: 9100
+            name: metrics
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 9100
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /host/proc
+            name: proc
+            readOnly: true
+          - mountPath: /host/sys
+            name: sys
+            readOnly: true
+          - mountPath: /host/root
+            mountPropagation: HostToContainer
+            name: root
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        hostNetwork: true
+        hostPID: true
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 65534
+          runAsGroup: 65534
+          runAsNonRoot: true
+          runAsUser: 65534
+        serviceAccount: my-loki-stack-prometheus-node-exporter
+        serviceAccountName: my-loki-stack-prometheus-node-exporter
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        volumes:
+        - hostPath:
+            path: /proc
+            type: ""
+          name: proc
+        - hostPath:
+            path: /sys
+            type: ""
+          name: sys
+        - hostPath:
+            path: /
+            type: ""
+          name: root
+    updateStrategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 1
+      type: RollingUpdate
+  status:
+    currentNumberScheduled: 3
+    desiredNumberScheduled: 3
+    numberAvailable: 3
+    numberMisscheduled: 0
+    numberReady: 3
+    observedGeneration: 1
+    updatedNumberScheduled: 3
+- apiVersion: apps/v1
+  kind: DaemonSet
+  metadata:
+    annotations:
+      deprecated.daemonset.template.generation: "1"
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: promtail
+      app.kubernetes.io/version: 2.9.3
+      helm.sh/chart: promtail-6.15.5
+    name: my-loki-stack-promtail
+    namespace: loki
+    resourceVersion: "726443"
+    uid: 114cf64e-9360-408a-9250-8a0d7196ba31
+  spec:
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: my-loki-stack
+        app.kubernetes.io/name: promtail
+    template:
+      metadata:
+        annotations:
+          checksum/config: 75b7cd339dcd509609f400a06038ef3697f4b2d3fabfd15ad0ae2e31217513ad
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/instance: my-loki-stack
+          app.kubernetes.io/name: promtail
+      spec:
+        containers:
+        - args:
+          - -config.file=/etc/promtail/promtail.yaml
+          env:
+          - name: HOSTNAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
+          image: docker.io/grafana/promtail:2.9.3
+          imagePullPolicy: IfNotPresent
+          name: promtail
+          ports:
+          - containerPort: 3101
+            name: http-metrics
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /ready
+              port: http-metrics
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/promtail
+            name: config
+          - mountPath: /run/promtail
+            name: run
+          - mountPath: /var/lib/docker/containers
+            name: containers
+            readOnly: true
+          - mountPath: /var/log/pods
+            name: pods
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        enableServiceLinks: true
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          runAsGroup: 0
+          runAsUser: 0
+        serviceAccount: my-loki-stack-promtail
+        serviceAccountName: my-loki-stack-promtail
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Exists
+        volumes:
+        - name: config
+          secret:
+            defaultMode: 420
+            secretName: my-loki-stack-promtail
+        - hostPath:
+            path: /run/promtail
+            type: ""
+          name: run
+        - hostPath:
+            path: /var/lib/docker/containers
+            type: ""
+          name: containers
+        - hostPath:
+            path: /var/log/pods
+            type: ""
+          name: pods
+    updateStrategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 1
+      type: RollingUpdate
+  status:
+    currentNumberScheduled: 3
+    desiredNumberScheduled: 3
+    numberAvailable: 3
+    numberMisscheduled: 0
+    numberReady: 3
+    observedGeneration: 1
+    updatedNumberScheduled: 3
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "2"
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generation: 2
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: grafana
+      app.kubernetes.io/version: 10.3.3
+      helm.sh/chart: grafana-6.43.5
+    name: my-loki-stack-grafana
+    namespace: loki
+    resourceVersion: "723646"
+    uid: 669b0ad1-9d4d-41ea-abf4-d12a398b32fd
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: my-loki-stack
+        app.kubernetes.io/name: grafana
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          checksum/config: 6367eca09763501a33c54438cb529bf0db1bbcecaffbf9cd1318bb41ea751676
+          checksum/dashboards-json-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+          checksum/sc-dashboard-provider-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+          checksum/secret: 72ddc4d478f5b91963ff376dc64de1e40d8a138a09e2de8731921ded303c9a69
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/instance: my-loki-stack
+          app.kubernetes.io/name: grafana
+      spec:
+        automountServiceAccountToken: true
+        containers:
+        - env:
+          - name: METHOD
+            value: WATCH
+          - name: LABEL
+          - name: FOLDER
+            value: /etc/grafana/provisioning/datasources
+          - name: RESOURCE
+            value: both
+          - name: REQ_USERNAME
+            valueFrom:
+              secretKeyRef:
+                key: admin-user
+                name: my-loki-stack-grafana
+          - name: REQ_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: admin-password
+                name: my-loki-stack-grafana
+          - name: REQ_URL
+            value: http://localhost:3000/api/admin/provisioning/datasources/reload
+          - name: REQ_METHOD
+            value: POST
+          image: quay.io/kiwigrid/k8s-sidecar:1.19.2
+          imagePullPolicy: IfNotPresent
+          name: grafana-sc-datasources
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/grafana/provisioning/datasources
+            name: sc-datasources-volume
+        - env:
+          - name: GF_SECURITY_ADMIN_USER
+            valueFrom:
+              secretKeyRef:
+                key: admin-user
+                name: my-loki-stack-grafana
+          - name: GF_SECURITY_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: admin-password
+                name: my-loki-stack-grafana
+          - name: GF_PATHS_DATA
+            value: /var/lib/grafana/
+          - name: GF_PATHS_LOGS
+            value: /var/log/grafana
+          - name: GF_PATHS_PLUGINS
+            value: /var/lib/grafana/plugins
+          - name: GF_PATHS_PROVISIONING
+            value: /etc/grafana/provisioning
+          image: grafana/grafana:10.3.3
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /api/health
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+          name: grafana
+          ports:
+          - containerPort: 3000
+            name: grafana
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/health
+              port: 3000
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/grafana/grafana.ini
+            name: config
+            subPath: grafana.ini
+          - mountPath: /var/lib/grafana
+            name: storage
+          - mountPath: /etc/grafana/provisioning/datasources
+            name: sc-datasources-volume
+        dnsPolicy: ClusterFirst
+        enableServiceLinks: true
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 472
+          runAsGroup: 472
+          runAsUser: 472
+        serviceAccount: my-loki-stack-grafana
+        serviceAccountName: my-loki-stack-grafana
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: my-loki-stack-grafana
+          name: config
+        - emptyDir: {}
+          name: storage
+        - emptyDir: {}
+          name: sc-datasources-volume
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2025-04-23T00:20:09Z"
+      lastUpdateTime: "2025-04-23T00:25:21Z"
+      message: ReplicaSet "my-loki-stack-grafana-58ccf497c5" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2025-04-24T22:35:10Z"
+      lastUpdateTime: "2025-04-24T22:35:10Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 2
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: kube-state-metrics
+      app.kubernetes.io/part-of: kube-state-metrics
+      app.kubernetes.io/version: 2.8.0
+      helm.sh/chart: kube-state-metrics-4.30.0
+    name: my-loki-stack-kube-state-metrics
+    namespace: loki
+    resourceVersion: "723642"
+    uid: 6fe665df-49e8-4447-aeaf-3bcd470bf42e
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: my-loki-stack
+        app.kubernetes.io/name: kube-state-metrics
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: metrics
+          app.kubernetes.io/instance: my-loki-stack
+          app.kubernetes.io/managed-by: Helm
+          app.kubernetes.io/name: kube-state-metrics
+          app.kubernetes.io/part-of: kube-state-metrics
+          app.kubernetes.io/version: 2.8.0
+          helm.sh/chart: kube-state-metrics-4.30.0
+      spec:
+        containers:
+        - args:
+          - --port=8080
+          - --resources=certificatesigningrequests,configmaps,cronjobs,daemonsets,deployments,endpoints,horizontalpodautoscalers,ingresses,jobs,leases,limitranges,mutatingwebhookconfigurations,namespaces,networkpolicies,nodes,persistentvolumeclaims,persistentvolumes,poddisruptionbudgets,pods,replicasets,replicationcontrollers,resourcequotas,secrets,services,statefulsets,storageclasses,validatingwebhookconfigurations,volumeattachments
+          image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.8.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: kube-state-metrics
+          ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 65534
+          runAsGroup: 65534
+          runAsUser: 65534
+        serviceAccount: my-loki-stack-kube-state-metrics
+        serviceAccountName: my-loki-stack-kube-state-metrics
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2025-04-23T00:20:09Z"
+      lastUpdateTime: "2025-04-23T00:21:10Z"
+      message: ReplicaSet "my-loki-stack-kube-state-metrics-7987c66974" has successfully
+        progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2025-04-24T22:35:10Z"
+      lastUpdateTime: "2025-04-24T22:35:10Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: prometheus-pushgateway
+      app.kubernetes.io/version: v1.5.1
+      helm.sh/chart: prometheus-pushgateway-2.0.4
+    name: my-loki-stack-prometheus-pushgateway
+    namespace: loki
+    resourceVersion: "723663"
+    uid: ae2e3025-748e-480b-b421-b506b81a3bba
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: my-loki-stack
+        app.kubernetes.io/name: prometheus-pushgateway
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/instance: my-loki-stack
+          app.kubernetes.io/managed-by: Helm
+          app.kubernetes.io/name: prometheus-pushgateway
+          app.kubernetes.io/version: v1.5.1
+          helm.sh/chart: prometheus-pushgateway-2.0.4
+      spec:
+        containers:
+        - image: prom/pushgateway:v1.5.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /-/ready
+              port: 9091
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+          name: pushgateway
+          ports:
+          - containerPort: 9091
+            name: metrics
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /-/ready
+              port: 9091
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /data
+            name: storage-volume
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 65534
+          runAsNonRoot: true
+          runAsUser: 65534
+        serviceAccount: my-loki-stack-prometheus-pushgateway
+        serviceAccountName: my-loki-stack-prometheus-pushgateway
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: storage-volume
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2025-04-23T00:20:09Z"
+      lastUpdateTime: "2025-04-23T00:21:31Z"
+      message: ReplicaSet "my-loki-stack-prometheus-pushgateway-5bcd9676b6" has successfully
+        progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2025-04-24T22:35:12Z"
+      lastUpdateTime: "2025-04-24T22:35:12Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generation: 1
+    labels:
+      app: prometheus
+      app.kubernetes.io/managed-by: Helm
+      chart: prometheus-19.7.2
+      component: server
+      heritage: Helm
+      release: my-loki-stack
+    name: my-loki-stack-prometheus-server
+    namespace: loki
+    resourceVersion: "725345"
+    uid: 26a2ff34-0834-4759-8c59-64d63b82b5d7
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: prometheus
+        component: server
+        release: my-loki-stack
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: prometheus
+          chart: prometheus-19.7.2
+          component: server
+          heritage: Helm
+          release: my-loki-stack
+      spec:
+        containers:
+        - args:
+          - --volume-dir=/etc/config
+          - --webhook-url=http://127.0.0.1:9090/-/reload
+          image: jimmidyson/configmap-reload:v0.8.0
+          imagePullPolicy: IfNotPresent
+          name: prometheus-server-configmap-reload
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/config
+            name: config-volume
+            readOnly: true
+        - args:
+          - --storage.tsdb.retention.time=15d
+          - --config.file=/etc/config/prometheus.yml
+          - --storage.tsdb.path=/data
+          - --web.console.libraries=/etc/prometheus/console_libraries
+          - --web.console.templates=/etc/prometheus/consoles
+          - --web.enable-lifecycle
+          image: quay.io/prometheus/prometheus:v2.41.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /-/healthy
+              port: 9090
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 10
+          name: prometheus-server
+          ports:
+          - containerPort: 9090
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /-/ready
+              port: 9090
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 4
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/config
+            name: config-volume
+          - mountPath: /data
+            name: storage-volume
+        dnsPolicy: ClusterFirst
+        enableServiceLinks: true
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 65534
+          runAsGroup: 65534
+          runAsNonRoot: true
+          runAsUser: 65534
+        serviceAccount: my-loki-stack-prometheus-server
+        serviceAccountName: my-loki-stack-prometheus-server
+        terminationGracePeriodSeconds: 300
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: my-loki-stack-prometheus-server
+          name: config-volume
+        - name: storage-volume
+          persistentVolumeClaim:
+            claimName: my-loki-stack-prometheus-server
+  status:
+    conditions:
+    - lastTransitionTime: "2025-04-23T00:20:10Z"
+      lastUpdateTime: "2025-04-23T00:20:10Z"
+      message: Deployment does not have minimum availability.
+      reason: MinimumReplicasUnavailable
+      status: "False"
+      type: Available
+    - lastTransitionTime: "2025-04-24T22:51:22Z"
+      lastUpdateTime: "2025-04-24T22:51:22Z"
+      message: ReplicaSet "my-loki-stack-prometheus-server-56d6c8fcf8" has timed out
+        progressing.
+      reason: ProgressDeadlineExceeded
+      status: "False"
+      type: Progressing
+    observedGeneration: 1
+    replicas: 1
+    unavailableReplicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "2"
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:25:01Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/name: grafana
+      pod-template-hash: 58ccf497c5
+    name: my-loki-stack-grafana-58ccf497c5
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: my-loki-stack-grafana
+      uid: 669b0ad1-9d4d-41ea-abf4-d12a398b32fd
+    resourceVersion: "723620"
+    uid: 4b23805c-edc5-4073-8000-2b68cb9290a6
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: my-loki-stack
+        app.kubernetes.io/name: grafana
+        pod-template-hash: 58ccf497c5
+    template:
+      metadata:
+        annotations:
+          checksum/config: 6367eca09763501a33c54438cb529bf0db1bbcecaffbf9cd1318bb41ea751676
+          checksum/dashboards-json-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+          checksum/sc-dashboard-provider-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+          checksum/secret: 72ddc4d478f5b91963ff376dc64de1e40d8a138a09e2de8731921ded303c9a69
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/instance: my-loki-stack
+          app.kubernetes.io/name: grafana
+          pod-template-hash: 58ccf497c5
+      spec:
+        automountServiceAccountToken: true
+        containers:
+        - env:
+          - name: METHOD
+            value: WATCH
+          - name: LABEL
+          - name: FOLDER
+            value: /etc/grafana/provisioning/datasources
+          - name: RESOURCE
+            value: both
+          - name: REQ_USERNAME
+            valueFrom:
+              secretKeyRef:
+                key: admin-user
+                name: my-loki-stack-grafana
+          - name: REQ_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: admin-password
+                name: my-loki-stack-grafana
+          - name: REQ_URL
+            value: http://localhost:3000/api/admin/provisioning/datasources/reload
+          - name: REQ_METHOD
+            value: POST
+          image: quay.io/kiwigrid/k8s-sidecar:1.19.2
+          imagePullPolicy: IfNotPresent
+          name: grafana-sc-datasources
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/grafana/provisioning/datasources
+            name: sc-datasources-volume
+        - env:
+          - name: GF_SECURITY_ADMIN_USER
+            valueFrom:
+              secretKeyRef:
+                key: admin-user
+                name: my-loki-stack-grafana
+          - name: GF_SECURITY_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: admin-password
+                name: my-loki-stack-grafana
+          - name: GF_PATHS_DATA
+            value: /var/lib/grafana/
+          - name: GF_PATHS_LOGS
+            value: /var/log/grafana
+          - name: GF_PATHS_PLUGINS
+            value: /var/lib/grafana/plugins
+          - name: GF_PATHS_PROVISIONING
+            value: /etc/grafana/provisioning
+          image: grafana/grafana:10.3.3
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /api/health
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+          name: grafana
+          ports:
+          - containerPort: 3000
+            name: grafana
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/health
+              port: 3000
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/grafana/grafana.ini
+            name: config
+            subPath: grafana.ini
+          - mountPath: /var/lib/grafana
+            name: storage
+          - mountPath: /etc/grafana/provisioning/datasources
+            name: sc-datasources-volume
+        dnsPolicy: ClusterFirst
+        enableServiceLinks: true
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 472
+          runAsGroup: 472
+          runAsUser: 472
+        serviceAccount: my-loki-stack-grafana
+        serviceAccountName: my-loki-stack-grafana
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: my-loki-stack-grafana
+          name: config
+        - emptyDir: {}
+          name: storage
+        - emptyDir: {}
+          name: sc-datasources-volume
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generation: 2
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/name: grafana
+      pod-template-hash: 9f5b4885f
+    name: my-loki-stack-grafana-9f5b4885f
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: my-loki-stack-grafana
+      uid: 669b0ad1-9d4d-41ea-abf4-d12a398b32fd
+    resourceVersion: "616708"
+    uid: 8c8d8bfd-cb4e-4bc8-82de-3140d16187b9
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: my-loki-stack
+        app.kubernetes.io/name: grafana
+        pod-template-hash: 9f5b4885f
+    template:
+      metadata:
+        annotations:
+          checksum/config: 6367eca09763501a33c54438cb529bf0db1bbcecaffbf9cd1318bb41ea751676
+          checksum/dashboards-json-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+          checksum/sc-dashboard-provider-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+          checksum/secret: ed239ebd269ab90982b76f39af081fe865f689fcdf70702a645efc5c89e724af
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/instance: my-loki-stack
+          app.kubernetes.io/name: grafana
+          pod-template-hash: 9f5b4885f
+      spec:
+        automountServiceAccountToken: true
+        containers:
+        - env:
+          - name: METHOD
+            value: WATCH
+          - name: LABEL
+          - name: FOLDER
+            value: /etc/grafana/provisioning/datasources
+          - name: RESOURCE
+            value: both
+          - name: REQ_USERNAME
+            valueFrom:
+              secretKeyRef:
+                key: admin-user
+                name: my-loki-stack-grafana
+          - name: REQ_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: admin-password
+                name: my-loki-stack-grafana
+          - name: REQ_URL
+            value: http://localhost:3000/api/admin/provisioning/datasources/reload
+          - name: REQ_METHOD
+            value: POST
+          image: quay.io/kiwigrid/k8s-sidecar:1.19.2
+          imagePullPolicy: IfNotPresent
+          name: grafana-sc-datasources
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/grafana/provisioning/datasources
+            name: sc-datasources-volume
+        - env:
+          - name: GF_SECURITY_ADMIN_USER
+            valueFrom:
+              secretKeyRef:
+                key: admin-user
+                name: my-loki-stack-grafana
+          - name: GF_SECURITY_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: admin-password
+                name: my-loki-stack-grafana
+          - name: GF_PATHS_DATA
+            value: /var/lib/grafana/
+          - name: GF_PATHS_LOGS
+            value: /var/log/grafana
+          - name: GF_PATHS_PLUGINS
+            value: /var/lib/grafana/plugins
+          - name: GF_PATHS_PROVISIONING
+            value: /etc/grafana/provisioning
+          image: grafana/grafana:10.3.3
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /api/health
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+          name: grafana
+          ports:
+          - containerPort: 3000
+            name: grafana
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/health
+              port: 3000
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/grafana/grafana.ini
+            name: config
+            subPath: grafana.ini
+          - mountPath: /var/lib/grafana
+            name: storage
+          - mountPath: /etc/grafana/provisioning/datasources
+            name: sc-datasources-volume
+        dnsPolicy: ClusterFirst
+        enableServiceLinks: true
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 472
+          runAsGroup: 472
+          runAsUser: 472
+        serviceAccount: my-loki-stack-grafana
+        serviceAccountName: my-loki-stack-grafana
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: my-loki-stack-grafana
+          name: config
+        - emptyDir: {}
+          name: storage
+        - emptyDir: {}
+          name: sc-datasources-volume
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: kube-state-metrics
+      app.kubernetes.io/part-of: kube-state-metrics
+      app.kubernetes.io/version: 2.8.0
+      helm.sh/chart: kube-state-metrics-4.30.0
+      pod-template-hash: 7987c66974
+    name: my-loki-stack-kube-state-metrics-7987c66974
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: my-loki-stack-kube-state-metrics
+      uid: 6fe665df-49e8-4447-aeaf-3bcd470bf42e
+    resourceVersion: "723624"
+    uid: b0018a72-d024-4b2b-b9ae-76b49f05c004
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: my-loki-stack
+        app.kubernetes.io/name: kube-state-metrics
+        pod-template-hash: 7987c66974
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: metrics
+          app.kubernetes.io/instance: my-loki-stack
+          app.kubernetes.io/managed-by: Helm
+          app.kubernetes.io/name: kube-state-metrics
+          app.kubernetes.io/part-of: kube-state-metrics
+          app.kubernetes.io/version: 2.8.0
+          helm.sh/chart: kube-state-metrics-4.30.0
+          pod-template-hash: 7987c66974
+      spec:
+        containers:
+        - args:
+          - --port=8080
+          - --resources=certificatesigningrequests,configmaps,cronjobs,daemonsets,deployments,endpoints,horizontalpodautoscalers,ingresses,jobs,leases,limitranges,mutatingwebhookconfigurations,namespaces,networkpolicies,nodes,persistentvolumeclaims,persistentvolumes,poddisruptionbudgets,pods,replicasets,replicationcontrollers,resourcequotas,secrets,services,statefulsets,storageclasses,validatingwebhookconfigurations,volumeattachments
+          image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.8.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: kube-state-metrics
+          ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 65534
+          runAsGroup: 65534
+          runAsUser: 65534
+        serviceAccount: my-loki-stack-kube-state-metrics
+        serviceAccountName: my-loki-stack-kube-state-metrics
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "1"
+      deployment.kubernetes.io/revision: "1"
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: prometheus-pushgateway
+      app.kubernetes.io/version: v1.5.1
+      helm.sh/chart: prometheus-pushgateway-2.0.4
+      pod-template-hash: 5bcd9676b6
+    name: my-loki-stack-prometheus-pushgateway-5bcd9676b6
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: my-loki-stack-prometheus-pushgateway
+      uid: ae2e3025-748e-480b-b421-b506b81a3bba
+    resourceVersion: "723635"
+    uid: 7dc225a2-a55e-457d-ab4a-46ca52fef52c
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: my-loki-stack
+        app.kubernetes.io/name: prometheus-pushgateway
+        pod-template-hash: 5bcd9676b6
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/instance: my-loki-stack
+          app.kubernetes.io/managed-by: Helm
+          app.kubernetes.io/name: prometheus-pushgateway
+          app.kubernetes.io/version: v1.5.1
+          helm.sh/chart: prometheus-pushgateway-2.0.4
+          pod-template-hash: 5bcd9676b6
+      spec:
+        containers:
+        - image: prom/pushgateway:v1.5.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /-/ready
+              port: 9091
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+          name: pushgateway
+          ports:
+          - containerPort: 9091
+            name: metrics
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /-/ready
+              port: 9091
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /data
+            name: storage-volume
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 65534
+          runAsNonRoot: true
+          runAsUser: 65534
+        serviceAccount: my-loki-stack-prometheus-pushgateway
+        serviceAccountName: my-loki-stack-prometheus-pushgateway
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: storage-volume
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "1"
+      deployment.kubernetes.io/revision: "1"
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generation: 1
+    labels:
+      app: prometheus
+      chart: prometheus-19.7.2
+      component: server
+      heritage: Helm
+      pod-template-hash: 56d6c8fcf8
+      release: my-loki-stack
+    name: my-loki-stack-prometheus-server-56d6c8fcf8
+    namespace: loki
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: my-loki-stack-prometheus-server
+      uid: 26a2ff34-0834-4759-8c59-64d63b82b5d7
+    resourceVersion: "724078"
+    uid: 65d7ff27-027f-4ed8-aecf-f7ea0be6635d
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: prometheus
+        component: server
+        pod-template-hash: 56d6c8fcf8
+        release: my-loki-stack
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: prometheus
+          chart: prometheus-19.7.2
+          component: server
+          heritage: Helm
+          pod-template-hash: 56d6c8fcf8
+          release: my-loki-stack
+      spec:
+        containers:
+        - args:
+          - --volume-dir=/etc/config
+          - --webhook-url=http://127.0.0.1:9090/-/reload
+          image: jimmidyson/configmap-reload:v0.8.0
+          imagePullPolicy: IfNotPresent
+          name: prometheus-server-configmap-reload
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/config
+            name: config-volume
+            readOnly: true
+        - args:
+          - --storage.tsdb.retention.time=15d
+          - --config.file=/etc/config/prometheus.yml
+          - --storage.tsdb.path=/data
+          - --web.console.libraries=/etc/prometheus/console_libraries
+          - --web.console.templates=/etc/prometheus/consoles
+          - --web.enable-lifecycle
+          image: quay.io/prometheus/prometheus:v2.41.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /-/healthy
+              port: 9090
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 10
+          name: prometheus-server
+          ports:
+          - containerPort: 9090
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /-/ready
+              port: 9090
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 4
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/config
+            name: config-volume
+          - mountPath: /data
+            name: storage-volume
+        dnsPolicy: ClusterFirst
+        enableServiceLinks: true
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 65534
+          runAsGroup: 65534
+          runAsNonRoot: true
+          runAsUser: 65534
+        serviceAccount: my-loki-stack-prometheus-server
+        serviceAccountName: my-loki-stack-prometheus-server
+        terminationGracePeriodSeconds: 300
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: my-loki-stack-prometheus-server
+          name: config-volume
+        - name: storage-volume
+          persistentVolumeClaim:
+            claimName: my-loki-stack-prometheus-server
+  status:
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generation: 1
+    labels:
+      app: loki
+      app.kubernetes.io/managed-by: Helm
+      chart: loki-2.16.0
+      heritage: Helm
+      release: my-loki-stack
+    name: my-loki-stack
+    namespace: loki
+    resourceVersion: "745897"
+    uid: f6489d08-6948-4ad6-9dba-095c208d34a5
+  spec:
+    persistentVolumeClaimRetentionPolicy:
+      whenDeleted: Retain
+      whenScaled: Retain
+    podManagementPolicy: OrderedReady
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: loki
+        release: my-loki-stack
+    serviceName: my-loki-stack-headless
+    template:
+      metadata:
+        annotations:
+          checksum/config: 52be1afe3f11dbaf7413f4e8a78e536a8c83f4f560c71b42f77543c82dd8363a
+          prometheus.io/port: http-metrics
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: loki
+          name: my-loki-stack
+          release: my-loki-stack
+      spec:
+        affinity: {}
+        containers:
+        - args:
+          - -config.file=/etc/loki/loki.yaml
+          image: grafana/loki:2.6.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /ready
+              port: http-metrics
+              scheme: HTTP
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: loki
+          ports:
+          - containerPort: 3100
+            name: http-metrics
+            protocol: TCP
+          - containerPort: 9095
+            name: grpc
+            protocol: TCP
+          - containerPort: 7946
+            name: memberlist-port
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /ready
+              port: http-metrics
+              scheme: HTTP
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          securityContext:
+            readOnlyRootFilesystem: true
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: tmp
+          - mountPath: /etc/loki
+            name: config
+          - mountPath: /data
+            name: storage
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 10001
+          runAsGroup: 10001
+          runAsNonRoot: true
+          runAsUser: 10001
+        serviceAccount: my-loki-stack
+        serviceAccountName: my-loki-stack
+        terminationGracePeriodSeconds: 4800
+        volumes:
+        - emptyDir: {}
+          name: tmp
+        - name: config
+          secret:
+            defaultMode: 420
+            secretName: my-loki-stack
+        - emptyDir: {}
+          name: storage
+    updateStrategy:
+      type: RollingUpdate
+  status:
+    availableReplicas: 1
+    collisionCount: 0
+    currentReplicas: 1
+    currentRevision: my-loki-stack-79f6dcb8
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updateRevision: my-loki-stack-79f6dcb8
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: my-loki-stack
+      meta.helm.sh/release-namespace: loki
+    creationTimestamp: "2025-04-23T00:20:09Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: my-loki-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/version: v0.25.0
+      helm.sh/chart: alertmanager-0.24.1
+    name: my-loki-stack-alertmanager
+    namespace: loki
+    resourceVersion: "723573"
+    uid: bf734a38-4824-460e-9448-7d59aa7f0539
+  spec:
+    persistentVolumeClaimRetentionPolicy:
+      whenDeleted: Retain
+      whenScaled: Retain
+    podManagementPolicy: OrderedReady
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: my-loki-stack
+        app.kubernetes.io/name: alertmanager
+    serviceName: my-loki-stack-alertmanager-headless
+    template:
+      metadata:
+        annotations:
+          checksum/config: 8d592ec7778653aad1bce3868e8b0d6d03dbdbb3cb668d603faf6d9f87739fd1
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/instance: my-loki-stack
+          app.kubernetes.io/name: alertmanager
+      spec:
+        containers:
+        - args:
+          - --storage.path=/alertmanager
+          - --config.file=/etc/alertmanager/alertmanager.yml
+          env:
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.podIP
+          image: quay.io/prometheus/alertmanager:v0.25.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: alertmanager
+          ports:
+          - containerPort: 9093
+            name: http
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          securityContext:
+            runAsGroup: 65534
+            runAsNonRoot: true
+            runAsUser: 65534
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/alertmanager
+            name: config
+          - mountPath: /alertmanager
+            name: storage
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 65534
+          runAsGroup: 65534
+          runAsNonRoot: true
+          runAsUser: 65534
+        serviceAccount: my-loki-stack-alertmanager
+        serviceAccountName: my-loki-stack-alertmanager
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: my-loki-stack-alertmanager
+          name: config
+    updateStrategy:
+      rollingUpdate:
+        partition: 0
+      type: RollingUpdate
+    volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        creationTimestamp: null
+        name: storage
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
+        volumeMode: Filesystem
+      status:
+        phase: Pending
+  status:
+    availableReplicas: 0
+    collisionCount: 0
+    currentReplicas: 1
+    currentRevision: my-loki-stack-alertmanager-5cb4d46b7b
+    observedGeneration: 1
+    replicas: 1
+    updateRevision: my-loki-stack-alertmanager-5cb4d46b7b
+    updatedReplicas: 1
+kind: List
+metadata:
+  resourceVersion: ""

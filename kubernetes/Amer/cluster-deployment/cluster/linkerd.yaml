@@ -1,0 +1,746 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-04-25T11:35:20Z"
+    generateName: linkerd-destination-64f5965f4-
+    labels:
+      linkerd.io/control-plane-component: destination
+      pod-template-hash: 64f5965f4
+    name: linkerd-destination-64f5965f4-cdvzb
+    namespace: linkerd
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: linkerd-destination-64f5965f4
+      uid: 93d3454e-2512-4bdd-bc6b-48a13c6bc938
+    resourceVersion: "767752"
+    uid: db8e3df5-7e27-498a-b512-d3b3b96ba33e
+  spec:
+    containers:
+    - args:
+      - -addr=:8086
+      - -controller-namespace=linkerd
+      - -log-level=info
+      - -metrics-addr=:9996
+      - -enable-pprof
+      - -cluster-domain=cluster.local
+      env:
+      - name: LINKERD2_PROXY_LOG
+        value: warn,linkerd=info
+      - name: LINKERD2_PROXY_BIND_TIMEOUT
+        value: 10s
+      - name: LINKERD2_PROXY_CONTROL_URL
+        value: tcp://linkerd-destination.linkerd.svc.cluster.local:8086
+      - name: LINKERD2_PROXY_METRICS_URL
+        value: tcp://linkerd-destination.linkerd.svc.cluster.local:8086
+      image: buoyantio/linkerd-destination:1.7.4
+      imagePullPolicy: IfNotPresent
+      name: destination
+      ports:
+      - containerPort: 8086
+        name: grpc
+        protocol: TCP
+      - containerPort: 9996
+        name: admin-http
+        protocol: TCP
+      resources:
+        limits:
+          cpu: 200m
+          memory: 100Mi
+        requests:
+          cpu: 100m
+          memory: 50Mi
+      securityContext:
+        runAsUser: 2103
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-w9vcj
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: worker02
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-w9vcj
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T11:35:50Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T11:35:23Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T11:35:23Z"
+      message: 'containers with unready status: [destination]'
+      reason: ContainersNotReady
+      status: "False"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T11:35:23Z"
+      message: 'containers with unready status: [destination]'
+      reason: ContainersNotReady
+      status: "False"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T11:35:22Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - image: buoyantio/linkerd-destination:1.7.4
+      imageID: ""
+      lastState: {}
+      name: destination
+      ready: false
+      restartCount: 0
+      started: false
+      state:
+        waiting:
+          message: Back-off pulling image "buoyantio/linkerd-destination:1.7.4"
+          reason: ImagePullBackOff
+    hostIP: 192.168.2.152
+    hostIPs:
+    - ip: 192.168.2.152
+    phase: Pending
+    podIP: 10.36.0.26
+    podIPs:
+    - ip: 10.36.0.26
+    qosClass: Burstable
+    startTime: "2025-04-25T11:35:23Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-04-25T11:35:11Z"
+    generateName: linkerd-web-687b9546f4-
+    labels:
+      linkerd.io/control-plane-component: web
+      pod-template-hash: 687b9546f4
+    name: linkerd-web-687b9546f4-62pgq
+    namespace: linkerd
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: linkerd-web-687b9546f4
+      uid: 4b90aae8-92b5-4f8c-aa74-85a47d5ffd1f
+    resourceVersion: "767819"
+    uid: 3ac9a49b-9818-4fac-8487-8bc45286f765
+  spec:
+    containers:
+    - args:
+      - -addr=:8084
+      - -controller-namespace=linkerd
+      - -log-level=info
+      - -metrics-addr=:9994
+      - -linkerd-metrics-api-addr=linkerd-controller-api.linkerd.svc.cluster.local:8085
+      - -enable-pprof
+      - -cluster-domain=cluster.local
+      env:
+      - name: LINKERD2_PROXY_LOG
+        value: warn,linkerd=info
+      - name: LINKERD2_PROXY_BIND_TIMEOUT
+        value: 10s
+      - name: LINKERD2_PROXY_CONTROL_URL
+        value: tcp://linkerd-destination.linkerd.svc.cluster.local:8086
+      - name: LINKERD2_PROXY_METRICS_URL
+        value: tcp://linkerd-destination.linkerd.svc.cluster.local:8086
+      image: buoyantio/linkerd-web:1.7.4
+      imagePullPolicy: IfNotPresent
+      name: web
+      ports:
+      - containerPort: 8084
+        name: http
+        protocol: TCP
+      - containerPort: 9994
+        name: admin-http
+        protocol: TCP
+      resources:
+        limits:
+          cpu: 200m
+          memory: 100Mi
+        requests:
+          cpu: 100m
+          memory: 50Mi
+      securityContext:
+        runAsUser: 2103
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-tzcbx
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: worker01
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-tzcbx
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T11:35:32Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T11:35:16Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T11:35:16Z"
+      message: 'containers with unready status: [web]'
+      reason: ContainersNotReady
+      status: "False"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T11:35:16Z"
+      message: 'containers with unready status: [web]'
+      reason: ContainersNotReady
+      status: "False"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-25T11:35:15Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - image: buoyantio/linkerd-web:1.7.4
+      imageID: ""
+      lastState: {}
+      name: web
+      ready: false
+      restartCount: 0
+      started: false
+      state:
+        waiting:
+          message: Back-off pulling image "buoyantio/linkerd-web:1.7.4"
+          reason: ImagePullBackOff
+    hostIP: 192.168.2.151
+    hostIPs:
+    - ip: 192.168.2.151
+    phase: Pending
+    podIP: 10.44.0.20
+    podIPs:
+    - ip: 10.44.0.20
+    qosClass: Burstable
+    startTime: "2025-04-25T11:35:16Z"
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"linkerd-controller-api","namespace":"linkerd"},"spec":{"ports":[{"name":"http","port":8085,"targetPort":8085}],"selector":{"linkerd.io/control-plane-component":"controller"},"type":"ClusterIP"}}
+    creationTimestamp: "2025-04-25T11:35:01Z"
+    name: linkerd-controller-api
+    namespace: linkerd
+    resourceVersion: "740415"
+    uid: d6cb33a8-603d-4c35-a298-c9c657f75943
+  spec:
+    clusterIP: 10.96.173.224
+    clusterIPs:
+    - 10.96.173.224
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 8085
+      protocol: TCP
+      targetPort: 8085
+    selector:
+      linkerd.io/control-plane-component: controller
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"linkerd-destination","namespace":"linkerd"},"spec":{"ports":[{"name":"grpc","port":8086,"targetPort":8086}],"selector":{"linkerd.io/control-plane-component":"destination"},"type":"ClusterIP"}}
+    creationTimestamp: "2025-04-25T11:35:21Z"
+    name: linkerd-destination
+    namespace: linkerd
+    resourceVersion: "740513"
+    uid: bdb121f3-c6ec-4310-80fd-9074841e55f5
+  spec:
+    clusterIP: 10.107.107.119
+    clusterIPs:
+    - 10.107.107.119
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: grpc
+      port: 8086
+      protocol: TCP
+      targetPort: 8086
+    selector:
+      linkerd.io/control-plane-component: destination
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"linkerd-web","namespace":"linkerd"},"spec":{"ports":[{"name":"http","nodePort":31112,"port":8084,"targetPort":"http"}],"selector":{"linkerd.io/control-plane-component":"web"},"type":"NodePort"}}
+    creationTimestamp: "2025-04-25T11:35:27Z"
+    name: linkerd-web
+    namespace: linkerd
+    resourceVersion: "740547"
+    uid: 661a1a8f-605f-485e-b647-87db9e6cc6be
+  spec:
+    clusterIP: 10.104.117.38
+    clusterIPs:
+    - 10.104.117.38
+    externalTrafficPolicy: Cluster
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      nodePort: 31112
+      port: 8084
+      protocol: TCP
+      targetPort: http
+    selector:
+      linkerd.io/control-plane-component: web
+    sessionAffinity: None
+    type: NodePort
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"linkerd-destination","namespace":"linkerd"},"spec":{"replicas":1,"selector":{"matchLabels":{"linkerd.io/control-plane-component":"destination"}},"template":{"metadata":{"labels":{"linkerd.io/control-plane-component":"destination"}},"spec":{"containers":[{"args":["-addr=:8086","-controller-namespace=linkerd","-log-level=info","-metrics-addr=:9996","-enable-pprof","-cluster-domain=cluster.local"],"env":[{"name":"LINKERD2_PROXY_LOG","value":"warn,linkerd=info"},{"name":"LINKERD2_PROXY_BIND_TIMEOUT","value":"10s"},{"name":"LINKERD2_PROXY_CONTROL_URL","value":"tcp://linkerd-destination.linkerd.svc.cluster.local:8086"},{"name":"LINKERD2_PROXY_METRICS_URL","value":"tcp://linkerd-destination.linkerd.svc.cluster.local:8086"}],"image":"buoyantio/linkerd-destination:1.7.4","name":"destination","ports":[{"containerPort":8086,"name":"grpc"},{"containerPort":9996,"name":"admin-http"}],"resources":{"limits":{"cpu":"200m","memory":"100Mi"},"requests":{"cpu":"100m","memory":"50Mi"}},"securityContext":{"runAsUser":2103}}]}}}}
+    creationTimestamp: "2025-04-25T11:35:16Z"
+    generation: 1
+    name: linkerd-destination
+    namespace: linkerd
+    resourceVersion: "741649"
+    uid: 668c1e24-d3c4-484f-8914-7337f609ec2f
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        linkerd.io/control-plane-component: destination
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          linkerd.io/control-plane-component: destination
+      spec:
+        containers:
+        - args:
+          - -addr=:8086
+          - -controller-namespace=linkerd
+          - -log-level=info
+          - -metrics-addr=:9996
+          - -enable-pprof
+          - -cluster-domain=cluster.local
+          env:
+          - name: LINKERD2_PROXY_LOG
+            value: warn,linkerd=info
+          - name: LINKERD2_PROXY_BIND_TIMEOUT
+            value: 10s
+          - name: LINKERD2_PROXY_CONTROL_URL
+            value: tcp://linkerd-destination.linkerd.svc.cluster.local:8086
+          - name: LINKERD2_PROXY_METRICS_URL
+            value: tcp://linkerd-destination.linkerd.svc.cluster.local:8086
+          image: buoyantio/linkerd-destination:1.7.4
+          imagePullPolicy: IfNotPresent
+          name: destination
+          ports:
+          - containerPort: 8086
+            name: grpc
+            protocol: TCP
+          - containerPort: 9996
+            name: admin-http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 50Mi
+          securityContext:
+            runAsUser: 2103
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    conditions:
+    - lastTransitionTime: "2025-04-25T11:35:24Z"
+      lastUpdateTime: "2025-04-25T11:35:24Z"
+      message: Deployment does not have minimum availability.
+      reason: MinimumReplicasUnavailable
+      status: "False"
+      type: Available
+    - lastTransitionTime: "2025-04-25T11:45:25Z"
+      lastUpdateTime: "2025-04-25T11:45:25Z"
+      message: ReplicaSet "linkerd-destination-64f5965f4" has timed out progressing.
+      reason: ProgressDeadlineExceeded
+      status: "False"
+      type: Progressing
+    observedGeneration: 1
+    replicas: 1
+    unavailableReplicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"linkerd-web","namespace":"linkerd"},"spec":{"replicas":1,"selector":{"matchLabels":{"linkerd.io/control-plane-component":"web"}},"template":{"metadata":{"labels":{"linkerd.io/control-plane-component":"web"}},"spec":{"containers":[{"args":["-addr=:8084","-controller-namespace=linkerd","-log-level=info","-metrics-addr=:9994","-linkerd-metrics-api-addr=linkerd-controller-api.linkerd.svc.cluster.local:8085","-enable-pprof","-cluster-domain=cluster.local"],"env":[{"name":"LINKERD2_PROXY_LOG","value":"warn,linkerd=info"},{"name":"LINKERD2_PROXY_BIND_TIMEOUT","value":"10s"},{"name":"LINKERD2_PROXY_CONTROL_URL","value":"tcp://linkerd-destination.linkerd.svc.cluster.local:8086"},{"name":"LINKERD2_PROXY_METRICS_URL","value":"tcp://linkerd-destination.linkerd.svc.cluster.local:8086"}],"image":"buoyantio/linkerd-web:1.7.4","name":"web","ports":[{"containerPort":8084,"name":"http"},{"containerPort":9994,"name":"admin-http"}],"resources":{"limits":{"cpu":"200m","memory":"100Mi"},"requests":{"cpu":"100m","memory":"50Mi"}},"securityContext":{"runAsUser":2103}}]}}}}
+    creationTimestamp: "2025-04-25T11:35:06Z"
+    generation: 1
+    name: linkerd-web
+    namespace: linkerd
+    resourceVersion: "741635"
+    uid: 5a28aad5-4a75-43cf-8b4c-484c57a88ce3
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        linkerd.io/control-plane-component: web
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          linkerd.io/control-plane-component: web
+      spec:
+        containers:
+        - args:
+          - -addr=:8084
+          - -controller-namespace=linkerd
+          - -log-level=info
+          - -metrics-addr=:9994
+          - -linkerd-metrics-api-addr=linkerd-controller-api.linkerd.svc.cluster.local:8085
+          - -enable-pprof
+          - -cluster-domain=cluster.local
+          env:
+          - name: LINKERD2_PROXY_LOG
+            value: warn,linkerd=info
+          - name: LINKERD2_PROXY_BIND_TIMEOUT
+            value: 10s
+          - name: LINKERD2_PROXY_CONTROL_URL
+            value: tcp://linkerd-destination.linkerd.svc.cluster.local:8086
+          - name: LINKERD2_PROXY_METRICS_URL
+            value: tcp://linkerd-destination.linkerd.svc.cluster.local:8086
+          image: buoyantio/linkerd-web:1.7.4
+          imagePullPolicy: IfNotPresent
+          name: web
+          ports:
+          - containerPort: 8084
+            name: http
+            protocol: TCP
+          - containerPort: 9994
+            name: admin-http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 50Mi
+          securityContext:
+            runAsUser: 2103
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    conditions:
+    - lastTransitionTime: "2025-04-25T11:35:19Z"
+      lastUpdateTime: "2025-04-25T11:35:19Z"
+      message: Deployment does not have minimum availability.
+      reason: MinimumReplicasUnavailable
+      status: "False"
+      type: Available
+    - lastTransitionTime: "2025-04-25T11:45:23Z"
+      lastUpdateTime: "2025-04-25T11:45:23Z"
+      message: ReplicaSet "linkerd-web-687b9546f4" has timed out progressing.
+      reason: ProgressDeadlineExceeded
+      status: "False"
+      type: Progressing
+    observedGeneration: 1
+    replicas: 1
+    unavailableReplicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2025-04-25T11:35:17Z"
+    generation: 1
+    labels:
+      linkerd.io/control-plane-component: destination
+      pod-template-hash: 64f5965f4
+    name: linkerd-destination-64f5965f4
+    namespace: linkerd
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: linkerd-destination
+      uid: 668c1e24-d3c4-484f-8914-7337f609ec2f
+    resourceVersion: "740510"
+    uid: 93d3454e-2512-4bdd-bc6b-48a13c6bc938
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        linkerd.io/control-plane-component: destination
+        pod-template-hash: 64f5965f4
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          linkerd.io/control-plane-component: destination
+          pod-template-hash: 64f5965f4
+      spec:
+        containers:
+        - args:
+          - -addr=:8086
+          - -controller-namespace=linkerd
+          - -log-level=info
+          - -metrics-addr=:9996
+          - -enable-pprof
+          - -cluster-domain=cluster.local
+          env:
+          - name: LINKERD2_PROXY_LOG
+            value: warn,linkerd=info
+          - name: LINKERD2_PROXY_BIND_TIMEOUT
+            value: 10s
+          - name: LINKERD2_PROXY_CONTROL_URL
+            value: tcp://linkerd-destination.linkerd.svc.cluster.local:8086
+          - name: LINKERD2_PROXY_METRICS_URL
+            value: tcp://linkerd-destination.linkerd.svc.cluster.local:8086
+          image: buoyantio/linkerd-destination:1.7.4
+          imagePullPolicy: IfNotPresent
+          name: destination
+          ports:
+          - containerPort: 8086
+            name: grpc
+            protocol: TCP
+          - containerPort: 9996
+            name: admin-http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 50Mi
+          securityContext:
+            runAsUser: 2103
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2025-04-25T11:35:08Z"
+    generation: 1
+    labels:
+      linkerd.io/control-plane-component: web
+      pod-template-hash: 687b9546f4
+    name: linkerd-web-687b9546f4
+    namespace: linkerd
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: linkerd-web
+      uid: 5a28aad5-4a75-43cf-8b4c-484c57a88ce3
+    resourceVersion: "740492"
+    uid: 4b90aae8-92b5-4f8c-aa74-85a47d5ffd1f
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        linkerd.io/control-plane-component: web
+        pod-template-hash: 687b9546f4
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          linkerd.io/control-plane-component: web
+          pod-template-hash: 687b9546f4
+      spec:
+        containers:
+        - args:
+          - -addr=:8084
+          - -controller-namespace=linkerd
+          - -log-level=info
+          - -metrics-addr=:9994
+          - -linkerd-metrics-api-addr=linkerd-controller-api.linkerd.svc.cluster.local:8085
+          - -enable-pprof
+          - -cluster-domain=cluster.local
+          env:
+          - name: LINKERD2_PROXY_LOG
+            value: warn,linkerd=info
+          - name: LINKERD2_PROXY_BIND_TIMEOUT
+            value: 10s
+          - name: LINKERD2_PROXY_CONTROL_URL
+            value: tcp://linkerd-destination.linkerd.svc.cluster.local:8086
+          - name: LINKERD2_PROXY_METRICS_URL
+            value: tcp://linkerd-destination.linkerd.svc.cluster.local:8086
+          image: buoyantio/linkerd-web:1.7.4
+          imagePullPolicy: IfNotPresent
+          name: web
+          ports:
+          - containerPort: 8084
+            name: http
+            protocol: TCP
+          - containerPort: 9994
+            name: admin-http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 50Mi
+          securityContext:
+            runAsUser: 2103
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    replicas: 1
+kind: List
+metadata:
+  resourceVersion: ""
