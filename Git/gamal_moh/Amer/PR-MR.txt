@@ -1,0 +1,54 @@
+In Git and version control systems like GitHub, GitLab, and Bitbucket, **Merge** and **Pull Request (PR)** are related but distinct concepts:
+
+### **1. Pull Request (PR) / Merge Request (MR)**
+- A **Pull Request (PR)** (called **Merge Request (MR)** in GitLab) is a **request to merge changes** from one branch into another (usually into `main` or `master`).
+- It is a **collaboration tool** that allows team members to:
+  - Review proposed changes.
+  - Discuss modifications via comments.
+  - Run automated tests (CI/CD).
+  - Approve or request changes before merging.
+- PRs are **not a Git feature** but a feature of platforms like GitHub/GitLab.
+
+#### **Example Workflow:**
+```bash
+git checkout -b feature-branch   # Create a new branch
+git add . && git commit -m "Add new feature"  # Make changes
+git push origin feature-branch   # Push to remote
+# Then create a PR/MR on GitHub/GitLab to merge into `main`
+```
+
+---
+
+### **2. Merge**
+- **Merge** is a **Git command** that combines changes from one branch into another.
+- It can be done:
+  - **Locally** (`git merge branch-name`).
+  - **Via a Pull Request** (after approval on GitHub/GitLab).
+- Merging does not require a PR (you can merge directly if you have permissions).
+
+#### **Example:**
+```bash
+git checkout main          # Switch to target branch
+git merge feature-branch   # Merge changes locally
+git push origin main       # Push merged changes
+```
+
+---
+
+### **Key Differences:**
+| Feature          | Pull Request (PR) | Merge |
+|------------------|------------------|-------|
+| **Purpose**      | Request & review changes before merging | Actually combines changes |
+| **Platform**     | GitHub/GitLab/Bitbucket feature | Native Git command |
+| **Collaboration**| Enables team review & approval | Can be done directly without review |
+| **Automation**   | Can trigger CI/CD checks | Just integrates code |
+
+### **When to Use Which?**
+- Use a **Pull Request** when:
+  - Working in a team (for code review).
+  - Following CI/CD best practices.
+- Use **`git merge` directly** when:
+  - Working alone (no review needed).
+  - Merging locally without a remote platform.
+
+Would you like a deeper explanation of any part? 😊
