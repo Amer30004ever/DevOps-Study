@@ -1,0 +1,111 @@
+Based on your outputs, there are several critical issues that need to be addressed to get your Kubernetes cluster functioning properly. Let's tackle them systematically:
+
+## 1. Clean Up Previous Installation
+First, we need to properly clean up the existing Kubernetes installation:
+
+```bash
+sudo kubeadm reset -f
+sudo rm -rf /etc/kubernetes/ /var/lib/etcd/ ~/.kube/
+sudo systemctl stop kubelet
+sudo systemctl stop containerd
+sudo rm -rf /var/lib/kubelet/
+sudo rm -rf /var/lib/cni/
+sudo rm -rf /etc/cni/net.d/*
+sudo iptables -F && sudo iptables -t nat -F && sudo iptables -t mangle -F && sudo iptables -X
+sudo ipvsadm --clear
+```
+
+## 2. Fix Version Mismatch
+Your kubelet version (1.30.10) is higher than the control plane version (1.29.0) you're trying to install. Let's align them:
+
+```bash
+sudo apt-mark unhold kubelet kubectl kubeadm
+sudo apt-get update
+sudo apt-get install -y kubelet=1.29.0-00 kubectl=1.29.0-00 kubeadm=1.29.0-00
+sudo apt-mark hold kubelet kubectl kubeadm
+```
+
+## 3. Initialize Cluster with Correct Configuration
+Update your `kubeadm-config.yaml`:
+
+```yaml
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+nodeRegistration:
+  criSocket: "unix:///var/run/containerd/containerd.sock"
+  kubeletExtraArgs:
+    cgroup-driver: "systemd"
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+kubernetesVersion: "1.29.0"
+controlPlaneEndpoint: "192.168.2.166:6443"
+networking:
+  podSubnet: "10.244.0.0/16"
+apiServer:
+  certSANs:
+  - "192.168.2.166"
+  - "masternode01"
+  - "masternode01.local"
+  - "127.0.0.1"
+```
+
+Then initialize the cluster:
+```bash
+sudo kubeadm init --config=kubeadm-config.yaml --upload-certs --ignore-preflight-errors=all
+```
+
+## 4. Configure kubectl
+```bash
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+## 5. Install Network Plugin
+Install Weave Net (or your preferred CNI):
+```bash
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+```
+
+## 6. Verify Installation
+```bash
+kubectl get nodes
+kubectl get pods -n kube-system
+```
+
+## 7. Troubleshooting Tips
+
+If you still encounter issues:
+
+1. **Check kubelet logs**:
+   ```bash
+   journalctl -xeu kubelet
+   ```
+
+2. **Verify containerd is working**:
+   ```bash
+   sudo crictl --runtime-endpoint unix:///var/run/containerd/containerd.sock ps -a
+   ```
+
+3. **Check API server health**:
+   ```bash
+   curl -k https://localhost:6443/healthz
+   ```
+
+4. **Verify etcd health**:
+   ```bash
+   sudo ETCDCTL_API=3 etcdctl \
+     --cert=/etc/kubernetes/pki/etcd/peer.crt \
+     --key=/etc/kubernetes/pki/etcd/peer.key \
+     --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+     --endpoints=https://127.0.0.1:2379 endpoint health
+   ```
+
+## Important Notes:
+1. Ensure your `controlPlaneEndpoint` (192.168.2.166:6443) is correctly configured in HAProxy
+2. All master nodes should have the same Kubernetes version
+3. Time synchronization across all nodes is critical (use NTP)
+4. Swap should be disabled (`sudo swapoff -a` and remove from `/etc/fstab`)
+
+Would you like me to focus on any specific part of this process? For example, we could dive deeper into the HAProxy configuration or the network plugin setup if you're still having issues after these steps.

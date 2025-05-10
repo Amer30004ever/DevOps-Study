@@ -1,0 +1,5 @@
+#list api-resources
+kubectl api-resources
+
+#explain specific resource
+kubectl explain pod

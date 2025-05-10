@@ -1,0 +1,83 @@
+Sure! Here are the **exact commands** you can run for each namespace stuck in `Terminating`:
+
+---
+
+### 🧨 For `emojivoto`:
+```bash
+kubectl get namespace emojivoto -o json > emojivoto.json
+sed -i '/"finalizers"/,/]/d' emojivoto.json
+kubectl replace --raw "/api/v1/namespaces/emojivoto/finalize" -f emojivoto.json
+rm emojivoto.json
+```
+
+---
+
+### 🧨 For `istio-kiali`:
+```bash
+kubectl get namespace istio-kiali -o json > istio-kiali.json
+sed -i '/"finalizers"/,/]/d' istio-kiali.json
+kubectl replace --raw "/api/v1/namespaces/istio-kiali/finalize" -f istio-kiali.json
+rm istio-kiali.json
+```
+
+---
+
+### 🧨 For `java`:
+```bash
+kubectl get namespace java -o json > java.json
+sed -i '/"finalizers"/,/]/d' java.json
+kubectl replace --raw "/api/v1/namespaces/java/finalize" -f java.json
+rm java.json
+```
+
+---
+
+### 🧨 For `kong`:
+```bash
+kubectl get namespace kong -o json > kong.json
+sed -i '/"finalizers"/,/]/d' kong.json
+kubectl replace --raw "/api/v1/namespaces/kong/finalize" -f kong.json
+rm kong.json
+```
+
+---
+
+### 🧨 For `linkerd`:
+```bash
+kubectl get namespace linkerd -o json > linkerd.json
+sed -i '/"finalizers"/,/]/d' linkerd.json
+kubectl replace --raw "/api/v1/namespaces/linkerd/finalize" -f linkerd.json
+rm linkerd.json
+```
+
+---
+
+### 🧨 For `Traefik`:
+```bash
+kubectl get namespace traefik -o json > traefik.json
+sed -i '/"finalizers"/,/]/d' traefik.json
+kubectl replace --raw "/api/v1/namespaces/traefik/finalize" -f traefik.json
+rm traefik.json
+```
+
+### 🧨 For `Gitea`:
+```bash
+kubectl get namespace gitea -o json > gitea.json
+sed -i '/"finalizers"/,/]/d' gitea.json
+kubectl replace --raw "/api/v1/namespaces/gitea/finalize" -f gitea.json
+rm gitea.json
+
+
+### 🧨 For `Istio`:
+```bash
+kubectl get namespace istio-system -o json > istio-system.json
+sed -i '/"finalizers"/,/]/d' istio-system.json
+kubectl replace --raw "/api/v1/namespaces/istio-system/finalize" -f istio-system.json
+rm istio-system.json
+
+### 🧨 For `gitlab`:
+```bash
+kubectl get namespace gitlab -o json > gitlab.json
+sed -i '/"finalizers"/,/]/d' gitlab.json
+kubectl replace --raw "/api/v1/namespaces/gitlab/finalize" -f gitlab.json
+rm gitlab.json
