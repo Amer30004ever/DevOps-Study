@@ -1,13 +1,44 @@
-amer@amer:~$ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-amer@amer:~$ chmod 700 get_helm.sh
-amer@amer:~$ ./get_helm.sh
+```
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+```
+
+```
+chmod 700 get_helm.sh
+```
+
+```
+./get_helm.sh
+```
 
 Downloading https://get.helm.sh/helm-v3.17.3-linux-amd64.tar.gz
 Verifying checksum... Done.
 Preparing to install helm into /usr/local/bin
 helm installed into /usr/local/bin/helm
 
-amer@amer:~$ helm version
+
+```
+helm version
+```
+
 version.BuildInfo{Version:"v3.17.3", GitCommit:"e4da49785aa6e6ee2b86efd5dd9e43400318262b", GitTreeState:"clean", GoVersion:"go1.23.7"}
-amer@amer:~$ helm list
+
+```
+helm list
+```
 NAME    NAMESPACE       REVISION        UPDATED STATUS  CHART   APP VERSION
+
+--------------------------------------------------------------
+## Install Helm
+```
+curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+```
+
+```
+sudo apt-get install apt-transport-https --yes
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+```
+
+```
+sudo apt-get update
+sudo apt-get install helm
+```

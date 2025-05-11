@@ -1,3 +1,0 @@
-minikube stop
-minikube start --memory=4096 --cpus=4
-minikube start --memory=2200mb
