@@ -260,5 +260,3 @@ By following these steps, you can **configure Kafka, MongoDB, MS SQL, and Redis*
 ✅ **Data consistency** (Replication, ACID compliance, backup strategies).  
 ✅ **Security** (Authentication, encryption, access control).  
 ✅ **Accessibility** (Load balancing, Ingress exposure).  
-
-Would you like a Helm-based approach or Ansible automation for deployment? 🚀
