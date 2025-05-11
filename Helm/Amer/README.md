@@ -321,82 +321,78 @@ Output:
 ```
 release "mydb" uninstalled
 ```
-All Covered Examples ✅
-Installation Methods
 
-Direct script install (get_helm.sh)
+# Helm Operations Guide
 
-Debian/Ubuntu repo install
+## ✅ All Covered Examples
 
-Verification with helm version output
+### Installation Methods
+- **Direct script install**: `get_helm.sh`
+- **Debian/Ubuntu repo install**
+- **Verification**: `helm version` output
 
-Repository Operations
+---
 
-helm repo add/list/update/remove with outputs
+### Repository Operations
+- `helm repo add/list/update/remove` with outputs
+- Example with Bitnami repo
 
-Example with Bitnami repo
+---
 
-Chart Operations
+### Chart Operations
+- `helm search repo nginx/mysql` with outputs
+- `helm install` with `--set` and `--values` (including `values.yaml` example)
+- Outputs showing `STATUS: deployed` and revision numbers
 
-helm search repo nginx/mysql with outputs
+---
 
-helm install with --set and --values (including values.yaml example)
+### Release Management
+- `helm list` (with and without `-n namespace` flag)
+- `helm status` with full output
+- `helm upgrade` (with `--set`, `--values`, and `--reuse-values`)
+- `helm rollback` with history output showing revisions (superseded/deployed states)
+- `helm uninstall` (with/without `--keep-history`)
 
-Outputs showing STATUS: deployed and revision numbers
+---
 
-Release Management
+### Namespace Operations
+- `--create-namespace` flag usage
+- Multi-namespace examples (`devops1`, `devops2`)
 
-helm list (with and without -n namespace flag)
+---
 
-helm status with full output
+### Advanced Features
+- `--dry-run` with manifest output (truncated but structure shown)
+- `--atomic` and `--wait` with success/failure outputs
+- `--force` upgrade explanation
+- `--cleanup-on-failure` explanation
 
-helm upgrade (with --set, --values, and --reuse-values)
+---
 
-helm rollback with history output showing revisions (superseded/deployed states)
+### Chart Development
+- `helm create firstchart` with directory structure
+- `helm package` with output
+- `helm lint` output
 
-helm uninstall (with/without --keep-history)
+---
 
-Namespace Operations
+### Debugging
+- `helm get values/manifest/history` with outputs
+- `helm history` showing revision states (superseded/deployed)
 
---create-namespace flag usage
+---
 
-Multi-namespace examples (devops1, devops2)
+### Random Name Generation
+- `--generate-name` and `--name-template` with `vekvpuy` example output
 
-Advanced Features
+---
 
---dry-run with manifest output (truncated but structure shown)
+### Error Cases
+- Invalid `image.pullPolicy` error
+- `context deadline exceeded` with `--timeout` fix
 
---atomic and --wait with success/failure outputs
+---
 
---force upgrade explanation
-
---cleanup-on-failure explanation
-
-Chart Development
-
-helm create firstchart with directory structure
-
-helm package with output
-
-helm lint output
-
-Debugging
-
-helm get values/manifest/history with outputs
-
-helm history showing revision states (superseded/deployed)
-
-Random Name Generation
-
---generate-name and --name-template with vekvpuy example output
-
-Error Cases
-
-Invalid image.pullPolicy error
-
-context deadline exceeded with --timeout fix
-
-Real Workflow
-
-End-to-end example from repo add → install → upgrade → uninstall
-
+### Real Workflow
+End-to-end example from `repo add` → `install` → `upgrade` → `uninstall`
+```
