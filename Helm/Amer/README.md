@@ -17,6 +17,38 @@ Helm is the package manager for Kubernetes, often referred to as the "apt/yum/ho
 9. [Example Workflow](#example-workflow)
 
 ## Installation
+### **Helm Installation Methods**
+
+#### 1. **Direct Script Install (Recommended)**
+```bash
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+```
+**Output**:
+```
+Downloading https://get.helm.sh/helm-v3.17.3-linux-amd64.tar.gz
+Verifying checksum... Done.
+Preparing to install helm into /usr/local/bin
+helm installed into /usr/local/bin/helm
+```
+
+#### 2. **Debian/Ubuntu APT Repository**
+```bash
+curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+sudo apt-get install apt-transport-https --yes
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm
+```
+
+#### 3. **Manual Download & Install**
+```bash
+# Download the binary
+wget https://get.helm.sh/helm-v3.17.3-linux-amd64.tar.gz
+tar -zxvf helm-v3.17.3-linux-amd64.tar.gz
+sudo mv linux-amd64/helm /usr/local/bin/helm
+```
 
 ### Verify Installation
 ```bash
