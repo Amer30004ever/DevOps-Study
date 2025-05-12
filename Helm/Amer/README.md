@@ -1,6 +1,3 @@
-Here's the enhanced README.md with command outputs included where most relevant:
-
-```markdown
 # Helm - Kubernetes Package Manager
 
 Helm is the package manager for Kubernetes, often referred to as the "apt/yum/homebrew" for Kubernetes. It simplifies application deployment and management using charts (pre-configured Kubernetes resource packages).
