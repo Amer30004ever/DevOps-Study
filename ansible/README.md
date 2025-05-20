@@ -13,7 +13,7 @@ including network configuration, SSH key setup, and Ansible installation.
 4. [Ansible Configuration](#ansible-configuration)
 5. [Testing the Setup](#testing-the-setup)
 6. [Example Playbook](#example-playbook)
-
+```
 ## <img src="https://cdn-icons-png.flaticon.com/512/1086/1086741.png" width="30"> Network Configuration
 
 Configure network settings using the `network.sh` script:
@@ -214,7 +214,7 @@ sudo sh -c 'cat > /etc/ansible/servers.txt << EOF
 ansible-worker01
 ```
 
-## Testing the Setup
+## <img src="https://cdn-icons-png.flaticon.com/512/4392/4392566.png" width="30"> Testing the Setup
 
 1. Verify inventory:
 ```bash
@@ -229,7 +229,7 @@ Expected output:
   |  |--ansible-worker01
 ```
 
-2. <img src="https://cdn-icons-png.flaticon.com/512/4392/4392566.png" width="30"> Test connectivity:
+2. Test connectivity:
 ```bash
 ansible workers -m ping -vvv
 ```
