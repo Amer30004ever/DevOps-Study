@@ -1,4 +1,3 @@
-```markdown
 # <img src="https://cdn-icons-png.flaticon.com/512/6125/6125000.png" width="30"> ArgoCD Kubernetes Deployment Guide
 
 This guide provides step-by-step instructions for deploying ArgoCD, a declarative GitOps continuous delivery tool, in your Kubernetes cluster.
