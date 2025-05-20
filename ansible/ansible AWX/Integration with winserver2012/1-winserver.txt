@@ -1,0 +1,137 @@
+# Windows Server 2012 AWX Integration Documentation
+
+## Successful Configuration Guide
+
+This documentation outlines the verified steps to configure Windows Server 2012 for AWX integration, based on the successful commands executed in your environment.
+
+---
+
+### 1. PowerShell Remoting and WinRM Configuration
+
+#### 1.1 Enable PowerShell Remoting
+```powershell
+Enable-PSRemoting -Force
+```
+**Purpose**: Configures the system to receive PowerShell remote commands.
+
+**Outcome**: Successfully enabled WS-Management protocol and created necessary listeners.
+
+#### 1.2 Quick WinRM Configuration
+```powershell
+winrm quickconfig -q
+```
+**Purpose**: Sets up WinRM with default settings (quiet mode).
+
+**Outcome**: Created HTTP listener on port 5985 and enabled firewall exception.
+
+#### 1.3 Configure WinRM Security Settings
+```powershell
+winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+winrm set winrm/config/service/auth '@{Basic="true"}'
+```
+**Purpose**: 
+- Allows unencrypted traffic (required for basic authentication)
+- Enables basic authentication for WinRM
+
+**Outcome**: Successfully configured as verified by subsequent checks.
+
+#### 1.4 Firewall Configuration
+```powershell
+netsh advfirewall firewall add rule name="WinRM-HTTP" dir=in localport=5985 protocol=TCP action=allow
+```
+**Purpose**: Explicitly opens port 5985 in Windows Firewall.
+
+**Outcome**: Rule added successfully to allow incoming WinRM connections.
+
+#### 1.5 Service Configuration
+```powershell
+Set-Service -Name WinRM -StartupType Automatic
+Restart-Service WinRM
+```
+**Purpose**: 
+- Ensures WinRM starts automatically with system
+- Applies configuration changes
+
+**Outcome**: Service configured and restarted successfully.
+
+#### 1.6 Verification
+```powershell
+winrm enumerate winrm/config/listener
+```
+**Expected Output**: Should show HTTP listener active on port 5985.
+
+---
+
+### 2. AWX User Creation (Windows Server 2012 Specific)
+
+#### 2.1 Create Local User Account
+```powershell
+net user AWXUser "YourSecurePassword123!" /add /comment:"AWX Automation Account"
+```
+**Purpose**: Creates the automation user account.
+
+**Note**: On Windows Server 2012, this is the preferred method over `New-LocalUser`.
+
+**Outcome**: User created successfully (confirmed by successful command completion).
+
+#### 2.2 Add User to Administrators Group
+```powershell
+net localgroup Administrators AWXUser /add
+```
+**Purpose**: Grants administrative privileges to the AWX user.
+
+**Outcome**: User successfully added to Administrators group.
+
+#### 2.3 Set Password to Never Expire
+```powershell
+wmic useraccount where "name='AWXUser'" set PasswordExpires=FALSE
+```
+**Purpose**: Ensures the automation account doesn't require periodic password changes.
+
+**Outcome**: Successfully configured (after correcting syntax from earlier attempts).
+
+---
+
+### 3. Final Verification Steps
+
+#### 3.1 Verify User Account
+```powershell
+net user AWXUser
+```
+**Expected Output**: Shows user details including "Password expires: Never".
+
+#### 3.2 Verify Group Membership
+```powershell
+net localgroup Administrators
+```
+**Expected Output**: Should list "AWXUser" among members.
+
+#### 3.3 Verify WinRM Configuration
+```powershell
+winrm get winrm/config/service
+winrm get winrm/config/service/auth
+```
+**Expected Output**: 
+- `AllowUnencrypted = true`
+- `Basic = true`
+
+---
+
+## Important Notes
+
+1. **Security Considerations**:
+   - Basic authentication transmits credentials in plaintext
+   - AllowUnencrypted should only be used in secure, internal networks
+   - Consider using HTTPS (port 5986) for production environments
+
+2. **Windows Server 2012 Specifics**:
+   - Uses legacy `net user` instead of `New-LocalUser`
+   - WMIC syntax requires exact quoting for user names
+   - Group names are case-sensitive ("Administrators" not "Administrator")
+
+3. **Troubleshooting**:
+   - If commands fail, run as Administrator
+   - Check for typos in user/group names
+   - Verify WinRM service is running (`Get-Service WinRM`)
+
+This documentation reflects the successful configuration achieved in your environment, with corrections made to initial syntax errors. The steps have been verified to work on Windows Server 2012 for AWX integration.
