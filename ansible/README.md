@@ -1,4 +1,4 @@
-Ansible Automation: From Zero to Production-Ready
+# Ansible Automation: From Zero to Production-Ready
 
 ```markdown
 # Ansible Automation Setup
@@ -252,9 +252,10 @@ ansible-worker01 | SUCCESS => {
 
 ## <img src="https://cdn-icons-png.flaticon.com/512/2933/2933245.png" width="30"> Example Playbook
 
-Create a test playbook to install nginx:
+1. Create a test playbook to install nginx:
 
-```yaml
+```
+sudo sh -c 'cat > test-playbook.yml << EOF
 ---
 - hosts: workers
   tasks:
@@ -262,9 +263,10 @@ Create a test playbook to install nginx:
       apt:
         name: nginx
         state: present
+EOF'
 ```
 
-Run the playbook:
+2. Run the playbook:
 ```bash
 ansible-playbook test.yml
 ```
@@ -283,7 +285,7 @@ PLAY RECAP *********************************************************************
 ansible-worker01           : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-Verify nginx installation on worker nodes:
+3. Verify nginx installation on worker nodes:
 ```bash
 sudo systemctl status nginx.service
 ```
@@ -326,4 +328,3 @@ ssh -v amer@ansible-worker01      # SSH debug
 sudo cat /etc/sudoers.d/amer      # Verify sudo config
 ```
 
-```

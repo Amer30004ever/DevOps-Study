@@ -37,6 +37,9 @@ kubectl create -f awx-ubuntu.yml -n $NAMESPACE
 echo "Getting AWX Dashboard URL..."
 minikube service awx-ubuntu-service --url -n $NAMESPACE
 
+#if service not found list all services
+minikube service list
+
 # Step 9: Retrieve Admin Password
 echo "Retrieving Admin Password..."
 PASSWORD=$(kubectl get secret awx-ubuntu-admin-password -o jsonpath="{.data.password}" -n $NAMESPACE | base64 --decode)
@@ -44,6 +47,9 @@ echo "Username: admin"
 echo "Password: $PASSWORD"
 
 # Step 10: Port Forwarding (Optional)
+
+nohup kubectl port-forward --address 0.0.0.0 svc/awx-ubuntu-service 8080:80 -n ansible-awx &
+
 echo "To access AWX locally, run the following command in a new terminal:"
 echo "kubectl port-forward --address 0.0.0.0 svc/awx-ubuntu-service 8080:80 -n $NAMESPACE"
 
