@@ -67,31 +67,3 @@ kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.pas
 ```bash
 kubectl delete secret argocd-initial-admin-secret -n argocd
 ```
-3. Consider configuring SSO integration for production environments
-
-## <img src="https://cdn-icons-png.flaticon.com/512/1055/1055683.png" width="25"> Next Steps
-- [Configure your first application](https://argo-cd.readthedocs.io/en/stable/getting_started/)
-- [Set up Git repositories](https://argo-cd.readthedocs.io/en/stable/user-guide/private-repositories/)
-- [Configure RBAC](https://argo-cd.readthedocs.io/en/stable/operator-manual/rbac/)
-```
-
-Key features of this README:
-1. **Professional title** with GitOps/CD icon
-2. **Clear section organization** with intuitive icons
-3. **Multiple access methods** documented
-4. **Security best practices** highlighted
-5. **Next steps** for further configuration
-6. **Visual consistency** with icon sizes and spacing
-
-The icons chosen represent:
-- Gear for installation
-- Screen for access methods
-- Key for credentials
-- Shield for security
-- Rocket for next steps
-
-Would you like me to add any of the following?
-- Troubleshooting section
-- Minikube-specific configuration details
-- Screenshot examples
-- Alternative installation methods (Helm, etc.)
