@@ -1,4 +1,4 @@
-# Ansible Automation: From Zero to Production-Ready
+# <img src="https://cdn-icons-png.flaticon.com/512/4289/4289281.png" width="30"> Ansible Automation: From Zero to Production-Ready
 
 ```markdown
 # Ansible Automation Setup
@@ -153,14 +153,14 @@ Expected output:
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQChS4itQOVgzkuJHKxcrubRubl8nBXTBwn4TLJCsEVIEf0N/BCvEh/aNVzIlpdKO5Kzts0qDAnY544vlzi1pR761iARazHnWC+e1RcqUFub1f8ZcajBhRxOg7JOnqSWQBoE4Mn6zvXruh3TfLXUzU2Uh7hKOTgp3t7cyZRGXL4nrbHFFjBDvrxj1hSHl6YRvvvauozAT4UUOMbEgelS5Y01gnH3vMJ3f2QmjqHtCwa22vMh9HL0mOoKNTKam8YqLN48ltUoSWC3J8gWPT92po/BmuQV1VBSQRpxi1rYO3+Pr1HXzsiF3YnXckaHgxSiXcM6onTs3pYMjxXYskghRU37+pgaGweU2nt3WQLcNdEYni4my3pLWNKywgUzyJgWM/XGxuMBC6W678Qp6uii4bD/UR7Cuk7vboNtCPmKJg6P/0U0vQOK8mWMlxZIGaOqycrVGGVCrttIx6IQu5sP+ep/VqO1ZvBRJ87mePh1XwbRHxWbtiCw5GU3SKuhIOpi9J0= amer@ansible
 ```
 
-## Ansible Installation
+## <img src="https://cdn-icons-png.flaticon.com/512/2777/2777154.png" width="30"> Ansible Installation
 
-Install Ansible on the control node:
+1. Install Ansible on the control node:
 ```bash
 sudo apt install python3 ansible -y
 ```
 
-Verify installation:
+2. Verify installation:
 ```bash
 ansible --version
 ```
