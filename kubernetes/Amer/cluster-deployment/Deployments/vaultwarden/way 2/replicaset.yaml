@@ -1,0 +1,72 @@
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2025-01-15T00:20:13Z"
+    generation: 1
+    labels:
+      app: vaultwarden-server
+      pod-template-hash: 5dc4f454db
+    name: vaultwarden-5dc4f454db
+    namespace: vaultwarden
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: vaultwarden
+      uid: 9f41b154-7035-4765-8a5e-97442e13c52f
+    resourceVersion: "384202"
+    uid: ad9b4745-de0e-4c29-8610-481b6a406339
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: vaultwarden-server
+        pod-template-hash: 5dc4f454db
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: vaultwarden-server
+          pod-template-hash: 5dc4f454db
+      spec:
+        containers:
+        - env:
+          - name: ROCKET_PORT
+            value: "80"
+          image: vaultwarden/server:latest
+          imagePullPolicy: Always
+          name: vaultwarden
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /data
+            name: vaultwarden-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: vaultwarden-data
+          persistentVolumeClaim:
+            claimName: vaultwarden-pv-claim
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+kind: List
+metadata:
+  resourceVersion: ""

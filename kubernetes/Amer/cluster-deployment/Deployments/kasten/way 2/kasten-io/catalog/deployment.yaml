@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k10-catalog
+  namespace: kasten-io
+  labels:
+    app: k10
+    component: catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k10
+      component: catalog
+  template:
+    metadata:
+      labels:
+        app: k10
+        component: catalog
+    spec:
+      serviceAccountName: k10-catalog
+      containers:
+      - name: catalog
+        image: gcr.io/kasten-images/catalog:7.5.2
+        ports:
+        - containerPort: 8003
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8003
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8003
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        env:
+        - name: K10_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: K10_CATALOG_PORT
+          value: "8003"
+        - name: K10_CATALOG_HOST
+          value: "0.0.0.0"
+        - name: K10_GATEWAY_URL
+          value: "https://k10-gateway.kasten-io.svc.cluster.local"
+        - name: K10_AUTH_URL
+          value: "https://k10-auth.kasten-io.svc.cluster.local" 

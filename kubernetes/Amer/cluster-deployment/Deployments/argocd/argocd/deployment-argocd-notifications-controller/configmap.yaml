@@ -1,0 +1,20 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"ConfigMap","metadata":{"annotations":{},"labels":{"app.kubernetes.io/component":"notifications-controller","app.kubernetes.io/name":"argocd-notifications-controller","app.kubernetes.io/part-of":"argocd"},"name":"argocd-notifications-cm","namespace":"argocd"}}
+    creationTimestamp: "2025-01-15T17:25:25Z"
+    labels:
+      app.kubernetes.io/component: notifications-controller
+      app.kubernetes.io/name: argocd-notifications-controller
+      app.kubernetes.io/part-of: argocd
+    name: argocd-notifications-cm
+    namespace: argocd
+    resourceVersion: "40243"
+    uid: cfec0748-1fae-4373-bc53-e741c48584a6
+kind: List
+metadata:
+  resourceVersion: ""

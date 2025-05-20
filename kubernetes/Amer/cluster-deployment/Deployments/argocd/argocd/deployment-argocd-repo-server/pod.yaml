@@ -1,0 +1,443 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-04-09T21:09:28Z"
+    generateName: argocd-repo-server-584d45d88f-
+    labels:
+      app.kubernetes.io/name: argocd-repo-server
+      pod-template-hash: 584d45d88f
+    name: argocd-repo-server-584d45d88f-9459w
+    namespace: argocd
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: argocd-repo-server-584d45d88f
+      uid: a2188e3d-4e3d-4c30-abe6-902c6200ec2f
+    resourceVersion: "385167"
+    uid: 762ac24e-0376-401a-8e2e-e8cedd17edc4
+  spec:
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: argocd-repo-server
+            topologyKey: kubernetes.io/hostname
+          weight: 100
+        - podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/part-of: argocd
+            topologyKey: kubernetes.io/hostname
+          weight: 5
+    automountServiceAccountToken: false
+    containers:
+    - args:
+      - /usr/local/bin/argocd-repo-server
+      env:
+      - name: REDIS_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: auth
+            name: argocd-redis
+      - name: ARGOCD_RECONCILIATION_TIMEOUT
+        valueFrom:
+          configMapKeyRef:
+            key: timeout.reconciliation
+            name: argocd-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_LOGFORMAT
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.log.format
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_LOGLEVEL
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.log.level
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_PARALLELISM_LIMIT
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.parallelism.limit
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_LISTEN_ADDRESS
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.listen.address
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_LISTEN_METRICS_ADDRESS
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.metrics.listen.address
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_DISABLE_TLS
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.disable.tls
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_TLS_MIN_VERSION
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.tls.minversion
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_TLS_MAX_VERSION
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.tls.maxversion
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_TLS_CIPHERS
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.tls.ciphers
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_CACHE_EXPIRATION
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.repo.cache.expiration
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: REDIS_SERVER
+        valueFrom:
+          configMapKeyRef:
+            key: redis.server
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: REDIS_COMPRESSION
+        valueFrom:
+          configMapKeyRef:
+            key: redis.compression
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: REDISDB
+        valueFrom:
+          configMapKeyRef:
+            key: redis.db
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_DEFAULT_CACHE_EXPIRATION
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.default.cache.expiration
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_OTLP_ADDRESS
+        valueFrom:
+          configMapKeyRef:
+            key: otlp.address
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_OTLP_INSECURE
+        valueFrom:
+          configMapKeyRef:
+            key: otlp.insecure
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_OTLP_HEADERS
+        valueFrom:
+          configMapKeyRef:
+            key: otlp.headers
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_MAX_COMBINED_DIRECTORY_MANIFESTS_SIZE
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.max.combined.directory.manifests.size
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_PLUGIN_TAR_EXCLUSIONS
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.plugin.tar.exclusions
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_ALLOW_OUT_OF_BOUNDS_SYMLINKS
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.allow.oob.symlinks
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_STREAMED_MANIFEST_MAX_TAR_SIZE
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.streamed.manifest.max.tar.size
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_STREAMED_MANIFEST_MAX_EXTRACTED_SIZE
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.streamed.manifest.max.extracted.size
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_HELM_MANIFEST_MAX_EXTRACTED_SIZE
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.helm.manifest.max.extracted.size
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_DISABLE_HELM_MANIFEST_MAX_EXTRACTED_SIZE
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.disable.helm.manifest.max.extracted.size
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REVISION_CACHE_LOCK_TIMEOUT
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.revision.cache.lock.timeout
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_GIT_MODULES_ENABLED
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.enable.git.submodule
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_GIT_LS_REMOTE_PARALLELISM_LIMIT
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.git.lsremote.parallelism.limit
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_GIT_REQUEST_TIMEOUT
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.git.request.timeout
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_GRPC_MAX_SIZE_MB
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.grpc.max.size
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_REPO_SERVER_INCLUDE_HIDDEN_DIRECTORIES
+        valueFrom:
+          configMapKeyRef:
+            key: reposerver.include.hidden.directories
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: HELM_CACHE_HOME
+        value: /helm-working-dir
+      - name: HELM_CONFIG_HOME
+        value: /helm-working-dir
+      - name: HELM_DATA_HOME
+        value: /helm-working-dir
+      image: quay.io/argoproj/argocd:v2.13.2
+      imagePullPolicy: Always
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /healthz?full=true
+          port: 8084
+          scheme: HTTP
+        initialDelaySeconds: 30
+        periodSeconds: 30
+        successThreshold: 1
+        timeoutSeconds: 5
+      name: argocd-repo-server
+      ports:
+      - containerPort: 8081
+        protocol: TCP
+      - containerPort: 8084
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /healthz
+          port: 8084
+          scheme: HTTP
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /app/config/ssh
+        name: ssh-known-hosts
+      - mountPath: /app/config/tls
+        name: tls-certs
+      - mountPath: /app/config/gpg/source
+        name: gpg-keys
+      - mountPath: /app/config/gpg/keys
+        name: gpg-keyring
+      - mountPath: /app/config/reposerver/tls
+        name: argocd-repo-server-tls
+      - mountPath: /tmp
+        name: tmp
+      - mountPath: /helm-working-dir
+        name: helm-working-dir
+      - mountPath: /home/argocd/cmp-server/plugins
+        name: plugins
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    initContainers:
+    - command:
+      - /bin/cp
+      - -n
+      - /usr/local/bin/argocd
+      - /var/run/argocd/argocd-cmp-server
+      image: quay.io/argoproj/argocd:v2.13.2
+      imagePullPolicy: IfNotPresent
+      name: copyutil
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/argocd
+        name: var-files
+    nodeName: worker01
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: argocd-repo-server
+    serviceAccountName: argocd-repo-server
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: argocd-ssh-known-hosts-cm
+      name: ssh-known-hosts
+    - configMap:
+        defaultMode: 420
+        name: argocd-tls-certs-cm
+      name: tls-certs
+    - configMap:
+        defaultMode: 420
+        name: argocd-gpg-keys-cm
+      name: gpg-keys
+    - emptyDir: {}
+      name: gpg-keyring
+    - emptyDir: {}
+      name: tmp
+    - emptyDir: {}
+      name: helm-working-dir
+    - name: argocd-repo-server-tls
+      secret:
+        defaultMode: 420
+        items:
+        - key: tls.crt
+          path: tls.crt
+        - key: tls.key
+          path: tls.key
+        - key: ca.crt
+          path: ca.crt
+        optional: true
+        secretName: argocd-repo-server-tls
+    - emptyDir: {}
+      name: var-files
+    - emptyDir: {}
+      name: plugins
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-14T17:34:37Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-09T21:13:22Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-14T17:39:01Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-14T17:39:01Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-09T21:10:26Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://fd4b25452bf96483a58e1783eb6dd1b5ab5dd200dca825cdb6e4a27fe72e1b48
+      image: quay.io/argoproj/argocd:v2.13.2
+      imageID: quay.io/argoproj/argocd@sha256:1322e91b758b9d44db3af44f457c298831c57a8e1d635118910d35e71f822646
+      lastState:
+        terminated:
+          containerID: containerd://957dcb7b749a6502462325db8900213d766d1d1336ca46ab725cd7db0973ebf8
+          exitCode: 143
+          finishedAt: "2025-04-14T17:38:46Z"
+          reason: Error
+          startedAt: "2025-04-14T17:36:42Z"
+      name: argocd-repo-server
+      ready: true
+      restartCount: 14
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-14T17:38:48Z"
+    hostIP: 192.168.2.151
+    hostIPs:
+    - ip: 192.168.2.151
+    initContainerStatuses:
+    - containerID: containerd://a3c02ca803e6a2e03b81691912e0ed6fd085305acbdece1fafbaca13caadec2e
+      image: quay.io/argoproj/argocd:v2.13.2
+      imageID: quay.io/argoproj/argocd@sha256:1322e91b758b9d44db3af44f457c298831c57a8e1d635118910d35e71f822646
+      lastState: {}
+      name: copyutil
+      ready: true
+      restartCount: 1
+      started: false
+      state:
+        terminated:
+          containerID: containerd://a3c02ca803e6a2e03b81691912e0ed6fd085305acbdece1fafbaca13caadec2e
+          exitCode: 0
+          finishedAt: "2025-04-14T17:34:47Z"
+          reason: Completed
+          startedAt: "2025-04-14T17:34:36Z"
+    phase: Running
+    podIP: 10.44.0.6
+    podIPs:
+    - ip: 10.44.0.6
+    qosClass: BestEffort
+    startTime: "2025-04-09T21:10:26Z"
+kind: List
+metadata:
+  resourceVersion: ""

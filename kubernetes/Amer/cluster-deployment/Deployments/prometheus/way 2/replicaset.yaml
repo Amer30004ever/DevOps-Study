@@ -1,0 +1,78 @@
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2025-01-15T00:20:23Z"
+    generation: 1
+    labels:
+      app: prometheus
+      pod-template-hash: 6c66c4d9cf
+    name: prometheus-6c66c4d9cf
+    namespace: prometheus
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: prometheus
+      uid: 15123eeb-9281-49ec-95da-b3e9a8eeeee7
+    resourceVersion: "384337"
+    uid: f089f4c2-7622-4243-bd0d-4226e7aa99b4
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: prometheus
+        pod-template-hash: 6c66c4d9cf
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: prometheus
+          pod-template-hash: 6c66c4d9cf
+      spec:
+        containers:
+        - args:
+          - --config.file=/etc/prometheus/prometheus.yml
+          - --storage.tsdb.path=/prometheus
+          image: prom/prometheus:latest
+          imagePullPolicy: Always
+          name: prometheus
+          ports:
+          - containerPort: 9090
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/prometheus/
+            name: prometheus-config-volume
+          - mountPath: /prometheus
+            name: prometheus-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: prometheus-config
+          name: prometheus-config-volume
+        - name: prometheus-data
+          persistentVolumeClaim:
+            claimName: prometheus-pv-claim
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+kind: List
+metadata:
+  resourceVersion: ""

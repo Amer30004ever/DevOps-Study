@@ -1,0 +1,152 @@
+Here's a **step-by-step guide** to perform **PostgreSQL database migration in Kubernetes using a Job**, ensuring minimal downtime and data integrity:
+
+---
+
+### **1. Create a Migration Job YAML (`migration-job.yaml`)**
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: awx-db-migrator
+  namespace: awx
+spec:
+  template:
+    spec:
+      containers:
+      - name: migrator
+        image: bitnami/postgresql:13
+        env:
+        - name: SOURCE_HOST
+          value: "my-awx-postgresql.default.svc.cluster.local"  # Old DB
+        - name: TARGET_HOST
+          value: "my-awx-postgresql.awx.svc.cluster.local"      # New DB
+        - name: PGUSER
+          value: "awx"
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: my-awx-postgresql
+              key: postgresql-password
+        command: ["/bin/sh", "-c"]
+        args:
+          - >
+            pg_dump -h ${SOURCE_HOST} -U ${PGUSER} -d awx -Fc > /tmp/awx.dump &&
+            pg_restore -h ${TARGET_HOST} -U ${PGUSER} -d awx --clean --create /tmp/awx.dump
+      restartPolicy: Never
+  backoffLimit: 1
+```
+
+---
+
+### **2. Deploy the Migration Job**
+```bash
+kubectl apply -f migration-job.yaml
+```
+
+---
+
+### **3. Monitor the Job**
+```bash
+# Check job status
+kubectl get jobs -n awx
+
+# View logs
+kubectl logs -n awx -l job-name=awx-db-migrator --tail=50
+```
+
+**Expected Output:**  
+```
+pg_dump: dumping database "awx"...
+pg_restore: restoring database "awx"...
+```
+
+---
+
+### **4. Verify Data Integrity**
+```bash
+# Connect to the new database
+kubectl exec -it my-awx-postgresql-0 -n awx -- psql -U awx -d awx -c "SELECT COUNT(*) FROM main_user;"
+```
+
+---
+
+### **5. Clean Up (Optional)**
+```bash
+# Delete the job after completion
+kubectl delete job awx-db-migrator -n awx
+```
+
+---
+
+### **Key Features of This Approach**
+1. **Atomic Operation**: Uses `pg_dump` + `pg_restore` for reliable transfers.
+2. **Minimal Downtime**: Job runs independently of AWX pods.
+3. **Kubernetes-Native**: Leverages K8s Job for fault tolerance.
+4. **Secret Management**: Pulls credentials from Kubernetes Secrets.
+
+---
+
+### **Troubleshooting**
+#### **If the Job Fails**
+1. **Check Logs**:
+   ```bash
+   kubectl describe job awx-db-migrator -n awx
+   kubectl logs -n awx -l job-name=awx-db-migrator
+   ```
+
+2. **Common Fixes**:
+   - **Connection Issues**: Verify network policies allow pod-to-pod communication.
+   - **Authentication Errors**: Double-check secrets:
+     ```bash
+     kubectl get secret my-awx-postgresql -n awx -o yaml
+     ```
+
+3. **Manual Recovery**:
+   ```bash
+   # Start a debug pod
+   kubectl run -it --rm --image=bitnami/postgresql:13 debug-pod -n awx -- bash
+   # Manually run pg_dump/pg_restore commands
+   ```
+
+---
+
+### **Alternative: Persistent Volume (PV) Migration**
+If databases are large (>10GB), use **PV migration**:
+```bash
+# 1. Scale down AWX
+kubectl scale deploy my-awx -n awx --replicas=0
+
+# 2. Create a PVC in the new namespace pointing to the old PV
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-my-awx-postgresql-0
+  namespace: awx
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: <OLD_PV_NAME>  # Get from `kubectl get pv`
+EOF
+
+# 3. Redeploy AWX
+helm upgrade my-awx awx-community/awx -n awx --reuse-values
+```
+
+---
+
+### **Final Notes**
+✅ **Zero data loss**  
+✅ **Kubernetes-native solution**  
+✅ **Auditable via job logs**  
+
+For **production environments**, add:  
+🔹 **Pre/Post migration checks** (schema validation)  
+🔹 **Rollback plan** (snapshot PVs before migration)  
+🔹 **Notifications** (Alert if job fails)  
+
+Would you like a **schema validation script** to compare old/new databases? 🛠️

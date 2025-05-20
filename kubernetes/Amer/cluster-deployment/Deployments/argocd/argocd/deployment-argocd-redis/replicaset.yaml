@@ -1,0 +1,121 @@
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2025-01-15T17:25:26Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/name: argocd-redis
+      pod-template-hash: 55c76cb574
+    name: argocd-redis-55c76cb574
+    namespace: argocd
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: argocd-redis
+      uid: f652da00-6918-49c5-842e-2ce49b18574a
+    resourceVersion: "385134"
+    uid: bf8f648b-5e02-4a3e-b150-ce433c6093a3
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: argocd-redis
+        pod-template-hash: 55c76cb574
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/name: argocd-redis
+          pod-template-hash: 55c76cb574
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: argocd-redis
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/part-of: argocd
+                topologyKey: kubernetes.io/hostname
+              weight: 5
+        containers:
+        - args:
+          - --save
+          - ""
+          - --appendonly
+          - "no"
+          - --requirepass $(REDIS_PASSWORD)
+          env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: auth
+                name: argocd-redis
+          image: redis:7.0.15-alpine
+          imagePullPolicy: Always
+          name: redis
+          ports:
+          - containerPort: 6379
+            protocol: TCP
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        initContainers:
+        - command:
+          - argocd
+          - admin
+          - redis-initial-password
+          image: quay.io/argoproj/argocd:v2.13.2
+          imagePullPolicy: IfNotPresent
+          name: secret-init
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+          seccompProfile:
+            type: RuntimeDefault
+        serviceAccount: argocd-redis
+        serviceAccountName: argocd-redis
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+kind: List
+metadata:
+  resourceVersion: ""

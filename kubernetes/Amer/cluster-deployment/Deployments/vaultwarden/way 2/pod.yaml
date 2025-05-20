@@ -1,0 +1,135 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-02-24T23:42:32Z"
+    generateName: vaultwarden-5dc4f454db-
+    labels:
+      app: vaultwarden-server
+      pod-template-hash: 5dc4f454db
+    name: vaultwarden-5dc4f454db-5qr69
+    namespace: vaultwarden
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: vaultwarden-5dc4f454db
+      uid: ad9b4745-de0e-4c29-8610-481b6a406339
+    resourceVersion: "384201"
+    uid: 4ab7b997-5aef-4e00-8427-8139c47a81f9
+  spec:
+    containers:
+    - env:
+      - name: ROCKET_PORT
+        value: "80"
+      image: vaultwarden/server:latest
+      imagePullPolicy: Always
+      name: vaultwarden
+      ports:
+      - containerPort: 80
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /data
+        name: vaultwarden-data
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-cxsvz
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: worker02
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: vaultwarden-data
+      persistentVolumeClaim:
+        claimName: vaultwarden-pv-claim
+    - name: kube-api-access-cxsvz
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-14T17:33:52Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-02-24T23:42:32Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-14T17:33:52Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-14T17:33:52Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-02-24T23:42:32Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://cde8907ef62292944a86adfe2e979b71c8eb0afe9522feaef32750a918f970cc
+      image: docker.io/vaultwarden/server:latest
+      imageID: docker.io/vaultwarden/server@sha256:87edb99945da91bd7504ac1435495595af2e89ad2c7adc151ae5bf091ec8baf2
+      lastState:
+        terminated:
+          containerID: containerd://fbccfd2b103771e05dfcba0e17888a31ac5a25a8ee2be60e1d1720a83aa46bfe
+          exitCode: 255
+          finishedAt: "2025-04-14T17:30:33Z"
+          reason: Unknown
+          startedAt: "2025-04-09T21:23:06Z"
+      name: vaultwarden
+      ready: true
+      restartCount: 3
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-14T17:33:52Z"
+    hostIP: 192.168.2.152
+    hostIPs:
+    - ip: 192.168.2.152
+    phase: Running
+    podIP: 10.36.0.1
+    podIPs:
+    - ip: 10.36.0.1
+    qosClass: BestEffort
+    startTime: "2025-02-24T23:42:32Z"
+kind: List
+metadata:
+  resourceVersion: ""

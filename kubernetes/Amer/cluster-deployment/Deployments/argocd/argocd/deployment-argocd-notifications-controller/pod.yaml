@@ -1,0 +1,194 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-02-24T23:42:34Z"
+    generateName: argocd-notifications-controller-69cd888b56-
+    labels:
+      app.kubernetes.io/name: argocd-notifications-controller
+      pod-template-hash: 69cd888b56
+    name: argocd-notifications-controller-69cd888b56-b98gj
+    namespace: argocd
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: argocd-notifications-controller-69cd888b56
+      uid: 191ae6ee-d151-4ab6-8797-f26638be62b1
+    resourceVersion: "385350"
+    uid: de271bf3-8127-46af-a316-c951c70c77b4
+  spec:
+    containers:
+    - args:
+      - /usr/local/bin/argocd-notifications
+      env:
+      - name: ARGOCD_NOTIFICATIONS_CONTROLLER_LOGFORMAT
+        valueFrom:
+          configMapKeyRef:
+            key: notificationscontroller.log.format
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_NOTIFICATIONS_CONTROLLER_LOGLEVEL
+        valueFrom:
+          configMapKeyRef:
+            key: notificationscontroller.log.level
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_APPLICATION_NAMESPACES
+        valueFrom:
+          configMapKeyRef:
+            key: application.namespaces
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_NOTIFICATION_CONTROLLER_SELF_SERVICE_NOTIFICATION_ENABLED
+        valueFrom:
+          configMapKeyRef:
+            key: notificationscontroller.selfservice.enabled
+            name: argocd-cmd-params-cm
+            optional: true
+      - name: ARGOCD_NOTIFICATION_CONTROLLER_REPO_SERVER_PLAINTEXT
+        valueFrom:
+          configMapKeyRef:
+            key: notificationscontroller.repo.server.plaintext
+            name: argocd-cmd-params-cm
+            optional: true
+      image: quay.io/argoproj/argocd:v2.13.2
+      imagePullPolicy: Always
+      livenessProbe:
+        failureThreshold: 3
+        periodSeconds: 10
+        successThreshold: 1
+        tcpSocket:
+          port: 9001
+        timeoutSeconds: 1
+      name: argocd-notifications-controller
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /app/config/tls
+        name: tls-certs
+      - mountPath: /app/config/reposerver/tls
+        name: argocd-repo-server-tls
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-pgcbm
+        readOnly: true
+      workingDir: /app
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: worker02
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    serviceAccount: argocd-notifications-controller
+    serviceAccountName: argocd-notifications-controller
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: argocd-tls-certs-cm
+      name: tls-certs
+    - name: argocd-repo-server-tls
+      secret:
+        defaultMode: 420
+        items:
+        - key: tls.crt
+          path: tls.crt
+        - key: tls.key
+          path: tls.key
+        - key: ca.crt
+          path: ca.crt
+        optional: true
+        secretName: argocd-repo-server-tls
+    - name: kube-api-access-pgcbm
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-14T17:34:12Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-02-24T23:42:34Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-14T17:40:47Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-14T17:40:47Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-02-24T23:42:34Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://da4efa28d2defa4a9215798c162b75a327bf83a93821dd1d40ba4714262fe2d4
+      image: quay.io/argoproj/argocd:v2.13.2
+      imageID: quay.io/argoproj/argocd@sha256:1322e91b758b9d44db3af44f457c298831c57a8e1d635118910d35e71f822646
+      lastState:
+        terminated:
+          containerID: containerd://79c0f31280950799f0649ab8a35225a8837c6fb156663a7d2aa6aee90b2439ba
+          exitCode: 143
+          finishedAt: "2025-04-14T17:37:54Z"
+          reason: Error
+          startedAt: "2025-04-14T17:37:25Z"
+      name: argocd-notifications-controller
+      ready: true
+      restartCount: 15
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-14T17:40:46Z"
+    hostIP: 192.168.2.152
+    hostIPs:
+    - ip: 192.168.2.152
+    phase: Running
+    podIP: 10.36.0.10
+    podIPs:
+    - ip: 10.36.0.10
+    qosClass: BestEffort
+    startTime: "2025-02-24T23:42:34Z"
+kind: List
+metadata:
+  resourceVersion: ""

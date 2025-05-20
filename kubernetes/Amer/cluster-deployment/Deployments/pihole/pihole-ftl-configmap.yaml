@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pihole-ftl-config
+  namespace: pihole
+data:
+  pihole-FTL.conf: |
+    #; Pi-hole FTL config file
+    #; Comments should start with #; to avoid issues with PHP and bash reading this file
+    MACVENDORDB=/macvendor.db
+    LOCAL_IPV4=0.0.0.0
+    dns_upstreams="8.8.8.8 8.8.4.4"
+    misc_etc_dnsmasq_d=true
+    webserver_api_password=admin123
+    webserver_port=80 

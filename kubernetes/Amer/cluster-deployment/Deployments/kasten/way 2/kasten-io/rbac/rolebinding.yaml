@@ -1,0 +1,27 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: k10-controller
+  namespace: kasten-io
+subjects:
+- kind: ServiceAccount
+  name: k10-controller
+  namespace: kasten-io
+roleRef:
+  kind: Role
+  name: k10-controller
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: k10-catalog
+  namespace: kasten-io
+subjects:
+- kind: ServiceAccount
+  name: k10-catalog
+  namespace: kasten-io
+roleRef:
+  kind: Role
+  name: k10-catalog
+  apiGroup: rbac.authorization.k8s.io 

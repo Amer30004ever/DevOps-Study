@@ -1,15 +1,9 @@
-# 🛠️ Windows Server 2012 Configuration for AWX Integration
+# Windows Server 2012 Configuration for AWX Integration
 
-![Architecture Diagram](architecture.png)
+## Summary of Configuration Steps
+This document outlines the steps to properly configure a Windows Server 2012 machine for integration with AWX (Ansible Tower). The process focuses on enabling PowerShell Remoting, configuring WinRM, and creating a dedicated user account.
 
-## 🔍 Project Summary
-This project demonstrates how to configure a **Windows Server 2012** machine for seamless integration with **AWX (Ansible Tower)**. It outlines the necessary steps to enable PowerShell Remoting, configure WinRM, and create a dedicated user account for automation purposes. Additionally, it includes Ansible playbooks for managing both Linux and Windows hosts using AWX.
-
-The configuration ensures secure remote access via WinRM, compatibility with older versions of Windows, and provides best practices for automation workflows.
-
----
-
-## 📋 Key Configuration Steps
+## Key Configuration Steps
 
 ### 1. Enable PowerShell Remoting and Configure WinRM
 ```powershell
@@ -47,21 +41,21 @@ net localgroup Administrators AWXUser /add
 wmic useraccount where "name='AWXUser'" set PasswordExpires=FALSE
 ```
 
----
+## Common Issues and Solutions
+1. **`New-LocalUser` not available**:  
+   - Windows Server 2012 doesn't support this cmdlet (introduced in Server 2016)  
+   - Solution: Use `net user` command instead
 
-## ⚠️ Common Issues and Solutions
+2. **Incorrect group name**:  
+   - Ensure you use "Administrators" (plural) not "Administrator"
 
-| Issue | Solution |
-|-------|----------|
-| `New-LocalUser` not available | Use `net user` command instead |
-| Incorrect group name | Ensure you use "Administrators" (plural) not "Administrator" |
-| WinRM configuration syntax errors | Use exact syntax: `winrm set winrm/config/service/auth '@{Basic="true"}'` |
-| Password expiration setting | Note the correct parameter is `PasswordExpires` (not "PasswordExpress") |
+3. **WinRM configuration syntax errors**:  
+   - Use exact syntax: `winrm set winrm/config/service/auth '@{Basic="true"}'`
 
----
+4. **Password expiration setting**:  
+   - Note the correct parameter is `PasswordExpires` (not "PasswordExpress")
 
-## ✅ Final Verification
-
+## Final Verification
 1. Verify user creation:
    ```cmd
    net user AWXUser
@@ -78,20 +72,16 @@ wmic useraccount where "name='AWXUser'" set PasswordExpires=FALSE
    winrm get winrm/config/service/auth
    ```
 
----
+This configuration provides secure remote management capabilities while maintaining compatibility with Windows Server 2012's older feature set.
 
-## 🐧 Ansible VM Setup
-
+# Ansible VM Setup
 ```bash
 sudo apt update
 sudo apt install python3-pip
 sudo pip3 install pywinrm
 ```
 
----
-
-## 📄 Ansible Configuration
-
+## Ansible Configuration
 ```ini
 [defaults]
 inventory = /etc/ansible/servers.txt
@@ -105,10 +95,7 @@ become_user = root
 become_ask_pass = False
 ```
 
----
-
-## 🖥️ Inventory File
-
+## Inventory File
 ```ini
 # Linux hosts
 [linux]
@@ -133,12 +120,9 @@ ansible_winrm_server_cert_validation=ignore
 ansible_become=no
 ```
 
----
-
-## 🧪 Playbooks
+## Playbooks
 
 ### Configure Windows Server 2012
-
 ```yaml
 ---
 - name: Configure Windows Server 2012
@@ -171,7 +155,6 @@ ansible_become=no
 ```
 
 ### Revert Changes
-
 ```yaml
 ---
 - name: Revert Windows Server 2012 Configuration
@@ -196,9 +179,9 @@ ansible_become=no
     # Verify removal by checking directory only
     - name: Verify directory removal
       win_shell: |
-        Write-Output "Directory Contents of C:\\Temp:"
-        if (Test-Path C:\\Temp) { Get-ChildItem C:\\Temp -Recurse }
-        else { Write-Output "C:\\Temp\\AnsibleDemo directory does not exist" }
+        Write-Output "Directory Contents of C:\Temp:"
+        if (Test-Path C:\Temp) { Get-ChildItem C:\Temp -Recurse }
+        else { Write-Output "C:\Temp\AnsibleDemo directory does not exist" }
       register: dir_verification
 
     - name: Display verification results
@@ -206,10 +189,7 @@ ansible_become=no
         var: dir_verification.stdout_lines
 ```
 
----
-
-## 📈 Execution Output Example
-
+## Execution Output Example
 ```bash
 amer@ansible:/etc/ansible$ ls
 ansible.cfg  revert_changes.yml  servers.txt  testfile.txt  windows_playbook.yml
@@ -283,20 +263,232 @@ PLAY RECAP *********************************************************************
 192.168.1.128              : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
----
-
-## 📦 Verbose Output Example
-
-> *(See full output in original documentation)*
-
----
-
-## 🧾 License
-
-MIT License  
-Copyright © 2025 Your Name  
-Permission is hereby granted...  
-
---- 
-
-> 💡 Tip: Replace `architecture.png` with your actual architecture diagram image file.
+## Verbose Output Example
+```bash
+amer@ansible:/etc/ansible$ ansible-playbook revert_changes.yml -vvv
+ansible-playbook 2.10.8
+  config file = /etc/ansible/ansible.cfg
+  configured module search path = ['/home/amer/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3/dist-packages/ansible
+  executable location = /usr/bin/ansible-playbook
+  python version = 3.10.12 (main, Feb  4 2025, 14:57:36) [GCC 11.4.0]
+Using /etc/ansible/ansible.cfg as config file
+host_list declined parsing /etc/ansible/servers.txt as it did not pass its verify_file() method
+script declined parsing /etc/ansible/servers.txt as it did not pass its verify_file() method
+auto declined parsing /etc/ansible/servers.txt as it did not pass its verify_file() method
+yaml declined parsing /etc/ansible/servers.txt as it did not pass its verify_file() method
+Parsed /etc/ansible/servers.txt inventory source with ini plugin
+redirecting (type: modules) ansible.builtin.win_feature to ansible.windows.win_feature
+redirecting (type: modules) ansible.builtin.win_file to ansible.windows.win_file
+redirecting (type: modules) ansible.builtin.win_shell to ansible.windows.win_shell
+Skipping callback 'default', as we already have a stdout callback.
+Skipping callback 'minimal', as we already have a stdout callback.
+Skipping callback 'oneline', as we already have a stdout callback.
+PLAYBOOK: revert_changes.yml *********************************************************************************
+1 plays in revert_changes.yml
+PLAY [Revert Windows Server 2012 Configuration] **************************************************************
+TASK [Gathering Facts] ***************************************************************************************
+task path: /etc/ansible/revert_changes.yml:2
+redirecting (type: modules) ansible.builtin.setup to ansible.windows.setup
+Using module file /usr/lib/python3/dist-packages/ansible_collections/ansible/windows/plugins/modules/setup.ps1
+Pipelining is enabled.
+<192.168.1.128> ESTABLISH WINRM CONNECTION FOR USER: Administrator on PORT 5985 TO 192.168.1.128
+EXEC (via pipeline wrapper)
+ok: [192.168.1.128]
+META: ran handlers
+TASK [Ensure IIS is removed] *********************************************************************************
+task path: /etc/ansible/revert_changes.yml:8
+redirecting (type: modules) ansible.builtin.win_feature to ansible.windows.win_feature
+Using module file /usr/lib/python3/dist-packages/ansible_collections/ansible/windows/plugins/modules/win_feature.ps1
+Pipelining is enabled.
+<192.168.1.128> ESTABLISH WINRM CONNECTION FOR USER: Administrator on PORT 5985 TO 192.168.1.128
+EXEC (via pipeline wrapper)
+changed: [192.168.1.128] => {
+    "changed": true,
+    "exitcode": "SuccessRestartRequired",
+    "feature_result": [
+        {
+            "display_name": "Common HTTP Features",
+            "id": 141,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        },
+        {
+            "display_name": "Default Document",
+            "id": 143,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        },
+        {
+            "display_name": "Directory Browsing",
+            "id": 144,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        },
+        {
+            "display_name": "Request Filtering",
+            "id": 169,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        },
+        {
+            "display_name": "Health and Diagnostics",
+            "id": 155,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        },
+        {
+            "display_name": "HTTP Errors",
+            "id": 145,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        },
+        {
+            "display_name": "HTTP Logging",
+            "id": 156,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        },
+        {
+            "display_name": "IIS Management Console",
+            "id": 175,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        },
+        {
+            "display_name": "Management Tools",
+            "id": 174,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        },
+        {
+            "display_name": "Performance",
+            "id": 171,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        },
+        {
+            "display_name": "Security",
+            "id": 162,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        },
+        {
+            "display_name": "Web Server (IIS)",
+            "id": 2,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        },
+        {
+            "display_name": "Static Content Compression",
+            "id": 172,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        },
+        {
+            "display_name": "Static Content",
+            "id": 142,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        },
+        {
+            "display_name": "Web Server",
+            "id": 140,
+            "message": [],
+            "reboot_required": true,
+            "restart_needed": true,
+            "skip_reason": "NotSkipped",
+            "success": true
+        }
+    ],
+    "reboot_required": true,
+    "success": true
+}
+TASK [Remove sample directory structure] *********************************************************************
+task path: /etc/ansible/revert_changes.yml:16
+redirecting (type: modules) ansible.builtin.win_file to ansible.windows.win_file
+Using module file /usr/lib/python3/dist-packages/ansible_collections/ansible/windows/plugins/modules/win_file.ps1
+Pipelining is enabled.
+<192.168.1.128> ESTABLISH WINRM CONNECTION FOR USER: Administrator on PORT 5985 TO 192.168.1.128
+EXEC (via pipeline wrapper)
+changed: [192.168.1.128] => {
+    "changed": true
+}
+TASK [Verify directory removal] ******************************************************************************
+task path: /etc/ansible/revert_changes.yml:23
+redirecting (type: modules) ansible.builtin.win_shell to ansible.windows.win_shell
+Using module file /usr/lib/python3/dist-packages/ansible_collections/ansible/windows/plugins/modules/win_shell.ps1
+Pipelining is enabled.
+<192.168.1.128> ESTABLISH WINRM CONNECTION FOR USER: Administrator on PORT 5985 TO 192.168.1.128
+EXEC (via pipeline wrapper)
+changed: [192.168.1.128] => {
+    "changed": true,
+    "cmd": "Write-Output \"Directory Contents of C:\\Temp:\"
+if (Test-Path C:\\Temp) { Get-ChildItem C:\\Temp -Recurse }
+else { Write-Output \"C:\\Temp\\AnsibleDemo directory does not exist\" }",
+    "delta": "0:00:00.422098",
+    "end": "2025-05-21 06:37:41.343238",
+    "rc": 0,
+    "start": "2025-05-21 06:37:40.921139",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "Directory Contents of C:\\Temp:\r
+",
+    "stdout_lines": [
+        "Directory Contents of C:\\Temp:"
+    ]
+}
+TASK [Display verification results] **************************************************************************
+task path: /etc/ansible/revert_changes.yml:30
+ok: [192.168.1.128] => {
+    "dir_verification.stdout_lines": [
+        "Directory Contents of C:\\Temp:"
+    ]
+}
+META: ran handlers
+META: ran handlers
+PLAY RECAP ***************************************************************************************************
+192.168.1.128              : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```

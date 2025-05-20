@@ -1,0 +1,56 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: pihole-network-policy
+  namespace: pihole
+spec:
+  podSelector:
+    matchLabels:
+      app: pihole
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: pihole
+    ports:
+    - port: 80
+      protocol: TCP
+    - port: 53
+      protocol: TCP
+    - port: 53
+      protocol: UDP
+  - from:
+    - ipBlock:
+        cidr: 0.0.0.0/0
+    ports:
+    - port: 80
+      protocol: TCP
+    - port: 443
+      protocol: TCP
+  egress:
+  - ports:
+    - port: 80
+      protocol: TCP
+    - port: 53
+      protocol: TCP
+    - port: 53
+      protocol: UDP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          name: pihole
+  - to:
+    - ipBlock:
+        cidr: 0.0.0.0/0
+    ports:
+    - port: 53
+      protocol: TCP
+    - port: 53
+      protocol: UDP
+    - port: 80
+      protocol: TCP
+    - port: 443
+      protocol: TCP 

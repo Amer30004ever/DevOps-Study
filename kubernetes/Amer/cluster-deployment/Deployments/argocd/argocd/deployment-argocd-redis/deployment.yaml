@@ -1,0 +1,128 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app.kubernetes.io/component":"redis","app.kubernetes.io/name":"argocd-redis","app.kubernetes.io/part-of":"argocd"},"name":"argocd-redis","namespace":"argocd"},"spec":{"selector":{"matchLabels":{"app.kubernetes.io/name":"argocd-redis"}},"template":{"metadata":{"labels":{"app.kubernetes.io/name":"argocd-redis"}},"spec":{"affinity":{"podAntiAffinity":{"preferredDuringSchedulingIgnoredDuringExecution":[{"podAffinityTerm":{"labelSelector":{"matchLabels":{"app.kubernetes.io/name":"argocd-redis"}},"topologyKey":"kubernetes.io/hostname"},"weight":100},{"podAffinityTerm":{"labelSelector":{"matchLabels":{"app.kubernetes.io/part-of":"argocd"}},"topologyKey":"kubernetes.io/hostname"},"weight":5}]}},"containers":[{"args":["--save","","--appendonly","no","--requirepass $(REDIS_PASSWORD)"],"env":[{"name":"REDIS_PASSWORD","valueFrom":{"secretKeyRef":{"key":"auth","name":"argocd-redis"}}}],"image":"redis:7.0.15-alpine","imagePullPolicy":"Always","name":"redis","ports":[{"containerPort":6379}],"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true}}],"initContainers":[{"command":["argocd","admin","redis-initial-password"],"image":"quay.io/argoproj/argocd:v2.13.2","imagePullPolicy":"IfNotPresent","name":"secret-init","securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}}],"securityContext":{"runAsNonRoot":true,"runAsUser":999,"seccompProfile":{"type":"RuntimeDefault"}},"serviceAccountName":"argocd-redis"}}}}
+  creationTimestamp: "2025-01-15T17:25:26Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/component: redis
+    app.kubernetes.io/name: argocd-redis
+    app.kubernetes.io/part-of: argocd
+  name: argocd-redis
+  namespace: argocd
+  resourceVersion: "385136"
+  uid: f652da00-6918-49c5-842e-2ce49b18574a
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-redis
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: argocd-redis
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: argocd-redis
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/part-of: argocd
+              topologyKey: kubernetes.io/hostname
+            weight: 5
+      containers:
+      - args:
+        - --save
+        - ""
+        - --appendonly
+        - "no"
+        - --requirepass $(REDIS_PASSWORD)
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: auth
+              name: argocd-redis
+        image: redis:7.0.15-alpine
+        imagePullPolicy: Always
+        name: redis
+        ports:
+        - containerPort: 6379
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - command:
+        - argocd
+        - admin
+        - redis-initial-password
+        image: quay.io/argoproj/argocd:v2.13.2
+        imagePullPolicy: IfNotPresent
+        name: secret-init
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccount: argocd-redis
+      serviceAccountName: argocd-redis
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2025-01-15T17:25:26Z"
+    lastUpdateTime: "2025-01-15T17:25:42Z"
+    message: ReplicaSet "argocd-redis-55c76cb574" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  - lastTransitionTime: "2025-04-14T17:38:49Z"
+    lastUpdateTime: "2025-04-14T17:38:49Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1

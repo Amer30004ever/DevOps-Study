@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: k10-catalog
+  namespace: kasten-io
+  labels:
+    app: k10
+    component: catalog
+spec:
+  ports:
+  - port: 443
+    targetPort: 8003
+    protocol: TCP
+    name: https
+  selector:
+    app: k10
+    component: catalog
+  type: ClusterIP 

@@ -1,0 +1,131 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-pihole
+  namespace: pihole
+  labels:
+    app: pihole
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: ""
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pihole
+  template:
+    metadata:
+      labels:
+        app: pihole
+    spec:
+      containers:
+      - name: pihole
+        image: pihole/pihole:2024.02.1
+        ports:
+        - name: web-http
+          containerPort: 80
+          protocol: TCP
+        - name: web-https
+          containerPort: 443
+          protocol: TCP
+        - name: dns-53
+          containerPort: 53
+          protocol: TCP
+        - name: dns-53-udp
+          containerPort: 53
+          protocol: UDP
+        - name: dhcp-67
+          containerPort: 67
+          protocol: UDP
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+        livenessProbe:
+          httpGet:
+            path: /admin/
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /admin/
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        env:
+        - name: TZ
+          value: "UTC"
+        - name: WEBPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pihole-secret
+              key: password
+        - name: DNS1
+          value: "1.1.1.1"
+        - name: DNS2
+          value: "1.0.0.1"
+        - name: PIHOLE_DNS_1
+          value: "1.1.1.1"
+        - name: PIHOLE_DNS_2
+          value: "1.0.0.1"
+        - name: PIHOLE_DNS_3
+          value: "8.8.8.8"
+        - name: PIHOLE_DNS_4
+          value: "8.8.4.4"
+        - name: DNSMASQ_LISTENING
+          value: "all"
+        - name: QUERY_LOGGING
+          value: "true"
+        - name: BLOCKING_ENABLED
+          value: "true"
+        - name: WEBTHEME
+          value: "default"
+        - name: CACHE_SIZE
+          value: "10000"
+        - name: FTLCONF_webserver_port
+          value: "80"
+        - name: VIRTUAL_HOST
+          value: "pi.hole"
+        - name: FTLCONF_misc_etc_dnsmasq_d
+          value: "true"
+        - name: FTLCONF_webserver_api_password
+          valueFrom:
+            secretKeyRef:
+              name: pihole-secret
+              key: password
+        - name: FTLCONF_dns_upstreams
+          value: "8.8.8.8;8.8.4.4"
+        volumeMounts:
+        - name: pihole-data
+          mountPath: /etc/pihole
+        - name: dnsmasq-d
+          mountPath: /etc/dnsmasq.d
+        - name: custom-dnsmasq
+          mountPath: /etc/addn-hosts
+          subPath: addn-hosts
+        - name: custom-dnsmasq
+          mountPath: /etc/dnsmasq.d/02-custom.conf
+          subPath: 02-custom.conf
+        - name: pihole-ftl-config
+          mountPath: /etc/pihole/pihole-FTL.conf
+          subPath: pihole-FTL.conf
+      volumes:
+      - name: pihole-data
+        persistentVolumeClaim:
+          claimName: pihole-data
+      - name: dnsmasq-d
+        persistentVolumeClaim:
+          claimName: dnsmasq-d
+      - name: custom-dnsmasq
+        configMap:
+          name: my-pihole-custom-dnsmasq
+      - name: pihole-ftl-config
+        configMap:
+          name: pihole-ftl-config 

@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pihole-config
+  namespace: pihole
+data:
+  setupVars.conf: |
+    PIHOLE_INTERFACE=eth0
+    IPV4_ADDRESS=0.0.0.0
+    IPV6_ADDRESS=
+    PIHOLE_DNS_1=1.1.1.1
+    PIHOLE_DNS_2=1.0.0.1
+    QUERY_LOGGING=true
+    INSTALL_WEB_SERVER=true
+    INSTALL_WEB_INTERFACE=true
+    LIGHTTPD_ENABLED=true
+    BLOCKING_ENABLED=true
+    WEBPASSWORD=admin123
+    DNSMASQ_LISTENING=local
+    REV_SERVER=false
+    REV_SERVER_DOMAIN=
+    REV_SERVER_TARGET=
+    REV_SERVER_CIDR=
+    TEMPERATUREUNIT=C
+    WEBUIBOXEDLAYOUT=traditional
+    WEBTHEME=default
+    CACHE_SIZE=10000
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pihole-ftl-config
+  namespace: pihole
+data:
+  pihole-FTL.conf: |
+    #; Pi-hole FTL config file
+    #; Comments should start with #; to avoid issues with PHP and bash reading this file
+    MACVENDORDB=/macvendor.db
+    LOCAL_IPV4=0.0.0.0
+    dns_upstreams="8.8.8.8 8.8.4.4"
+    misc_etc_dnsmasq_d=true
+    webserver_api_password=admin123
+    webserver_port=80 

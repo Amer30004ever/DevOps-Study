@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitea
+  namespace: gitea
+  labels:
+    app: gitea
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitea
+  template:
+    metadata:
+      labels:
+        app: gitea
+    spec:
+      containers:
+      - name: gitea
+        image: gitea/gitea:1.21.7
+        ports:
+        - containerPort: 3000
+        - containerPort: 22
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        env:
+        - name: GITEA__database__DB_TYPE
+          value: "sqlite3"
+        - name: GITEA__database__PATH
+          value: "/data/gitea/gitea.db"
+        - name: GITEA__server__DOMAIN
+          value: "192.168.2.152"
+        - name: GITEA__server__ROOT_URL
+          value: "http://192.168.2.152:30090/"
+        - name: GITEA__server__HTTP_ADDR
+          value: "0.0.0.0"
+        - name: GITEA__server__HTTP_PORT
+          value: "3000"
+        - name: GITEA__server__DISABLE_SSH
+          value: "false"
+        - name: GITEA__server__SSH_PORT
+          value: "22"
+        - name: GITEA__server__START_SSH_SERVER
+          value: "true"
+        volumeMounts:
+        - name: gitea-data
+          mountPath: /data
+      volumes:
+      - name: gitea-data
+        persistentVolumeClaim:
+          claimName: gitea-data 

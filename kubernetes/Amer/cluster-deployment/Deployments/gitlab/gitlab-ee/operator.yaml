@@ -1,0 +1,660 @@
+#!/bin/bash
+
+set -e
+
+# creating mount dir and giving permission
+sudo mkdir -p /mnt/data/gitlab
+sudo chown -R $USER:$USER /mnt/data/gitlab
+sudo chmod -R 755 /mnt/data/gitlab
+
+# Function to get the node IP
+get_node_ip() {
+  local node_ip=$(hostname -I | awk '{print $1}')
+  echo "Using node IP: $node_ip"
+}
+
+# Get the node IP
+NODE_IP=$(get_node_ip)
+
+# Create namespace for Gitlab
+kubectl create namespace gitlab || echo "Namespace 'gitlab' already exists."
+
+# gitlab.yml
+cat <<EOF | kubectl apply -f -
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: gitlabs.apps.gitlab.com
+spec:
+  group: apps.gitlab.com
+  names:
+    kind: GitLab
+    listKind: GitLabList
+    plural: gitlabs
+    shortNames:
+    - gl
+    singular: gitlab
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.phase
+      name: STATUS
+      type: string
+    - jsonPath: .status.version
+      name: VERSION
+      type: string
+    name: v1beta1
+    schema:
+      openAPIV3Schema:
+        description: GitLab is a complete DevOps platform, delivered in a single application.
+        properties:
+          apiVersion:
+            type: string
+          kind:
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              chart:
+                properties:
+                  values:
+                    type: object
+                  version:
+                    type: string
+                type: object
+            type: object
+          status:
+            description: Most recently observed status of the GitLab instance. It is read-only to the user.
+            properties:
+              conditions:
+                items:
+                  properties:
+                    lastTransitionTime:
+                      type: string
+                    message:
+                      type: string
+                    observedGeneration:
+                      type: integer
+                    reason:
+                      type: string
+                    status:
+                      type: string
+                    type:
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - message
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+              phase:
+                type: string
+              version:
+                type: string
+            required:
+            - conditions
+            type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames: {}
+  conditions: []
+  storedVersions: []
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gitlab-app-nonroot
+  namespace: gitlab
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gitlab-manager
+  namespace: gitlab
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gitlab-nginx-ingress
+  namespace: gitlab
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gitlab-prometheus-server
+  namespace: gitlab
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gitlab-app-role-nonroot
+rules:
+- apiGroups:
+  - security.openshift.io
+  resourceNames:
+  - nonroot-v2
+  resources:
+  - securitycontextconstraints
+  verbs:
+  - use
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gitlab-metrics-auth-role
+rules:
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gitlab-metrics-reader
+rules:
+- nonResourceURLs:
+  - /metrics
+  verbs:
+  - get
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gitlab-manager-role
+rules:
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - daemonsets
+  - statefulsets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps.gitlab.com
+  resources:
+  - gitlabs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps.gitlab.com
+  resources:
+  - gitlabs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - apps.gitlab.com
+  resources:
+  - gitlabs/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - autoscaling
+  resources:
+  - horizontalpodautoscalers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cert-manager.io
+  resources:
+  - certificates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cert-manager.io
+  resources:
+  - issuers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - endpoints
+  - namespaces
+  - secrets
+  - services
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - policy
+  resources:
+  - poddisruptionbudgets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - clusterroles
+  - clusterrolebindings
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - roles
+  - rolebindings
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - storage.k8s.io
+  resources:
+  - storageclasses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - patch
+  - update
+  - list
+  - watch
+  - create
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gitlab-nginx-ingress-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - services
+  - endpoints
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gitlab-prometheus-server
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+  - watch
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: gitlab-app-rolebinding-nonroot
+  namespace: gitlab
+subjects:
+- kind: ServiceAccount
+  name: gitlab-app-nonroot
+  namespace: gitlab
+roleRef:
+  kind: ClusterRole
+  name: gitlab-app-role-nonroot
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: gitlab-manager-rolebinding
+subjects:
+- kind: ServiceAccount
+  name: gitlab-manager
+  namespace: gitlab
+roleRef:
+  kind: ClusterRole
+  name: gitlab-manager-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitlab
+  namespace: gitlab
+spec:
+  selector:
+    app: gitlab
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab
+  namespace: gitlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab
+  template:
+    metadata:
+      labels:
+        app: gitlab
+    spec:
+      containers:
+      - name: gitlab
+        image: gitlab/gitlab-ee:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /mnt/data/gitlab
+          name: gitlab-data
+      volumes:
+      - name: gitlab-data
+        persistentVolumeClaim:
+          claimName: gitlab-pvc
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: gitlab
+  namespace: gitlab
+spec:
+  replicas: 1
+  serviceName: "gitlab"
+  selector:
+    matchLabels:
+      app: gitlab
+  template:
+    metadata:
+      labels:
+        app: gitlab
+    spec:
+      containers:
+      - name: gitlab
+        image: gitlab/gitlab-ce:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /mnt/data/gitlab
+          name: gitlab-data
+      volumes:
+      - name: gitlab-data
+        persistentVolumeClaim:
+          claimName: gitlab-pvc
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gitlab-ingress
+  namespace: gitlab
+spec:
+  rules:
+  - host: "$NODE_IP" 
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: gitlab
+            port:
+              number: 80
+EOF
+
+# Apply all the YAML files
+kubectl apply -f gitlab.yml
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab
+  namespace: gitlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab
+  template:
+    metadata:
+      labels:
+        app: gitlab
+    spec:
+      containers:
+      - name: gitlab
+        image: gitlab/gitlab-ee:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: GITLAB_OMNIBUS_CONFIG
+          value: |
+            external_url 'http://$(NODE_IP)'
+            gitlab_rails['db_adapter'] = 'postgresql'
+            gitlab_rails['db_encoding'] = 'utf8'
+            gitlab_rails['db_host'] = 'EXTERNAL_PG_HOST'
+            gitlab_rails['db_port'] = '5432'
+            gitlab_rails['db_database'] = 'gitlabhq_production'
+            gitlab_rails['db_username'] = 'gitlab'
+            gitlab_rails['db_password'] = 'securepassword'
+            gitlab_rails['backup_path'] = '/var/opt/gitlab/backups'
+        volumeMounts:
+        - mountPath: /var/opt/gitlab
+          name: gitlab-data
+        - mountPath: /var/log/gitlab
+          name: gitlab-logs
+        - mountPath: /etc/gitlab
+          name: gitlab-config
+        - mountPath: /var/opt/gitlab/backups
+          name: gitlab-backups
+      volumes:
+      - name: gitlab-data
+        persistentVolumeClaim:
+          claimName: gitlab-data
+      - name: gitlab-logs
+        persistentVolumeClaim:
+          claimName: gitlab-logs
+      - name: gitlab-config
+        persistentVolumeClaim:
+          claimName: gitlab-config
+      - name: gitlab-backups
+        persistentVolumeClaim:
+          claimName: gitlab-backups
+          
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gitlab-pv
+  namespace: gitlab
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /mnt/data/gitlab
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gitlab-pvc
+  namespace: gitlab
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: gitlab
+  namespace: gitlab
+spec:
+  replicas: 1
+  serviceName: "gitlab"
+  selector:
+    matchLabels:
+      app: gitlab
+  template:
+    metadata:
+      labels:
+        app: gitlab
+    spec:
+      containers:
+      - name: gitlab
+        image: gitlab/gitlab-ce:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: gitlab-data
+          mountPath: /var/opt/gitlab
+      volumes:
+      - name: gitlab-data
+        persistentVolumeClaim:
+          claimName: gitlab-pvc
+

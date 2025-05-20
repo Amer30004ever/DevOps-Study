@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-loki-stack-prometheus-pushgateway
+  namespace: loki
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-pushgateway
+  template:
+    metadata:
+      labels:
+        app: prometheus-pushgateway
+    spec:
+      containers:
+      - name: pushgateway
+        image: prom/pushgateway:latest
+        ports:
+        - containerPort: 9091
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-pushgateway
+  namespace: loki
+spec:
+  selector:
+    app: prometheus-pushgateway
+  ports:
+  - port: 9091
+    targetPort: 9091 

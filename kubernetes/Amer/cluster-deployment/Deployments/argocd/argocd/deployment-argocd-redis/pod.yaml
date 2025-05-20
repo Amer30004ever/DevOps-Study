@@ -1,0 +1,204 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-04-09T21:23:00Z"
+    generateName: argocd-redis-55c76cb574-
+    labels:
+      app.kubernetes.io/name: argocd-redis
+      pod-template-hash: 55c76cb574
+    name: argocd-redis-55c76cb574-bs4d8
+    namespace: argocd
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: argocd-redis-55c76cb574
+      uid: bf8f648b-5e02-4a3e-b150-ce433c6093a3
+    resourceVersion: "385131"
+    uid: be765ebb-7025-414b-a5e2-2f639ee38af9
+  spec:
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: argocd-redis
+            topologyKey: kubernetes.io/hostname
+          weight: 100
+        - podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/part-of: argocd
+            topologyKey: kubernetes.io/hostname
+          weight: 5
+    containers:
+    - args:
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+      - --requirepass $(REDIS_PASSWORD)
+      env:
+      - name: REDIS_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: auth
+            name: argocd-redis
+      image: redis:7.0.15-alpine
+      imagePullPolicy: Always
+      name: redis
+      ports:
+      - containerPort: 6379
+        protocol: TCP
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-znvxq
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    initContainers:
+    - command:
+      - argocd
+      - admin
+      - redis-initial-password
+      image: quay.io/argoproj/argocd:v2.13.2
+      imagePullPolicy: IfNotPresent
+      name: secret-init
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-znvxq
+        readOnly: true
+    nodeName: worker01
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+      seccompProfile:
+        type: RuntimeDefault
+    serviceAccount: argocd-redis
+    serviceAccountName: argocd-redis
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-znvxq
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-14T17:34:41Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-09T21:23:47Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-14T17:38:49Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-14T17:38:49Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-04-09T21:23:00Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://0cd20342d3db4aa054e2b47753ddd37c7ef21d82e54be3c8b7a7f3499968e426
+      image: docker.io/library/redis:7.0.15-alpine
+      imageID: docker.io/library/redis@sha256:c9d92d840fd011c908f040592857c724ae6d877f2aba5c40ad963276507386b2
+      lastState:
+        terminated:
+          containerID: containerd://a970c03ebafcc91157bc11f66b8d459465a3bf034ebbf2618caff83512d35cc8
+          exitCode: 255
+          finishedAt: "2025-04-14T17:31:04Z"
+          reason: Unknown
+          startedAt: "2025-04-09T21:32:06Z"
+      name: redis
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2025-04-14T17:38:48Z"
+    hostIP: 192.168.2.151
+    hostIPs:
+    - ip: 192.168.2.151
+    initContainerStatuses:
+    - containerID: containerd://e09ee75a890deb983e991c4130e4cc16a00970d279d44b3873a9e62bb2ed4e49
+      image: quay.io/argoproj/argocd:v2.13.2
+      imageID: quay.io/argoproj/argocd@sha256:1322e91b758b9d44db3af44f457c298831c57a8e1d635118910d35e71f822646
+      lastState: {}
+      name: secret-init
+      ready: true
+      restartCount: 1
+      started: false
+      state:
+        terminated:
+          containerID: containerd://e09ee75a890deb983e991c4130e4cc16a00970d279d44b3873a9e62bb2ed4e49
+          exitCode: 0
+          finishedAt: "2025-04-14T17:38:39Z"
+          reason: Completed
+          startedAt: "2025-04-14T17:34:41Z"
+    phase: Running
+    podIP: 10.44.0.15
+    podIPs:
+    - ip: 10.44.0.15
+    qosClass: BestEffort
+    startTime: "2025-04-09T21:23:00Z"
+kind: List
+metadata:
+  resourceVersion: ""

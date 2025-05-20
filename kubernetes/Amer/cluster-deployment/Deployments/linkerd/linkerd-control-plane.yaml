@@ -1,0 +1,45 @@
+apiVersion: linkerd.io/v1alpha2
+kind: LinkerdControlPlane
+metadata:
+  name: linkerd-control-plane
+  namespace: linkerd
+spec:
+  version: stable-2.14.0
+  proxy:
+    image:
+      name: gcr.io/linkerd-io/proxy
+      pullPolicy: IfNotPresent
+    resources:
+      cpu:
+        limit: 100m
+        request: 10m
+      memory:
+        limit: 250Mi
+        request: 20Mi
+  identity:
+    issuer:
+      scheme: kubernetes.io/tls
+  proxyInjector:
+    resources:
+      cpu:
+        limit: 100m
+        request: 10m
+      memory:
+        limit: 50Mi
+        request: 10Mi
+  destination:
+    resources:
+      cpu:
+        limit: 100m
+        request: 10m
+      memory:
+        limit: 50Mi
+        request: 10Mi
+  tap:
+    resources:
+      cpu:
+        limit: 100m
+        request: 10m
+      memory:
+        limit: 50Mi
+        request: 10Mi 

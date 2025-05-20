@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traefik-config
+  namespace: traefik
+data:
+  traefik.yaml: |
+    api:
+      insecure: true
+    accessLog: {}
+    entryPoints:
+      web:
+        address: ":80"
+      websecure:
+        address: ":443"
+    providers:
+      kubernetesIngress: {}

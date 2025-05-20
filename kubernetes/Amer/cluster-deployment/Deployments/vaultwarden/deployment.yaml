@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultwarden-server
+  template:
+    metadata:
+      labels:
+        app: vaultwarden-server
+    spec:
+      containers:
+      - name: vaultwarden
+        image: vaultwarden/server:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: ROCKET_PORT
+          value: "80"
+        volumeMounts:
+        - name: vaultwarden-data
+          mountPath: /data
+      volumes:
+      - name: vaultwarden-data
+        persistentVolumeClaim:
+          claimName: vaultwarden-pv-claim

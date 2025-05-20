@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"vaultwarden","namespace":"vaultwarden"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"vaultwarden-server"}},"template":{"metadata":{"labels":{"app":"vaultwarden-server"}},"spec":{"containers":[{"env":[{"name":"ROCKET_PORT","value":"80"}],"image":"vaultwarden/server:latest","name":"vaultwarden","ports":[{"containerPort":80}],"volumeMounts":[{"mountPath":"/data","name":"vaultwarden-data"}]}],"volumes":[{"name":"vaultwarden-data","persistentVolumeClaim":{"claimName":"vaultwarden-pv-claim"}}]}}}}
+  creationTimestamp: "2025-01-15T00:20:13Z"
+  generation: 1
+  name: vaultwarden
+  namespace: vaultwarden
+  resourceVersion: "384205"
+  uid: 9f41b154-7035-4765-8a5e-97442e13c52f
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: vaultwarden-server
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: vaultwarden-server
+    spec:
+      containers:
+      - env:
+        - name: ROCKET_PORT
+          value: "80"
+        image: vaultwarden/server:latest
+        imagePullPolicy: Always
+        name: vaultwarden
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /data
+          name: vaultwarden-data
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: vaultwarden-data
+        persistentVolumeClaim:
+          claimName: vaultwarden-pv-claim
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2025-01-15T00:20:13Z"
+    lastUpdateTime: "2025-01-15T00:20:18Z"
+    message: ReplicaSet "vaultwarden-5dc4f454db" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  - lastTransitionTime: "2025-04-14T17:33:52Z"
+    lastUpdateTime: "2025-04-14T17:33:52Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1

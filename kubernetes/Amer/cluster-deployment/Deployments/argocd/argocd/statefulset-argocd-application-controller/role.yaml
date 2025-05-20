@@ -1,0 +1,58 @@
+apiVersion: v1
+items:
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"Role","metadata":{"annotations":{},"labels":{"app.kubernetes.io/component":"application-controller","app.kubernetes.io/name":"argocd-application-controller","app.kubernetes.io/part-of":"argocd"},"name":"argocd-application-controller","namespace":"argocd"},"rules":[{"apiGroups":[""],"resources":["secrets","configmaps"],"verbs":["get","list","watch"]},{"apiGroups":["argoproj.io"],"resources":["applications","appprojects"],"verbs":["create","get","list","watch","update","patch","delete"]},{"apiGroups":[""],"resources":["events"],"verbs":["create","list"]},{"apiGroups":["apps"],"resources":["deployments"],"verbs":["get","list","watch"]}]}
+    creationTimestamp: "2025-01-15T17:25:25Z"
+    labels:
+      app.kubernetes.io/component: application-controller
+      app.kubernetes.io/name: argocd-application-controller
+      app.kubernetes.io/part-of: argocd
+    name: argocd-application-controller
+    namespace: argocd
+    resourceVersion: "40228"
+    uid: 4615a8a4-f294-4caf-bf55-60438c6f8d0f
+  rules:
+  - apiGroups:
+    - ""
+    resources:
+    - secrets
+    - configmaps
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - argoproj.io
+    resources:
+    - applications
+    - appprojects
+    verbs:
+    - create
+    - get
+    - list
+    - watch
+    - update
+    - patch
+    - delete
+  - apiGroups:
+    - ""
+    resources:
+    - events
+    verbs:
+    - create
+    - list
+  - apiGroups:
+    - apps
+    resources:
+    - deployments
+    verbs:
+    - get
+    - list
+    - watch
+kind: List
+metadata:
+  resourceVersion: ""

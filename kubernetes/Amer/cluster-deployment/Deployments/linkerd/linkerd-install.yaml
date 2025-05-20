@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkerd-controller
+  namespace: linkerd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: linkerd-controller
+  template:
+    metadata:
+      labels:
+        app: linkerd-controller
+    spec:
+      containers:
+      - name: linkerd-controller
+        image: ghcr.io/linkerd/controller:stable-2.14.0
+        ports:
+        - containerPort: 8085
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 200m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkerd-controller
+  namespace: linkerd
+spec:
+  ports:
+  - port: 8085
+    targetPort: 8085
+    name: admin
+  selector:
+    app: linkerd-controller
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkerd-destination
+  namespace: linkerd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: linkerd-destination
+  template:
+    metadata:
+      labels:
+        app: linkerd-destination
+    spec:
+      containers:
+      - name: linkerd-destination
+        image: ghcr.io/linkerd/destination:stable-2.14.0
+        ports:
+        - containerPort: 8086
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 200m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkerd-destination
+  namespace: linkerd
+spec:
+  ports:
+  - port: 8086
+    targetPort: 8086
+    name: admin
+  selector:
+    app: linkerd-destination 

@@ -1,0 +1,39 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app.kubernetes.io/component":"redis","app.kubernetes.io/name":"argocd-redis","app.kubernetes.io/part-of":"argocd"},"name":"argocd-redis","namespace":"argocd"},"spec":{"ports":[{"name":"tcp-redis","port":6379,"targetPort":6379}],"selector":{"app.kubernetes.io/name":"argocd-redis"}}}
+    creationTimestamp: "2025-01-15T17:25:26Z"
+    labels:
+      app.kubernetes.io/component: redis
+      app.kubernetes.io/name: argocd-redis
+      app.kubernetes.io/part-of: argocd
+    name: argocd-redis
+    namespace: argocd
+    resourceVersion: "40266"
+    uid: 131f42fe-1a27-4bea-abe7-51208178d7b2
+  spec:
+    clusterIP: 10.98.120.16
+    clusterIPs:
+    - 10.98.120.16
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: tcp-redis
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+    selector:
+      app.kubernetes.io/name: argocd-redis
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: List
+metadata:
+  resourceVersion: ""

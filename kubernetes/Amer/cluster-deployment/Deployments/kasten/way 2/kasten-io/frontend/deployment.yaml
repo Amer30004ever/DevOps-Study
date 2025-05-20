@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k10-frontend
+  namespace: kasten-io
+  labels:
+    app: k10
+    component: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k10
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: k10
+        component: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: gcr.io/kasten-images/frontend:7.5.2
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        env:
+        - name: K10_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: K10_FRONTEND_PORT
+          value: "3000"
+        - name: K10_FRONTEND_HOST
+          value: "0.0.0.0"
+        - name: K10_GATEWAY_URL
+          value: "https://k10-gateway.kasten-io.svc.cluster.local" 

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gitea-data-pv
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  hostPath:
+    path: /data/gitea
+    type: DirectoryOrCreate
+  claimRef:
+    name: gitea-data
+    namespace: gitea 

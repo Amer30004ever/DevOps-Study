@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2025-04-10T12:01:17Z"
+  generateName: amer-project-6f7cdd845c-
+  labels:
+    app: amer-project
+    pod-template-hash: 6f7cdd845c
+  name: amer-project-6f7cdd845c-gs5d8
+  namespace: amer-project
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: amer-project-6f7cdd845c
+    uid: 8b4e6340-d4f3-48ab-aab0-ef2c0b745776
+  resourceVersion: "384173"
+  uid: 345e0451-e8b0-4f75-b700-5183c02643d7
+spec:
+  containers:
+  - image: amer30004ever/proj
+    imagePullPolicy: Always
+    name: proj
+    ports:
+    - containerPort: 80
+      protocol: TCP
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6qb7f
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: worker02
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-6qb7f
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2025-04-14T17:33:46Z"
+    status: "True"
+    type: PodReadyToStartContainers
+  - lastProbeTime: null
+    lastTransitionTime: "2025-04-10T12:01:17Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2025-04-14T17:33:46Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2025-04-14T17:33:46Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2025-04-10T12:01:17Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: containerd://35362e4046dc29a938e805738b64ae322fabe57726c0cc9c479f2ca7dfc93f9c
+    image: docker.io/amer30004ever/proj:latest
+    imageID: docker.io/amer30004ever/proj@sha256:9e60b8ba42bdcda8a0789a104d0931a386cc1625cac30219299f0c87dabb67a6
+    lastState:
+      terminated:
+        containerID: containerd://6c68f990c6d45800321c80df62dbe9dcf03bc11cb3a49f29e4b75a604f5c344d
+        exitCode: 255
+        finishedAt: "2025-04-14T17:30:33Z"
+        reason: Unknown
+        startedAt: "2025-04-10T12:01:19Z"
+    name: proj
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2025-04-14T17:33:45Z"
+  hostIP: 192.168.2.152
+  hostIPs:
+  - ip: 192.168.2.152
+  phase: Running
+  podIP: 10.36.0.11
+  podIPs:
+  - ip: 10.36.0.11
+  qosClass: BestEffort
+  startTime: "2025-04-10T12:01:17Z"

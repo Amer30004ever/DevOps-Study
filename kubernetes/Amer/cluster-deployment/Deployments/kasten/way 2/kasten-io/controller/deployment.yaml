@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k10-controller
+  namespace: kasten-io
+  labels:
+    app: k10
+    component: controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k10
+      component: controller
+  template:
+    metadata:
+      labels:
+        app: k10
+        component: controller
+    spec:
+      serviceAccountName: k10-controller
+      containers:
+      - name: controller
+        image: gcr.io/kasten-images/controller:7.5.2
+        ports:
+        - containerPort: 8002
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        env:
+        - name: K10_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: K10_CONTROLLER_PORT
+          value: "8002"
+        - name: K10_CONTROLLER_HOST
+          value: "0.0.0.0"
+        - name: K10_GATEWAY_URL
+          value: "https://k10-gateway.kasten-io.svc.cluster.local"
+        - name: K10_AUTH_URL
+          value: "https://k10-auth.kasten-io.svc.cluster.local" 
