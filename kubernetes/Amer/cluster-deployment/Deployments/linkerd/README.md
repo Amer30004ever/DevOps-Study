@@ -151,12 +151,12 @@ kubectl delete namespace metallb-system --force --grace-period=0
 ```
 
 ### 3. Uninstall Ingress-NGINX
-## For Helm installation:
+#### For Helm installation:
 ```bash
 helm uninstall ingress-nginx -n ingress-nginx
 ```
 
-## For manifest installation:
+#### For manifest installation:
 ```bash
 kubectl delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
 ```
