@@ -183,8 +183,7 @@ docker ps -a | grep kind
 | 502 Bad Gateway | `kubectl get endpoints -n linkerd-viz web` |
 | TLS errors | `linkerd upgrade | kubectl apply -f -` |
 ```
----
-```
+
 <p align="center">
   :book: <a href="https://linkerd.io/docs/">Linkerd Docs</a> | 
   :computer: <a href="https://kind.sigs.k8s.io/">Kind Docs</a> |
