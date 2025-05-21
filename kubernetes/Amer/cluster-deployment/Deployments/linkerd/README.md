@@ -207,5 +207,3 @@ The README now covers:
 - Comprehensive troubleshooting
 - Proper cleanup procedures
 - Helm-based Ingress installation
-
-Would you like me to add any specific troubleshooting scenarios or additional configuration details?
