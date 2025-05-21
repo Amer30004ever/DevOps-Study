@@ -116,8 +116,10 @@ winrm get winrm/config/service/auth
 - `Basic = true`
 
 ---
-```
+
 # AWX Project Directory Operations
+
+## Accessing AWX Task Container
 
 ## Listing Project Directory Contents
 
