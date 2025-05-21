@@ -116,74 +116,117 @@ winrm get winrm/config/service/auth
 - `Basic = true`
 
 ---
+```
+# AWX Project Directory Operations
 
-amer@amer:~$ kubectl exec -it my-awx-69d6fb48b9-52l7b -n awx -c task -- ls -la /var/lib/awx/projects
+## Listing Project Directory Contents
+
+```bash
+kubectl exec -it my-awx-69d6fb48b9-52l7b -n awx -c task -- ls -la /var/lib/awx/projects
+```
+
+Output:
+```
 total 16
 drwxr-xr-x 3 awx  root 4096 May 17 22:08 .
 drwxrwxr-x 1 root root 4096 May 17 18:49 ..
 -rwxr-xr-x 1 awx  root    0 May 17 18:23 _6__win_system_info.lock
 drwxr-xr-x 3 awx  root 4096 May 17 18:23 .__awx_cache
-amer@amer:~$
-amer@amer:~$ kubectl exec -it my-awx-69d6fb48b9-52l7b -n awx -c task -- mkdir -p /var/lib/awx/projects/_6__win_system_info/
-amer@amer:~$ kubectl exec -it my-awx-69d6fb48b9-52l7b -n awx -c task -- ls -la /var/lib/awx/projects/
+```
+
+## Creating a New Project Directory
+
+```bash
+kubectl exec -it my-awx-69d6fb48b9-52l7b -n awx -c task -- mkdir -p /var/lib/awx/projects/_6__win_system_info/
+```
+
+Verification:
+```bash
+kubectl exec -it my-awx-69d6fb48b9-52l7b -n awx -c task -- ls -la /var/lib/awx/projects/
+```
+
+Output:
+```
 total 20
 drwxr-xr-x 4 awx  root 4096 May 18 18:21 .
 drwxrwxr-x 1 root root 4096 May 17 18:49 ..
 drwxr-xr-x 2 awx  root 4096 May 18 18:21 _6__win_system_info
 -rwxr-xr-x 1 awx  root    0 May 17 18:23 _6__win_system_info.lock
 drwxr-xr-x 3 awx  root 4096 May 17 18:23 .__awx_cache
-amer@amer:~$ kubectl exec -it my-awx-69d6fb48b9-52l7b -n awx -c task -- ls -la /var/lib/awx/projects/_6__win_system_info/
-total 8
-drwxr-xr-x 2 awx root 4096 May 18 18:21 .
-drwxr-xr-x 4 awx root 4096 May 18 18:21 ..
-amer@amer:~$ kubectl cp win_system_info.yml my-awx-69d6fb48b9-52l7b:/var/lib/awx/projects/_6__win_system_info/ -n awx -c task
-amer@amer:~$ kubectl exec -it my-awx-69d6fb48b9-52l7b -n awx -c task -- ls -la /var/lib/awx/projects/_6__win_system_info/
+```
+
+## Copying a File to the Project Directory
+
+```bash
+kubectl cp win_system_info.yml my-awx-69d6fb48b9-52l7b:/var/lib/awx/projects/_6__win_system_info/ -n awx -c task
+```
+
+Verification:
+```bash
+kubectl exec -it my-awx-69d6fb48b9-52l7b -n awx -c task -- ls -la /var/lib/awx/projects/_6__win_system_info/
+```
+
+Output:
+```
 total 12
 drwxr-xr-x 2 awx root 4096 May 18 19:02 .
 drwxr-xr-x 4 awx root 4096 May 18 18:21 ..
 -rw-r--r-- 1 awx root  152 May 18 19:02 win_system_info.yml
-amer@amer:~$ kubectl exec -it my-awx-5fb45b8f74-mbms7 -n awx -c task -- \
-ls -la /var/lib/awx/projects/_7__windows_server_information/
+```
+
+## Listing Contents of Another Project Directory
+
+```bash
+kubectl exec -it my-awx-5fb45b8f74-mbms7 -n awx -c task -- ls -la /var/lib/awx/projects/_7__windows_server_information/
+```
+
+Output:
+```
 total 108
 drwxr-xr-x 23 awx root 4096 May 18 22:35  .
 drwxr-xr-x  6 awx root 4096 May 18 22:35  ..
 drwxr-xr-x  4 awx root 4096 May 18 22:35  ansible
 drwxr-xr-x  3 awx root 4096 May 18 22:35  ArgoCD
-drwxr-xr-x  2 awx root 4096 May 18 22:35  Articles
-drwxr-xr-x  4 awx root 4096 May 18 22:35  Bash-Script
--rw-r--r--  1 awx root 4945 May 18 22:35  build-test-deploy.txt
-drwxr-xr-x  3 awx root 4096 May 18 22:35  DataBase
-drwxr-xr-x  2 awx root 4096 May 18 22:35 'DevOps Implementation for Middleware and Database Configuration'
-drwxr-xr-x  4 awx root 4096 May 18 22:35  docker
-drwxr-xr-x  8 awx root 4096 May 18 22:35  .git
-drwxr-xr-x  3 awx root 4096 May 18 22:35  Git
-drwxr-xr-x  2 awx root 4096 May 18 22:35  GitLab
-drwxr-xr-x  3 awx root 4096 May 18 22:35  Helm
-drwxr-xr-x  3 awx root 4096 May 18 22:35  jenkins
-drwxr-xr-x  2 awx root 4096 May 18 22:35  K9s
-drwxr-xr-x  4 awx root 4096 May 18 22:35 'KinD + K3d'
-drwxr-xr-x  4 awx root 4096 May 18 22:35  kubernetes
-drwxr-xr-x  3 awx root 4096 May 18 22:35  Linux
-drwxr-xr-x  4 awx root 4096 May 18 22:35  Monitoring-Tools
--rw-r--r--  1 awx root  249 May 18 22:35 'password-encryption using base64.txt'
-drwxr-xr-x  2 awx root 4096 May 18 22:35  Proxy
-drwxr-xr-x  4 awx root 4096 May 18 22:35  terraform
-drwxr-xr-x  3 awx root 4096 May 18 22:35  vagrant
-drwxr-xr-x  3 awx root 4096 May 18 22:35  windows
+[...truncated for brevity...]
 -rw-r--r--  1 awx root   66 May 18 22:35 'you ip a.txt'
+```
 
-amer@amer:~$ kubectl exec -it my-awx-5fb45b8f74-mbms7 -n awx -c task -- \
-ansible-playbook --syntax-check /var/lib/awx/projects/_7__windows_server_information/win_facts.yml
+## Ansible Playbook Syntax Check
+
+```bash
+kubectl exec -it my-awx-5fb45b8f74-mbms7 -n awx -c task -- ansible-playbook --syntax-check /var/lib/awx/projects/_7__windows_server_information/win_facts.yml
+```
+
+Output:
+```
 [WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does
 not match 'all'
 
 playbook: /var/lib/awx/projects/_7__windows_server_information/win_facts.yml
+```
 
-bash-4.4$ ansible win-server-2012 -m win_ping -i /var/lib/awx/projects/_7__windows_server_information/test_inventory.yml
+## Windows Server Ping Test
+
+```bash
+ansible win-server-2012 -m win_ping -i /var/lib/awx/projects/_7__windows_server_information/test_inventory.yml
+```
+
+Output:
+```
 win-server-2012 | FAILED! => {
     "msg": "winrm or requests is not installed: No module named 'winrm'"
 }
-bash-4.4$ cat /var/lib/awx/projects/_7__windows_server_information/test_inventory.yml                        all:
+```
+
+## Inventory File Contents
+
+```bash
+cat /var/lib/awx/projects/_7__windows_server_information/test_inventory.yml
+```
+
+Contents:
+```yaml
+all:
   hosts:
     win-server-2012:
       ansible_host: 192.168.1.120
@@ -192,7 +235,8 @@ bash-4.4$ cat /var/lib/awx/projects/_7__windows_server_information/test_inventor
       ansible_connection: winrm
       ansible_winrm_transport: basic
       ansible_winrm_server_cert_validation: ignore
-      ansible_port: 5985bash-4.4$
+      ansible_port: 5985
+```
 ---
 ### **Step 1: Add Windows Host to AWX Inventory**
 #### **1.1 Log in to AWX Web UI**
