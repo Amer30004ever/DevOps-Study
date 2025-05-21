@@ -189,7 +189,6 @@ docker ps -a | grep kind
   :computer: <a href="https://kind.sigs.k8s.io/">Kind Docs</a> |
   :warning: <a href="https://metallb.universe.tf/">MetalLB Guide</a>
 </p>
-```
 
 Key Features:
 1. **Multiple Access Methods** - From simple LoadBalancer to production Ingress
