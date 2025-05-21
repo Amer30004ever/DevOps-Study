@@ -150,18 +150,29 @@ kubectl delete -f https://raw.githubusercontent.com/metallb/metallb/v0.13.7/conf
 kubectl delete namespace metallb-system --force --grace-period=0
 ```
 
-### 3. Delete Kind Cluster
+### 3. Uninstall Ingress-NGINX
+## For Helm installation:
+```bash
+helm uninstall ingress-nginx -n ingress-nginx
+```
+
+## For manifest installation:
+```bash
+kubectl delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+```
+
+### 4. Delete Kind Cluster
 ```bash
 kind delete cluster --name linkerd-demo
 ```
 
-### 4. Clean Local Files
+### 5. Clean Local Files
 ```bash
 sudo rm /usr/local/bin/linkerd
 rm -rf ~/.linkerd2
 ```
 
-### 5. Verify Complete Removal
+### 6. Verify Complete Removal
 ```bash
 # Check all Kubernetes resources
 kubectl get all --all-namespaces
