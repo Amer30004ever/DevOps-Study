@@ -127,10 +127,52 @@ echo "$EXTERNAL_IP dashboard.example.com" | sudo tee -a /etc/hosts
 ```
 
 ## 🧹 Cleanup
+### 1. Uninstall Linkerd Components
+```bash
+# Uninstall Viz extension
+linkerd viz uninstall | kubectl delete -f -
+
+# Uninstall control plane
+linkerd uninstall | kubectl delete -f -
+
+# Delete CRDs
+linkerd install --crds | kubectl delete -f -
+
+# Remove namespace (if stuck in terminating)
+kubectl delete namespace linkerd linkerd-viz
+```
+
+### 2. Uninstall MetalLB
+```bash
+kubectl delete -f https://raw.githubusercontent.com/metallb/metallb/v0.13.7/config/manifests/metallb-native.yaml
+
+# Force delete if needed
+kubectl delete namespace metallb-system --force --grace-period=0
+```
+
+### 3. Delete Kind Cluster
 ```bash
 kind delete cluster --name linkerd-demo
+```
+
+### 4. Clean Local Files
+```bash
 sudo rm /usr/local/bin/linkerd
 rm -rf ~/.linkerd2
+```
+
+### 5. Verify Complete Removal
+```bash
+# Check all Kubernetes resources
+kubectl get all --all-namespaces
+
+# Check for lingering resources
+kubectl get crds | grep -E 'linkerd|metallb'
+kubectl get ns | grep -E 'linkerd|metallb'
+
+# Check Docker containers
+docker ps -a | grep kind
+```
 ```
 
 ## 🚨 Troubleshooting Guide
